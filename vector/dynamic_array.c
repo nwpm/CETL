@@ -192,34 +192,12 @@ dynamic_int32_array *arr_erase_range(dynamic_int32_array *arr, size_t pos,
   return arr;
 }
 
-void arr_free(dynamic_int32_array *arr) { free(arr->ptr); }
+int32_t arr_back(dynamic_int32_array *arr) {
+  if (arr->size == 0) {
+    return -1; // ???
+  }
 
-int main(void) {
-
-  dynamic_int32_array arr;
-  dynamic_int32_array *p_arr = &arr;
-
-  arr_create(p_arr, 10);
-  arr_push_back(p_arr, 1);
-  arr_push_back(p_arr, 2);
-  arr_push_back(p_arr, 3);
-
-  arr_print(p_arr);
-  printf("\n");
-
-  int32_t range[3] = {5, 5, 5};
-
-  arr_insert_range(p_arr, range, 3, 0);
-
-  arr_print(p_arr);
-  printf("\n");
-
-  arr_erase_range(p_arr, 0, 2);
-
-  arr_print(p_arr);
-  printf("\n");
-
-  arr_free(p_arr);
-
-  return 0;
+  return arr->ptr[arr->size - 1];
 }
+
+void arr_free(dynamic_int32_array *arr) { free(arr->ptr); }

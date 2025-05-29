@@ -27,7 +27,7 @@ list *list_create(list *l) {
 
   l->head = head;
   l->tail = head;
-  l->size++;
+  l->size = 1;
 
   return l;
 }
@@ -42,7 +42,7 @@ list *list_create_init(list *l, int32_t data) {
 
   l->head = head;
   l->tail = head;
-  l->size++;
+  l->size = 1;
 
   return l;
 }
@@ -210,7 +210,7 @@ void list_print_data(list *l) {
   }
 }
 
-void list_free(list *l) {
+void list_free_nodes(list *l) {
 
   node *current = l->head;
   node *next = NULL;
@@ -220,44 +220,4 @@ void list_free(list *l) {
     free(current);
     current = next;
   }
-}
-
-int main(void) {
-
-  list *p_l = (list *)malloc(sizeof(list));
-
-  list_create_init(p_l, 10);
-  list_push_back(p_l, 9);
-  list_print_data(p_l);
-
-  printf("--------\n");
-
-  list_pop_back(p_l);
-  list_print_data(p_l);
-
-  printf("--------\n");
-
-  list_push_front(p_l, 11);
-  list_print_data(p_l);
-
-  printf("--------\n");
-
-  node *n = (node *)malloc(sizeof(node));
-  n->data = 22;
-
-  list_insert(p_l, n, 2);
-  list_print_data(p_l);
-
-  printf("--------\n");
-
-  list_erase(p_l, 2);
-  list_print_data(p_l);
-
-  printf("--------\n");
-
-  list_free(p_l);
-
-  free(p_l);
-
-  return 0;
 }
