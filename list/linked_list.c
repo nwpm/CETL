@@ -72,6 +72,12 @@ list *list_pop_back(list *l) {
     return l;
   }
 
+  if (l->size == 1) {
+    free(l->tail);
+    l->size = 0;
+    return l;
+  }
+
   node *current = l->head;
 
   while (current->next->next != NULL) {
@@ -166,7 +172,7 @@ list *list_erase(list *l, size_t pos) {
     return list_pop_front(l);
   }
 
-  if (pos == l->size) {
+  if (pos == l->size - 1) {
     return list_pop_back(l);
   }
 
