@@ -5,72 +5,77 @@
 #include <stdlib.h>
 #include <string.h>
 
-vector *vec_create(size_t vec_capacity, size_t elem_size) {
+cstl_vector *vec_create(size_t vec_capacity, size_t elem_size) {
 
-  vector *v = malloc(sizeof(vector));
-
-  if (v == NULL) {
+  if (vec_capacity <= 0 || elem_size <= 0) {
     return NULL;
   }
 
-  void *ptr = malloc(vec_capacity * elem_size);
+  cstl_vector *v = malloc(sizeof(cstl_vector));
 
-  if (ptr == NULL) {
-    free(v);
+  if (v == NULL) {
     return NULL;
   }
 
   v->size = 0;
   v->elem_size = elem_size;
-  v->data = ptr;
+  v->data = NULL;
   v->capacity = vec_capacity;
 
   return v;
 }
 
-vector *vec_create_copy(vector *v) {
+cstl_vector *vec_create_copy(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
   }
 
-  vector *v_copy = vec_create(v->capacity, v->elem_size);
+  cstl_vector *v_copy = vec_create(v->capacity, v->elem_size);
 
   v_copy->size = v->size;
+  void *data_copy = NULL;
 
-  void *data_copy = malloc(v_copy->capacity * v_copy->elem_size);
-  memcpy(data_copy, v->data, v->size * v->elem_size);
+  if (v->data != NULL) {
+    data_copy = malloc(v_copy->size * v_copy->elem_size);
+    memcpy(data_copy, v->data, v->size * v->elem_size);
+  }
 
   v_copy->data = data_copy;
   return v_copy;
 }
 
-vector *vec_create_filled(size_t vec_capacity, size_t elem_size,
-                          void *init_val) {
+cstl_vector *vec_create_filled(size_t vec_capacity, size_t elem_size,
+                               void *init_val) {
 
-  vector *v = vec_create(vec_capacity, elem_size);
+  cstl_vector *v = vec_create(vec_capacity, elem_size);
 
   if (v == NULL) {
     return NULL;
   }
 
+  void *data = malloc(elem_size * vec_capacity);
+
+  if (data == NULL) {
+    free(v);
+    return NULL;
+  }
+
   for (size_t i = 0; i < vec_capacity; ++i) {
-    void *elem_ptr = (char *)v->data + i * elem_size;
+    void *elem_ptr = (char *)data + i * elem_size;
     memcpy(elem_ptr, init_val, elem_size);
   }
 
+  v->data = data;
   v->capacity = vec_capacity;
   v->size = vec_capacity;
 
   return v;
 }
 
-size_t vec_size(vector *v) {
+size_t vec_size(cstl_vector *v) { return v->size; }
 
-  return v->size;
-}
-
-void *vec_front(vector *v) {
+void *vec_front(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
@@ -79,7 +84,7 @@ void *vec_front(vector *v) {
   return v->data;
 }
 
-void *vec_back(vector *v) {
+void *vec_back(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
@@ -88,7 +93,7 @@ void *vec_back(vector *v) {
   return (char *)v->data + (v->size - 1) * v->elem_size;
 }
 
-void *vec_get(vector *v, size_t index) {
+void *vec_get(cstl_vector *v, size_t index) {
 
   if (v == NULL || index >= v->size) {
     return NULL;
@@ -97,7 +102,7 @@ void *vec_get(vector *v, size_t index) {
   return (char *)v->data + index * v->elem_size;
 }
 
-int vec_set(vector *v, size_t index, void *elem_val) {
+int vec_set(cstl_vector *v, size_t index, void *elem_val) {
 
   if (v == NULL) {
     return -1;
@@ -112,7 +117,7 @@ int vec_set(vector *v, size_t index, void *elem_val) {
   return 0;
 }
 
-vector *vec_resize(vector *v, size_t new_capacity) {
+cstl_vector *vec_resize(cstl_vector *v, size_t new_capacity) {
 
   if (v == NULL) {
     return NULL;
@@ -135,7 +140,7 @@ vector *vec_resize(vector *v, size_t new_capacity) {
   return v;
 }
 
-vector *vec_push_back(vector *v, void *elem_val) {
+cstl_vector *vec_push_back(cstl_vector *v, void *elem_val) {
 
   if (v == NULL || elem_val == NULL) {
     return NULL;
@@ -154,7 +159,7 @@ vector *vec_push_back(vector *v, void *elem_val) {
   return v;
 }
 
-vector *vec_pop_back(vector *v) {
+cstl_vector *vec_pop_back(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
@@ -169,9 +174,11 @@ vector *vec_pop_back(vector *v) {
   return v;
 }
 
-bool vec_is_empty_arr(vector *arr) { return (arr->size > 0) ? false : true; }
+bool vec_is_empty_arr(cstl_vector *arr) {
+  return (arr->size > 0) ? false : true;
+}
 
-vector *vec_shrink_to_fit(vector *v) {
+cstl_vector *vec_shrink_to_fit(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
@@ -184,14 +191,14 @@ vector *vec_shrink_to_fit(vector *v) {
   return vec_resize(v, v->size);
 }
 
-vector *vec_clear(vector *v) {
+cstl_vector *vec_clear(cstl_vector *v) {
   vec_free(v);
   v->data = NULL;
   v->size = 0;
   return v;
 }
 
-vector *vec_insert(vector *v, size_t index, void *elem_val) {
+cstl_vector *vec_insert(cstl_vector *v, size_t index, void *elem_val) {
 
   if (v == NULL || elem_val == NULL || index > v->size) {
     return NULL;
@@ -210,7 +217,7 @@ vector *vec_insert(vector *v, size_t index, void *elem_val) {
   return v;
 }
 
-vector *vec_erase(vector *v, size_t index) {
+cstl_vector *vec_erase(cstl_vector *v, size_t index) {
 
   if (v == NULL || v->size == 0 || index >= v->size) {
     return NULL;
@@ -226,8 +233,8 @@ vector *vec_erase(vector *v, size_t index) {
   return v;
 }
 
-vector *vec_insert_range(vector *v, void *range, size_t range_size,
-                         size_t index) {
+cstl_vector *vec_insert_range(cstl_vector *v, void *range, size_t range_size,
+                              size_t index) {
 
   if (v == NULL || range == NULL || index > v->size) {
     return NULL;
@@ -253,7 +260,7 @@ vector *vec_insert_range(vector *v, void *range, size_t range_size,
   return v;
 }
 
-vector *vec_erase_range(vector *v, size_t index, size_t len) {
+cstl_vector *vec_erase_range(cstl_vector *v, size_t index, size_t len) {
 
   if (v == NULL || index > v->size) {
     return NULL;
@@ -269,4 +276,4 @@ vector *vec_erase_range(vector *v, size_t index, size_t len) {
   return v;
 }
 
-void vec_free(vector *v) { free(v->data); }
+void vec_free(cstl_vector *v) { free(v->data); }

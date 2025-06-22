@@ -5,41 +5,41 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct vector {
+typedef struct cstl_vector {
   size_t size;
   size_t capacity;
   size_t elem_size;
   void *data;
-} vector;
+} cstl_vector;
 
-vector *vec_create(size_t vec_capacity, size_t elem_size);
-vector *vec_create_copy(vector *v);
-vector *vec_create_filled(size_t vec_capacity, size_t elem_size,
+cstl_vector *vec_create(size_t vec_capacity, size_t elem_size);
+cstl_vector *vec_create_copy(cstl_vector *v);
+cstl_vector *vec_create_filled(size_t vec_capacity, size_t elem_size,
                           void *init_val);
 
-void *vec_front(vector *v);
-void *vec_back(vector *v);
-void *vec_get(vector *v, size_t index);
-void *vec_data(vector *v);
+void *vec_front(cstl_vector *v);
+void *vec_back(cstl_vector *v);
+void *vec_get(cstl_vector *v, size_t index);
+void *vec_data(cstl_vector *v);
 
-int vec_set(vector *v, size_t index, void *elem_val);
+int vec_set(cstl_vector *v, size_t index, void *elem_val);
 
-size_t vec_size(vector *v);
-size_t vec_capacity(vector *v);
+size_t vec_size(cstl_vector *v);
+size_t vec_capacity(cstl_vector *v);
 
-vector *vec_resize(vector *v, size_t new_capacity);
-vector *vec_push_back(vector *v, void *elem_val);
-vector *vec_pop_back(vector *v);
-vector *vec_shrink_to_fit(vector *v);
-vector *vec_clear(vector *v);
-vector *vec_insert(vector *v, size_t index, void *elem_val);
-vector *vec_erase(vector *v, size_t pos);
-vector *vec_insert_range(vector *v, void *range, size_t range_size,
+cstl_vector *vec_resize(cstl_vector *v, size_t new_capacity);
+cstl_vector *vec_push_back(cstl_vector *v, void *elem_val);
+cstl_vector *vec_pop_back(cstl_vector *v);
+cstl_vector *vec_shrink_to_fit(cstl_vector *v);
+cstl_vector *vec_clear(cstl_vector *v);
+cstl_vector *vec_insert(cstl_vector *v, size_t index, void *elem_val);
+cstl_vector *vec_erase(cstl_vector *v, size_t pos);
+cstl_vector *vec_insert_range(cstl_vector *v, void *range, size_t range_size,
                          size_t index);
-vector *vec_erase_range(vector *v, size_t index, size_t len);
+cstl_vector *vec_erase_range(cstl_vector *v, size_t index, size_t len);
 
-bool vec_is_empty(vector *v);
+bool vec_is_empty(cstl_vector *v);
 
-void vec_free(vector *v);
+void vec_free(cstl_vector *v);
 
 #endif // DYNAMIC_vec_H
