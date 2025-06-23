@@ -2,81 +2,82 @@
 #include "../../include/external/unity/unity.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void setUp() {}
 void tearDown() {}
 
-void test_vec_create_capacity_zero() {
-  cstl_vector *v = vec_create(0, sizeof(int));
+void test_cstl_vec_create_capacity_zero() {
+  cstl_vector *v = cstl_vec_create(0, sizeof(int));
   TEST_ASSERT_NULL(v);
 }
 
-void test_vec_create_capacity_one() {
-  cstl_vector *v = vec_create(1, sizeof(int));
+void test_cstl_vec_create_capacity_one() {
+  cstl_vector *v = cstl_vec_create(1, sizeof(int));
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(sizeof(int), v->elem_size);
   TEST_ASSERT_EQUAL(1, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_capacity_ten() {
-  cstl_vector *v = vec_create(10, sizeof(int));
+void test_cstl_vec_create_capacity_ten() {
+  cstl_vector *v = cstl_vec_create(10, sizeof(int));
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(sizeof(int), v->elem_size);
   TEST_ASSERT_EQUAL(10, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_capacity_1kk() {
-  cstl_vector *v = vec_create(10, sizeof(int));
+void test_cstl_vec_create_capacity_1kk() {
+  cstl_vector *v = cstl_vec_create(10, sizeof(int));
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(sizeof(int), v->elem_size);
   TEST_ASSERT_EQUAL(10, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_elem_size_one() {
-  cstl_vector *v = vec_create(1, 1);
+void test_cstl_vec_create_elem_size_one() {
+  cstl_vector *v = cstl_vec_create(1, 1);
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(1, v->elem_size);
   TEST_ASSERT_EQUAL(1, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_elem_size_double() {
-  cstl_vector *v = vec_create(1, sizeof(double));
+void test_cstl_vec_create_elem_size_double() {
+  cstl_vector *v = cstl_vec_create(1, sizeof(double));
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(sizeof(double), v->elem_size);
   TEST_ASSERT_EQUAL(1, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_elem_size_struct() {
+void test_cstl_vec_create_elem_size_struct() {
 
   typedef struct Test {
 
@@ -87,15 +88,15 @@ void test_vec_create_elem_size_struct() {
 
   } Test;
 
-  cstl_vector *v = vec_create(1, sizeof(Test));
+  cstl_vector *v = cstl_vec_create(1, sizeof(Test));
   TEST_ASSERT_NOT_NULL(v);
-  TEST_ASSERT_NULL(v->data);
+  TEST_ASSERT_NOT_NULL(v->data);
 
   TEST_ASSERT_EQUAL(0, v->size);
   TEST_ASSERT_EQUAL(sizeof(Test), v->elem_size);
   TEST_ASSERT_EQUAL(1, v->capacity);
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
@@ -104,7 +105,7 @@ void test_create_filled_capacity_zero() {
   int init_val = 1;
   int *init_val_ptr = &init_val;
 
-  cstl_vector *v = vec_create_filled(0, sizeof(int), init_val_ptr);
+  cstl_vector *v = cstl_vec_create_filled(0, sizeof(int), init_val_ptr);
 
   TEST_ASSERT_NULL(v);
 }
@@ -114,7 +115,7 @@ void test_create_filled_capacity_one() {
   int init_val = 1;
   void *init_val_ptr = &init_val;
 
-  cstl_vector *v = vec_create_filled(1, sizeof(int), init_val_ptr);
+  cstl_vector *v = cstl_vec_create_filled(1, sizeof(int), init_val_ptr);
 
   TEST_ASSERT_NOT_NULL(v);
   TEST_ASSERT_NOT_NULL(v->data);
@@ -124,7 +125,7 @@ void test_create_filled_capacity_one() {
   TEST_ASSERT_EQUAL(1, v->capacity);
   TEST_ASSERT_EQUAL(1, *((int *)v->data));
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
@@ -133,7 +134,7 @@ void test_create_filled_capacity_ten() {
   int init_val = 42;
   int *init_val_ptr = &init_val;
 
-  cstl_vector *v = vec_create_filled(10, sizeof(int), init_val_ptr);
+  cstl_vector *v = cstl_vec_create_filled(10, sizeof(int), init_val_ptr);
 
   TEST_ASSERT_NOT_NULL(v);
   TEST_ASSERT_NOT_NULL(v->data);
@@ -146,33 +147,35 @@ void test_create_filled_capacity_ten() {
     TEST_ASSERT_EQUAL(42, *((int *)v->data + i));
   }
 
-  vec_free(v);
+  cstl_vec_free(v);
   free(v);
 }
 
-void test_vec_create_copy_from_empty() {
+void test_cstl_vec_create_copy_from_empty() {
 
-  cstl_vector *v = vec_create(1, sizeof(int));
-  cstl_vector *v_copy = vec_create_copy(v);
+  cstl_vector *v = cstl_vec_create(1, sizeof(int));
+  cstl_vector *v_copy = cstl_vec_create_copy(v);
 
   TEST_ASSERT_NOT_NULL(v_copy);
-  TEST_ASSERT_NULL(v_copy->data);
+  TEST_ASSERT_NOT_NULL(v_copy->data);
 
   TEST_ASSERT_EQUAL(0, v_copy->size);
   TEST_ASSERT_EQUAL(sizeof(int), v_copy->elem_size);
   TEST_ASSERT_EQUAL(1, v_copy->capacity);
 
+  cstl_vec_free(v);
+  cstl_vec_free(v_copy);
   free(v);
   free(v_copy);
 }
 
-void test_vec_create_copy_from_size_one() {
+void test_cstl_vec_create_copy_from_size_one() {
 
   int val = 5;
   void *val_ptr = &val;
 
-  cstl_vector *v = vec_create_filled(1, sizeof(int), val_ptr);
-  cstl_vector *v_copy = vec_create_copy(v);
+  cstl_vector *v = cstl_vec_create_filled(1, sizeof(int), val_ptr);
+  cstl_vector *v_copy = cstl_vec_create_copy(v);
 
   TEST_ASSERT_NOT_NULL(v_copy);
   TEST_ASSERT_NOT_NULL(v_copy->data);
@@ -183,20 +186,20 @@ void test_vec_create_copy_from_size_one() {
   TEST_ASSERT_EQUAL(1, v_copy->capacity);
   TEST_ASSERT_EQUAL(5, *((int *)v_copy->data));
 
-  vec_free(v);
-  vec_free(v_copy);
+  cstl_vec_free(v);
+  cstl_vec_free(v_copy);
 
   free(v);
   free(v_copy);
 }
 
-void test_vec_create_copy_from_size_ten() {
+void test_cstl_vec_create_copy_from_size_ten() {
 
   int val = 2;
   void *val_ptr = &val;
 
-  cstl_vector *v = vec_create_filled(10, sizeof(int), val_ptr);
-  cstl_vector *v_copy = vec_create_copy(v);
+  cstl_vector *v = cstl_vec_create_filled(10, sizeof(int), val_ptr);
+  cstl_vector *v_copy = cstl_vec_create_copy(v);
 
   TEST_ASSERT_NOT_NULL(v_copy);
   TEST_ASSERT_NOT_NULL(v_copy->data);
@@ -209,27 +212,333 @@ void test_vec_create_copy_from_size_ten() {
     TEST_ASSERT_EQUAL(2, *((int *)v->data + i));
   }
 
-  vec_free(v);
-  vec_free(v_copy);
+  cstl_vec_free(v);
+  cstl_vec_free(v_copy);
 
   free(v);
   free(v_copy);
+}
+
+void test_cstl_vec_front_size_zero() {
+
+  cstl_vector *v = cstl_vec_create(1, sizeof(int));
+  TEST_ASSERT_NULL(cstl_vec_front(v));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_front_size_greater_zero() {
+
+  int val = 3;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(10, sizeof(int), val_ptr);
+  TEST_ASSERT_EQUAL(3, *((int *)cstl_vec_front(v)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_back_size_zero() {
+
+  cstl_vector *v = cstl_vec_create(1, sizeof(int));
+  TEST_ASSERT_NULL(cstl_vec_front(v));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_back_size_greater_zero() {
+
+  float val = 7.f;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(float), val_ptr);
+  TEST_ASSERT_EQUAL(7.f, *((float *)cstl_vec_back(v)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_get_pos_zero() {
+
+  short val = 9;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(3, sizeof(short), val_ptr);
+  TEST_ASSERT_EQUAL(9, *((short *)cstl_vec_get(v, 0)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_get_pos_last() {
+
+  int val = 11;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(4, sizeof(int), val_ptr);
+  TEST_ASSERT_EQUAL(11, *((short *)cstl_vec_get(v, v->size - 1)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_get_pos_out_of_bound(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(7, sizeof(short), val_ptr);
+  TEST_ASSERT_NULL(cstl_vec_get(v, 10));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_data_correct_ptr(){
+
+  short val = 2;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(4, sizeof(short), val_ptr);
+  TEST_ASSERT_NOT_NULL(v->data);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_set_pos_zero(){
+
+  short val = 9;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(10, sizeof(short), val_ptr);
+
+  short val_set = 10;
+  void *val_set_ptr = &val_set;
+
+  TEST_ASSERT_EQUAL(0, cstl_vec_set(v, 0, val_set_ptr));
+  TEST_ASSERT_EQUAL(10, *((short*)cstl_vec_front(v)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_set_pos_last(){
+
+  short val = 4;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  short val_set = 1;
+  void *val_set_ptr = &val_set;
+
+  TEST_ASSERT_EQUAL(0, cstl_vec_set(v, v->size - 1, val_set_ptr));
+  TEST_ASSERT_EQUAL(1, *((short*)cstl_vec_back(v)));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_set_pos_out_of_bound(){
+
+  short val = 4;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  short val_set = 1;
+  void *val_set_ptr = &val_set;
+
+  TEST_ASSERT_EQUAL(-2, cstl_vec_set(v, 100, val_set_ptr));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_set_elem_val_null(){
+
+  short val = 2;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  TEST_ASSERT_EQUAL(-1, cstl_vec_set(v, 0, NULL));
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_push_back_capacity_greater_size(){
+
+  short val = 10;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create(10, sizeof(short));
+  cstl_vec_push_back(v, val_ptr);
+
+  TEST_ASSERT_EQUAL(10, *((short*)cstl_vec_front(v)));
+  TEST_ASSERT_EQUAL(1, v->size);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_push_back_capacity_equal_size(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  short push_val = 2;
+  void *push_ptr_val = &push_val;
+
+  cstl_vec_push_back(v, push_ptr_val);
+  TEST_ASSERT_EQUAL(2, *((short*)cstl_vec_back(v)));
+  TEST_ASSERT_EQUAL(6, v->size);
+  TEST_ASSERT_EQUAL(10, v->capacity);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_pop_back_size_zero(){
+
+  cstl_vector *v = cstl_vec_create_empty();
+
+  cstl_vec_pop_back(v);
+  TEST_ASSERT_EQUAL(v, cstl_vec_pop_back(v));
+
+  free(v);
+}
+
+void test_cstl_vec_pop_back_size_greater_zero(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+
+  cstl_vec_pop_back(v);
+  TEST_ASSERT_EQUAL(4, v->size);
+  TEST_ASSERT_EQUAL(5, v->capacity);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_resize_new_capacity_equal_old(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  cstl_vec_resize(v, 5);
+
+  TEST_ASSERT_EQUAL(5, v->size);
+  TEST_ASSERT_EQUAL(5, v->capacity);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_resize_new_capacity_greater_old(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  cstl_vec_resize(v, 10);
+
+  TEST_ASSERT_EQUAL(5, v->size);
+  TEST_ASSERT_EQUAL(10, v->capacity);
+
+  int test_arr[] = {1,1,1,1,1};
+
+  for(size_t i = 0; i < 5; ++i){
+    TEST_ASSERT_EQUAL(test_arr[i], *((short*)cstl_vec_get(v, i)));
+  }
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_resize_new_capacity_less_old(){
+
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  cstl_vec_resize(v, 2);
+
+  TEST_ASSERT_EQUAL(2, v->size);
+  TEST_ASSERT_EQUAL(2, v->capacity);
+
+  int test_arr[] = {1,1};
+
+  for(size_t i = 0; i < 2; ++i){
+    TEST_ASSERT_EQUAL(test_arr[i], *((short*)cstl_vec_get(v, i)));
+  }
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_shrink_to_fit(){
+  
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  cstl_vec_resize(v, 10);
+  cstl_vec_shrink_to_fit(v);
+
+  TEST_ASSERT_EQUAL(5, v->capacity);
+  TEST_ASSERT_EQUAL(5, v->size);
+
+  cstl_vec_free(v);
+  free(v);
+}
+
+void test_cstl_vec_clear(){
+  
+  short val = 1;
+  void *val_ptr = &val;
+
+  cstl_vector *v = cstl_vec_create_filled(5, sizeof(short), val_ptr);
+
+  cstl_vec_clear(v);
+
+  TEST_ASSERT_EQUAL(5, v->capacity);
+  TEST_ASSERT_EQUAL(0, v->size);
+
+  cstl_vec_free(v);
+  free(v);
 }
 
 int main() {
 
   UNITY_BEGIN();
 
-  RUN_TEST(test_vec_create_capacity_zero);
-  RUN_TEST(test_vec_create_capacity_one);
-  RUN_TEST(test_vec_create_capacity_ten);
-  RUN_TEST(test_vec_create_capacity_1kk);
+  RUN_TEST(test_cstl_vec_create_capacity_zero);
+  RUN_TEST(test_cstl_vec_create_capacity_one);
+  RUN_TEST(test_cstl_vec_create_capacity_ten);
+  RUN_TEST(test_cstl_vec_create_capacity_1kk);
 
   printf("\n");
 
-  RUN_TEST(test_vec_create_elem_size_one);
-  RUN_TEST(test_vec_create_elem_size_double);
-  RUN_TEST(test_vec_create_elem_size_struct);
+  RUN_TEST(test_cstl_vec_create_elem_size_one);
+  RUN_TEST(test_cstl_vec_create_elem_size_double);
+  RUN_TEST(test_cstl_vec_create_elem_size_struct);
 
   printf("\n");
 
@@ -239,9 +548,60 @@ int main() {
 
   printf("\n");
 
-  RUN_TEST(test_vec_create_copy_from_empty);
-  RUN_TEST(test_vec_create_copy_from_size_one);
-  RUN_TEST(test_vec_create_copy_from_size_ten);
+  RUN_TEST(test_cstl_vec_create_copy_from_empty);
+  RUN_TEST(test_cstl_vec_create_copy_from_size_one);
+  RUN_TEST(test_cstl_vec_create_copy_from_size_ten);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_front_size_zero);
+  RUN_TEST(test_cstl_vec_front_size_greater_zero);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_back_size_zero);
+  RUN_TEST(test_cstl_vec_back_size_greater_zero);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_get_pos_zero);
+  RUN_TEST(test_cstl_vec_get_pos_last);
+  RUN_TEST(test_cstl_vec_get_pos_out_of_bound);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_data_correct_ptr);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_set_pos_zero);
+  RUN_TEST(test_cstl_vec_set_pos_last);
+  RUN_TEST(test_cstl_vec_set_pos_out_of_bound);
+  RUN_TEST(test_cstl_vec_set_elem_val_null);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_push_back_capacity_greater_size);
+  RUN_TEST(test_cstl_vec_push_back_capacity_equal_size);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_pop_back_size_zero);
+  RUN_TEST(test_cstl_vec_pop_back_size_greater_zero);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_resize_new_capacity_equal_old);
+  RUN_TEST(test_cstl_vec_resize_new_capacity_greater_old);
+  RUN_TEST(test_cstl_vec_resize_new_capacity_less_old);
+
+  printf("\n");
+
+  RUN_TEST(test_cstl_vec_shrink_to_fit);
+
+  printf("\n");
+  
+  RUN_TEST(test_cstl_vec_clear);
 
   return UNITY_END();
 }
