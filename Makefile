@@ -9,14 +9,15 @@ BIN_DIR   = bin/
 UNITY_DIR   = test/Unity
 UNITY_BUILD = $(BUILD_DIR)/unity
 
-VEC_SUBDIR = src/vector
-
 # === TARGETS ===
 
-.PHONY: all vector vtest unity clean
+.PHONY: all vector string vtest unity clean
 
 vector:
 	$(MAKE) -C src/vector
+
+string:
+	$(MAKE) -C src/string
 
 unity: $(UNITY_BUILD)
 	cd $(UNITY_BUILD) && cmake ../../$(UNITY_DIR)
