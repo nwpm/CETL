@@ -36,13 +36,3 @@ $(VEC_OBJ) : $(VEC_SRC) $(BUILD_PATH)
 
 $(BUILD_PATH):
 	mkdir -p $@
-
-
-
-
-
-
-
-
-
-
