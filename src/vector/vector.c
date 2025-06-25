@@ -91,20 +91,10 @@ cstl_vector *cstl_vec_create_filled(size_t vec_capacity, size_t elem_size,
 }
 
 size_t cstl_vec_size(cstl_vector *v) { 
-  
-  if(v == NULL){
-    return NULL;
-  }
-
   return v->size; 
 }
 
 size_t cstl_vec_capacity(cstl_vector *v) { 
-  
-  if(v == NULL){
-    return NULL;
-  }
-
   return v->capacity; 
 }
 
@@ -224,11 +214,6 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *v) {
 }
 
 bool cstl_vec_is_empty(cstl_vector *v) {
-
-  if(v == NULL){
-    return NULL;
-  }
-
   return !v->size;
 }
 
