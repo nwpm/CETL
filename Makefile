@@ -27,6 +27,9 @@ unity: $(UNITY_BUILD)
 vtest:
 	$(MAKE) -C test/vector
 
+strtest:
+	$(MAKE) -C test/string
+
 clean:
 	rm -rf $(BUILD_DIR)/*
 	rm -rf $(BIN_DIR)/*
