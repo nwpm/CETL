@@ -248,7 +248,7 @@ cstl_vector *cstl_vec_insert(cstl_vector *v, size_t index, void *elem_val) {
     cstl_vec_resize(v, new_capacity);
   }
 
-  if (index == v->size - 1) {
+  if (index == v->size) {
     cstl_vec_push_back(v, elem_val);
     return v;
   }
