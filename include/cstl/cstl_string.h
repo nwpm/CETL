@@ -30,7 +30,7 @@ cstl_string *cstl_str_replace(cstl_string *s, const char* substr, size_t pos);
 cstl_string *cstl_str_shrink_to_fit(cstl_string *s);
 cstl_string *cstl_str_pop_back(cstl_string *s);
 
-char *cstl_str_find(cstl_string *s, const char *substr);
+const char *cstl_str_find(cstl_string *s, const char *substr);
 char *cstl_str_data(cstl_string *s);
 
 int cstl_str_compare(cstl_string *s, const char *substr);
