@@ -11,13 +11,16 @@ UNITY_BUILD = $(BUILD_DIR)/unity
 
 # === TARGETS ===
 
-.PHONY: all vector string vtest unity clean
+.PHONY: all vector string list vtest strtest ltest unity clbuild
 
 vector:
 	$(MAKE) -C src/vector
 
 string:
 	$(MAKE) -C src/string
+
+list:
+	$(MAKE) -C src/list
 
 unity: $(UNITY_BUILD)
 	cd $(UNITY_BUILD) && cmake ../../$(UNITY_DIR)
@@ -29,6 +32,13 @@ vtest:
 
 strtest:
 	$(MAKE) -C test/string
+
+ltest:
+	$(MAKE) -C test/list
+
+clbuild:
+	rm -rf $(BIN_DIR)/*
+	find $(BUILD_DIR) -mindepth 1 -maxdepth 1 -not -name 'unity' -exec rm -rf {} +
 
 clean:
 	rm -rf $(BUILD_DIR)/*
