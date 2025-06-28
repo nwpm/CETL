@@ -1,0 +1,39 @@
+# === Compiler ===
+CC     = gcc
+CFLAGS = -g -O0 -fsanitize=address -Wall -Wextra -Wpedantic -std=c99
+
+# === Paths ===
+
+INCLUDE         = ../../include
+LIST_BIN_DIR     = ../../bin/list
+BUILD_DIR       = ../../build
+LIST_LIB_DIR     = $(BUILD_DIR)/list
+UNITY_LIB_DIR   = $(BUILD_DIR)/unity
+
+LIST_LIB   = $(LIST_LIB_DIR)/liblist.a
+UNITY_LIB = $(UNITY_LIB_DIR)/libunity.a 
+
+LIST_TEST_SRC = test_list.c
+LIST_TEST_OBJ = test_list.o
+
+LIST_TEST_BIN = $(LIST_BIN_DIR)/test_list
+
+# === Targets ===
+
+.PHONY: ltest
+
+ltest: $(LIST_TEST_BIN)
+
+# === Build rules ===
+
+$(LIST_TEST_BIN): $(LIST_TEST_OBJ)
+	$(CC) $(CFLAGS) $< -o $@ -L$(LIST_LIB_DIR) -llist -L$(UNITY_LIB_DIR) -lunity
+	rm $(LIST_TEST_OBJ)
+
+$(LIST_TEST_OBJ) : $(LIST_TEST_SRC) $(LIST_BIN_DIR)
+	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@
+
+$(LIST_BIN_DIR):
+	mkdir -p $@
+
+
