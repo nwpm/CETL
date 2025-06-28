@@ -81,13 +81,9 @@ cstl_string *cstl_str_create_copy(cstl_string *s) {
 
 // NOTE: get info functions
 
-size_t cstl_str_length(cstl_string *s) {
-  return s->length;
-}
+size_t cstl_str_length(cstl_string *s) { return s->length; }
 
-size_t cstl_str_capacity(cstl_string *s) {
-  return s->capacity;
-}
+size_t cstl_str_capacity(cstl_string *s) { return s->capacity; }
 
 char *cstl_str_data(cstl_string *s) {
 
@@ -98,9 +94,7 @@ char *cstl_str_data(cstl_string *s) {
   return s->data;
 }
 
-bool cstl_str_is_empty(cstl_string *s) {
-  return !s->length;
-}
+bool cstl_str_is_empty(cstl_string *s) { return !s->length; }
 
 // NOTE: change str functions
 
@@ -110,7 +104,7 @@ cstl_string *cstl_str_resize(cstl_string *s, size_t new_len) {
     return NULL;
   }
 
-  if (new_len == s->length) {
+  if (new_len + 1 == s->capacity) {
     return s;
   }
 
@@ -140,7 +134,7 @@ cstl_string *cstl_str_append(cstl_string *s, const char *c_s) {
 
   size_t cstr_len = strlen(c_s);
 
-  if(cstr_len == 0){
+  if (cstr_len == 0) {
     return s;
   }
 
@@ -188,18 +182,18 @@ cstl_string *cstl_str_append_char(cstl_string *s, int c) {
   return s;
 }
 
-cstl_string *cstl_str_insert(cstl_string *s, size_t pos, int c){
+cstl_string *cstl_str_insert(cstl_string *s, size_t pos, int c) {
 
-  if(s == NULL || pos > s->length){
+  if (s == NULL || pos > s->length) {
     return NULL;
   }
 
-  if(s->length + 1 >= s->capacity){
+  if (s->length + 1 >= s->capacity) {
     size_t new_capacity = (s->capacity > 0) ? s->capacity * 2 : 2;
     cstl_str_resize(s, new_capacity - 1);
   }
 
-  if(pos == s->length){
+  if (pos == s->length) {
     cstl_str_append_char(s, c);
     return s;
   }
@@ -208,34 +202,38 @@ cstl_string *cstl_str_insert(cstl_string *s, size_t pos, int c){
   char *src = s->data + pos;
   memmove(dest, src, s->length - pos);
 
-  char* dest_insert = s->data + pos;
+  char *dest_insert = s->data + pos;
   memset(dest_insert, c, sizeof(char));
+
+  s->length++;
+  s->data[s->length] = '\0';
 
   return s;
 }
 
-cstl_string *cstl_str_insert_range(cstl_string *s, size_t pos, const char *c_s){
+cstl_string *cstl_str_insert_range(cstl_string *s, size_t pos,
+                                   const char *c_s) {
 
-  if(s == NULL || c_s == NULL || pos > s->length){
+  if (s == NULL || c_s == NULL || pos > s->length) {
     return NULL;
   }
 
   size_t c_s_len = strlen(c_s);
 
-  if(c_s_len == 0){
+  if (c_s_len == 0) {
     return s;
   }
 
   size_t new_len = s->length + c_s_len;
 
-  if(new_len > s->capacity){
+  if (new_len > s->capacity) {
 
     size_t new_capacity = s->capacity;
 
-    while(new_capacity - 1 < new_len){
+    while (new_capacity - 1 < new_len) {
 
       new_capacity = (s->capacity > 0) ? s->capacity * 2 : 1;
-      if(cstl_str_resize(s, new_capacity - 1) == NULL){
+      if (cstl_str_resize(s, new_capacity - 1) == NULL) {
         return NULL;
       }
     }
@@ -254,10 +252,52 @@ cstl_string *cstl_str_insert_range(cstl_string *s, size_t pos, const char *c_s){
   return s;
 }
 
-cstl_string *cstl_str_erase_range(cstl_string *s, size_t pos, size_t len){
+cstl_string *cstl_str_erase(cstl_string *s, size_t pos) {
 
-  
+  if (s == NULL || s->length == 0 || pos >= s->length) {
+    return NULL;
+  }
 
+  if (pos == s->length - 1) {
+    return cstl_str_pop_back(s);
+  }
+
+  char *dest = s->data + pos;
+  char *src = s->data + pos + 1;
+  size_t move_size = s->length - pos - 1;
+  memmove(dest, src, move_size);
+
+  s->length--;
+  s->data[s->length] = '\0';
+
+  return s;
+}
+
+cstl_string *cstl_str_erase_range(cstl_string *s, size_t pos, size_t len) {
+
+  if (s == NULL || pos >= s->length || pos + len > s->length) {
+    return NULL;
+  }
+
+  if (len == 0) {
+    return s;
+  }
+
+  if (pos + len == s->length) {
+    s->length -= len;
+    s->data[pos] = '\0';
+    return s;
+  }
+
+  char *dest = s->data + pos;
+  char *src = s->data + pos + len;
+  size_t move_size = s->length - pos - len;
+  memmove(dest, src, move_size);
+
+  s->length -= len;
+  s->data[s->length] = '\0';
+
+  return s;
 }
 
 cstl_string *cstl_str_clear(cstl_string *s) {
@@ -267,6 +307,7 @@ cstl_string *cstl_str_clear(cstl_string *s) {
   }
 
   s->length = 0;
+  s->data[0] = '\0';
 
   return s;
 }
@@ -277,7 +318,7 @@ cstl_string *cstl_str_shrink_to_fit(cstl_string *s) {
     return NULL;
   }
 
-  return cstl_str_resize(s, s->length + 1);
+  return cstl_str_resize(s, s->length);
 }
 
 cstl_string *cstl_str_pop_back(cstl_string *s) {
@@ -290,24 +331,25 @@ cstl_string *cstl_str_pop_back(cstl_string *s) {
     return s;
   }
 
-  s->data[s->length - 1] = '\0';
   s->length--;
+  s->data[s->length] = '\0';
+
   return s;
 }
 
-cstl_string *cstl_str_replace(cstl_string *s, const char* substr, size_t pos){
+cstl_string *cstl_str_replace(cstl_string *s, const char *substr, size_t pos) {
 
-  if(s == NULL || substr == NULL || pos >= s->length){
+  if (s == NULL || substr == NULL || pos >= s->length) {
     return NULL;
   }
 
   size_t substr_len = strlen(substr);
 
-  if(substr_len + pos > s->length){
+  if (substr_len + pos > s->length) {
     return NULL;
   }
 
-  if(substr_len == 0){
+  if (substr_len == 0) {
     return s;
   }
 
@@ -316,7 +358,7 @@ cstl_string *cstl_str_replace(cstl_string *s, const char* substr, size_t pos){
   return s;
 }
 
-char *cstl_str_find(cstl_string *s, const char *substr) {
+const char *cstl_str_find(cstl_string *s, const char *substr) {
 
   if (s == NULL || substr == NULL) {
     return NULL;
@@ -338,6 +380,14 @@ void cstl_str_swap(cstl_string **s1, cstl_string **s2) {
   cstl_string *tmp = &(**s2);
   *s2 = *s1;
   *s1 = &(*tmp);
+
+  size_t *tmp_l = &((*s1)->length);
+  (*s1)->length = (*s2)->length;
+  (*s2)->length = *tmp_l;
+
+  size_t *tmp_c = &((*s1)->capacity);
+  (*s1)->capacity = (*s2)->capacity;
+  (*s2)->capacity = *tmp_c;
 }
 
 void cstl_str_free(cstl_string *s) { free(s->data); }
