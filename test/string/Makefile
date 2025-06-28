@@ -20,7 +20,7 @@ STR_TEST_BIN = $(STR_BIN_DIR)/test_string
 
 # === Targets ===
 
-.PHONY: vtest
+.PHONY: strtest
 
 strtest: $(STR_TEST_BIN)
 
