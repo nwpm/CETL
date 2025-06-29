@@ -26,11 +26,11 @@ cstl_node *cstl_list_create_node(void *data);
 cstl_list *cstl_list_create_empty();
 cstl_list *cstl_list_create(void *data, size_t elem_size);
 
-cstl_list *cstl_list_push_back(cstl_list *l, void *data);
+cstl_list *cstl_list_push_back(cstl_list *l, void *data, size_t elem_size);
 cstl_list *cstl_list_pop_back(cstl_list *l);
-cstl_list *cstl_list_push_front(cstl_list *l, void *data);
+cstl_list *cstl_list_push_front(cstl_list *l, void *data, size_t elem_size);
 cstl_list *cstl_list_pop_front(cstl_list *l);
-cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos);
+cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos, size_t elem_size);
 cstl_list *cstl_list_erase(cstl_list *l, size_t pos);
 cstl_list *cstl_list_merge_two(cstl_list *l1, cstl_list *l2);
 cstl_list *cstl_list_clear(cstl_list *l);
