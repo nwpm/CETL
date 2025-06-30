@@ -5,23 +5,24 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-typedef struct cstl_node {
+// TODO: move all node part in internal header?
+typedef struct _cstl_node {
 
   void *data;
-  struct cstl_node *next;
+  struct _cstl_node *next;
 
-} cstl_node;
+} _cstl_node;
 
 typedef struct cstl_list {
 
   size_t elem_size;
   size_t size;
-  cstl_node *head;
-  cstl_node *tail;
+  _cstl_node *head;
+  _cstl_node *tail;
 
 } cstl_list;
 
-cstl_node *cstl_list_create_node(void *data, size_t elem_size);
+_cstl_node *_cstl_list_create_node(void *data, size_t elem_size);
 
 cstl_list *cstl_list_create_empty();
 cstl_list *cstl_list_create(void *data, size_t elem_size);

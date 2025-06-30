@@ -12,7 +12,7 @@ void test_cstl_list_create_node() {
 
   int num = 15;
 
-  cstl_node *n = cstl_list_create_node(&num, sizeof(int));
+  _cstl_node *n = _cstl_list_create_node(&num, sizeof(int));
 
   TEST_ASSERT_NOT_NULL(n);
 
@@ -25,7 +25,7 @@ void test_cstl_list_create_node() {
 
 void test_cstl_list_create_node_null() {
 
-  cstl_node *n = cstl_list_create_node(NULL, sizeof(int));
+  _cstl_node *n = _cstl_list_create_node(NULL, sizeof(int));
   TEST_ASSERT_NULL(n);
 }
 
@@ -123,8 +123,8 @@ void test_cstl_list_create_copy() {
   TEST_ASSERT_EQUAL_size_t(l->size, c_l->size);
   TEST_ASSERT_EQUAL_size_t(l->elem_size, c_l->elem_size);
 
-  cstl_node *n1 = l->head;
-  cstl_node *n2 = c_l->head;
+  _cstl_node *n1 = l->head;
+  _cstl_node *n2 = c_l->head;
 
   for (size_t i = 0; i < l->size; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)n1->data), *((int *)n2->data));
@@ -188,8 +188,8 @@ void test_cstl_list_create_copy_independent() {
 
   TEST_ASSERT_NOT_EQUAL_INT(*((int *)l->head->data), *((int *)c_l->head->data));
 
-  cstl_node *n1 = l->head->next;
-  cstl_node *n2 = c_l->head->next;
+  _cstl_node *n1 = l->head->next;
+  _cstl_node *n2 = c_l->head->next;
 
   for (size_t i = 0; i < l->size - 1; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)n1->data), *((int *)n2->data));
@@ -615,8 +615,8 @@ void test_cstl_list_merge_two_both_not_empty() {
 
   TEST_ASSERT_EQUAL_size_t(l1->size + l2->size, merged->size);
 
-  cstl_node *m_node = merged->head;
-  cstl_node *l1_node = l1->head;
+  _cstl_node *m_node = merged->head;
+  _cstl_node *l1_node = l1->head;
 
   for (size_t i = 0; i < l1->size; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)m_node->data), *((int *)l1_node->data));
@@ -626,7 +626,7 @@ void test_cstl_list_merge_two_both_not_empty() {
     l1_node = l1_node->next;
   }
 
-  cstl_node *l2_node = l2->head;
+  _cstl_node *l2_node = l2->head;
 
   for (size_t i = 0; i < l2->size; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)m_node->data), *((int *)l2_node->data));
@@ -662,8 +662,8 @@ void test_cstl_list_merge_two_one_empty() {
 
   TEST_ASSERT_EQUAL_size_t(l1->size + l2->size, merged->size);
 
-  cstl_node *m_node = merged->head;
-  cstl_node *l2_node = l2->head;
+  _cstl_node *m_node = merged->head;
+  _cstl_node *l2_node = l2->head;
 
   for (size_t i = 0; i < l2->size; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)m_node->data), *((int *)l2_node->data));
