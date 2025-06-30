@@ -21,10 +21,11 @@ typedef struct cstl_list {
 
 } cstl_list;
 
-cstl_node *cstl_list_create_node(void *data);
+cstl_node *cstl_list_create_node(void *data, size_t elem_size);
 
 cstl_list *cstl_list_create_empty();
 cstl_list *cstl_list_create(void *data, size_t elem_size);
+cstl_list *cstl_list_create_copy(cstl_list *l);
 
 cstl_list *cstl_list_push_back(cstl_list *l, void *data, size_t elem_size);
 cstl_list *cstl_list_pop_back(cstl_list *l);
@@ -42,6 +43,7 @@ bool cstl_list_is_empty(cstl_list *l);
 
 void *cstl_list_get(cstl_list *l, size_t pos);
 
+void cstl_list_free(cstl_list *l);
 void cstl_list_free_nodes(cstl_list *l);
 
 #endif // CSTL_LIST_H

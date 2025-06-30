@@ -1,7 +1,9 @@
 #include "../../include/cstl/cstl_list.h"
+#include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
-cstl_node *cstl_list_create_node(void *data) {
+cstl_node *cstl_list_create_node(void *data, size_t elem_size) {
 
   if (data == NULL) {
     return NULL;
@@ -13,7 +15,16 @@ cstl_node *cstl_list_create_node(void *data) {
     return NULL;
   }
 
-  new_cstl_node->data = data;
+  void *data_copy = malloc(elem_size);
+
+  if (data_copy == NULL) {
+    free(new_cstl_node);
+    return NULL;
+  }
+
+  memcpy(data_copy, data, elem_size);
+
+  new_cstl_node->data = data_copy;
   new_cstl_node->next = NULL;
 
   return new_cstl_node;
@@ -47,7 +58,7 @@ cstl_list *cstl_list_create(void *data, size_t elem_size) {
     return NULL;
   }
 
-  cstl_node *head = cstl_list_create_node(data);
+  cstl_node *head = cstl_list_create_node(data, elem_size);
 
   if (head == NULL) {
     return NULL;
@@ -61,13 +72,47 @@ cstl_list *cstl_list_create(void *data, size_t elem_size) {
   return l;
 }
 
+cstl_list *cstl_list_create_copy(cstl_list *l) {
+
+  if (l == NULL) {
+    return NULL;
+  }
+
+  cstl_list *l_copy = cstl_list_create_empty();
+
+  if (l_copy == NULL) {
+    return NULL;
+  }
+
+  if (cstl_list_is_empty(l)) {
+    return l_copy;
+  }
+
+  l_copy->elem_size = l->elem_size;
+
+  cstl_node *current = l->head;
+
+  while (current) {
+    cstl_list *res = cstl_list_push_back(l_copy, current->data, l->elem_size);
+    current = current->next;
+
+    if (res == NULL) {
+      cstl_list_free_nodes(l_copy);
+      free(l_copy);
+      return NULL;
+    }
+  }
+
+  return l_copy;
+}
+
 cstl_list *cstl_list_push_back(cstl_list *l, void *data, size_t elem_size) {
 
   if (l == NULL || data == NULL || elem_size == 0) {
     return NULL;
   }
 
-  cstl_node *new_cstl_node = cstl_list_create_node(data);
+  cstl_node *new_cstl_node = cstl_list_create_node(data, elem_size);
 
   if (new_cstl_node == NULL) {
     return NULL;
@@ -101,6 +146,7 @@ cstl_list *cstl_list_pop_back(cstl_list *l) {
   }
 
   if (l->size == 1) {
+    free(l->tail->data);
     free(l->tail);
     l->head = NULL;
     l->tail = NULL;
@@ -114,6 +160,7 @@ cstl_list *cstl_list_pop_back(cstl_list *l) {
     current = current->next;
   }
 
+  free(l->tail->data);
   free(l->tail);
 
   current->next = NULL;
@@ -130,7 +177,7 @@ cstl_list *cstl_list_push_front(cstl_list *l, void *data, size_t elem_size) {
     return NULL;
   }
 
-  cstl_node *new_cstl_node = cstl_list_create_node(data);
+  cstl_node *new_cstl_node = cstl_list_create_node(data, elem_size);
 
   if (new_cstl_node == NULL) {
     return NULL;
@@ -163,6 +210,7 @@ cstl_list *cstl_list_pop_front(cstl_list *l) {
   }
 
   if (l->size == 1) {
+    free(l->tail->data);
     free(l->tail);
     l->head = NULL;
     l->tail = NULL;
@@ -173,6 +221,7 @@ cstl_list *cstl_list_pop_front(cstl_list *l) {
   cstl_node *tmp_head = l->head;
 
   l->head = l->head->next;
+  free(tmp_head->data);
   free(tmp_head);
 
   l->size--;
@@ -180,7 +229,8 @@ cstl_list *cstl_list_pop_front(cstl_list *l) {
   return l;
 }
 
-cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos, size_t elem_size) {
+cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos,
+                            size_t elem_size) {
 
   if (l == NULL || data == NULL || pos > l->size) {
     return NULL;
@@ -194,7 +244,7 @@ cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos, size_t elem_si
     return cstl_list_push_front(l, data, elem_size);
   }
 
-  cstl_node *n = cstl_list_create_node(data);
+  cstl_node *n = cstl_list_create_node(data, elem_size);
 
   if (n == NULL) {
     return NULL;
@@ -238,6 +288,7 @@ cstl_list *cstl_list_erase(cstl_list *l, size_t pos) {
 
   cstl_node *next = prev->next->next;
 
+  free(prev->next->data);
   free(prev->next);
   prev->next = next;
 
@@ -247,9 +298,31 @@ cstl_list *cstl_list_erase(cstl_list *l, size_t pos) {
 }
 
 cstl_list *cstl_list_merge_two(cstl_list *l1, cstl_list *l2) {
-  l1->tail->next = l2->head;
-  l1->size += l2->size;
-  return l1;
+
+  if (l1 == NULL || l2 == NULL) {
+    return NULL;
+  }
+
+  cstl_list *c_l1 = cstl_list_create_copy(l1);
+  cstl_list *c_l2 = cstl_list_create_copy(l2);
+
+  if (cstl_list_is_empty(c_l1)) {
+    free(c_l1);
+    return c_l2;
+  }
+
+  if (cstl_list_is_empty(c_l2)) {
+    free(c_l2);
+    return c_l1;
+  }
+
+  c_l1->tail->next = c_l2->head;
+  c_l1->tail = c_l2->tail;
+  c_l1->size += c_l2->size;
+
+  free(c_l2);
+
+  return c_l1;
 }
 
 cstl_list *cstl_list_clear(cstl_list *l) {
@@ -259,6 +332,8 @@ cstl_list *cstl_list_clear(cstl_list *l) {
   }
 
   cstl_list_free_nodes(l);
+  l->head = NULL;
+  l->tail = NULL;
   l->size = 0;
 
   return l;
@@ -266,7 +341,9 @@ cstl_list *cstl_list_clear(cstl_list *l) {
 
 size_t cstl_list_size(cstl_list *l) { return l->size; }
 
-bool cstl_list_is_empty(cstl_list *l) { return !l->size; }
+bool cstl_list_is_empty(cstl_list *l) {
+  return !l->size && !l->elem_size && !l->head && !l->tail;
+}
 
 void *cstl_list_get(cstl_list *l, size_t pos) {
 
@@ -295,7 +372,16 @@ cstl_list *cstl_list_set(cstl_list *l, size_t pos, void *data) {
     current = current->next;
   }
 
-  current->data = data;
+  void *data_copy = malloc(l->elem_size);
+
+  if (data_copy == NULL) {
+    return NULL;
+  }
+
+  memcpy(data_copy, data, l->elem_size);
+
+  free(current->data);
+  current->data = data_copy;
 
   return l;
 }
@@ -307,7 +393,16 @@ void cstl_list_free_nodes(cstl_list *l) {
 
   while (current != NULL) {
     next = current->next;
+    free(current->data);
     free(current);
     current = next;
   }
 }
+
+void cstl_list_free(cstl_list *l){
+  cstl_list_free_nodes(l);
+  free(l);
+}
+
+
+
