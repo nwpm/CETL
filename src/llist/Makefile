@@ -7,16 +7,16 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/list/
+BUILD_PATH  = ../../build/llist/
 
-LIST_SRC     = linked_list.c
-LIST_OBJ     = $(BUILD_PATH)/liblist.o
-LIST_TARGET  = $(BUILD_PATH)/liblist.a
+LIST_SRC     = llist.c
+LIST_OBJ     = $(BUILD_PATH)/libllist.o
+LIST_TARGET  = $(BUILD_PATH)/libllist.a
 
 # ===Targets===
-.PHONY: list install uninstall
+.PHONY: llist install uninstall
 
-list: $(LIST_TARGET) 
+llist: $(LIST_TARGET) 
 
 install:
 

@@ -1,7 +1,7 @@
 #ifndef CSTL_cstl_stack_H
 #define CSTL_cstl_stack_H
 
-#include "./cstl_list.h"
+#include "./cstl_llist.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -9,7 +9,7 @@
 typedef struct cstl_stack {
 
   size_t size;
-  cstl_list *data;
+  cstl_llist *data;
 
 } cstl_stack;
 

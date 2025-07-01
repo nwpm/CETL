@@ -1,38 +1,38 @@
-#include "../../include/cstl/cstl_list.h"
+#include "../../include/cstl/cstl_llist.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-_cstl_node *cstl_list_create_node(void *data, size_t elem_size) {
+_cstl_node *_cstl_llist_create_node(void *data, size_t elem_size) {
 
   if (data == NULL) {
     return NULL;
   }
 
-  _cstl_node *new__cstl_node = malloc(sizeof(_cstl_node));
+  _cstl_node *node = malloc(sizeof(_cstl_node));
 
-  if (new__cstl_node == NULL) {
+  if (node == NULL) {
     return NULL;
   }
 
   void *data_copy = malloc(elem_size);
 
   if (data_copy == NULL) {
-    free(new__cstl_node);
+    free(node);
     return NULL;
   }
 
   memcpy(data_copy, data, elem_size);
 
-  new__cstl_node->data = data_copy;
-  new__cstl_node->next = NULL;
+  node->data = data_copy;
+  node->next = NULL;
 
-  return new__cstl_node;
+  return node;
 }
 
-cstl_list *cstl_list_create_empty() {
+cstl_llist *cstl_llist_create_empty() {
 
-  cstl_list *l = malloc(sizeof(cstl_list));
+  cstl_llist *l = malloc(sizeof(cstl_llist));
 
   if (l == NULL) {
     return NULL;
@@ -46,19 +46,19 @@ cstl_list *cstl_list_create_empty() {
   return l;
 }
 
-cstl_list *cstl_list_create(void *data, size_t elem_size) {
+cstl_llist *cstl_llist_create(void *data, size_t elem_size) {
 
   if (data == NULL || elem_size == 0) {
     return NULL;
   }
 
-  cstl_list *l = cstl_list_create_empty();
+  cstl_llist *l = cstl_llist_create_empty();
 
   if (l == NULL) {
     return NULL;
   }
 
-  _cstl_node *head = cstl_list_create_node(data, elem_size);
+  _cstl_node *head = _cstl_llist_create_node(data, elem_size);
 
   if (head == NULL) {
     return NULL;
@@ -72,19 +72,19 @@ cstl_list *cstl_list_create(void *data, size_t elem_size) {
   return l;
 }
 
-cstl_list *cstl_list_create_copy(cstl_list *l) {
+cstl_llist *cstl_llist_create_copy(cstl_llist *l) {
 
   if (l == NULL) {
     return NULL;
   }
 
-  cstl_list *l_copy = cstl_list_create_empty();
+  cstl_llist *l_copy = cstl_llist_create_empty();
 
   if (l_copy == NULL) {
     return NULL;
   }
 
-  if (cstl_list_is_empty(l)) {
+  if (cstl_llist_is_empty(l)) {
     return l_copy;
   }
 
@@ -93,11 +93,11 @@ cstl_list *cstl_list_create_copy(cstl_list *l) {
   _cstl_node *current = l->head;
 
   while (current) {
-    cstl_list *res = cstl_list_push_back(l_copy, current->data, l->elem_size);
+    cstl_llist *res = cstl_llist_push_back(l_copy, current->data, l->elem_size);
     current = current->next;
 
     if (res == NULL) {
-      cstl_list_free_nodes(l_copy);
+      cstl_llist_free_nodes(l_copy);
       free(l_copy);
       return NULL;
     }
@@ -106,13 +106,13 @@ cstl_list *cstl_list_create_copy(cstl_list *l) {
   return l_copy;
 }
 
-cstl_list *cstl_list_push_back(cstl_list *l, void *data, size_t elem_size) {
+cstl_llist *cstl_llist_push_back(cstl_llist *l, void *data, size_t elem_size) {
 
   if (l == NULL || data == NULL || elem_size == 0) {
     return NULL;
   }
 
-  _cstl_node *new__cstl_node = cstl_list_create_node(data, elem_size);
+  _cstl_node *new__cstl_node = _cstl_llist_create_node(data, elem_size);
 
   if (new__cstl_node == NULL) {
     return NULL;
@@ -135,7 +135,7 @@ cstl_list *cstl_list_push_back(cstl_list *l, void *data, size_t elem_size) {
   return l;
 }
 
-cstl_list *cstl_list_pop_back(cstl_list *l) {
+cstl_llist *cstl_llist_pop_back(cstl_llist *l) {
 
   if (l == NULL) {
     return NULL;
@@ -171,13 +171,13 @@ cstl_list *cstl_list_pop_back(cstl_list *l) {
   return l;
 }
 
-cstl_list *cstl_list_push_front(cstl_list *l, void *data, size_t elem_size) {
+cstl_llist *cstl_llist_push_front(cstl_llist *l, void *data, size_t elem_size) {
 
   if (l == NULL || data == NULL || elem_size == 0) {
     return NULL;
   }
 
-  _cstl_node *new__cstl_node = cstl_list_create_node(data, elem_size);
+  _cstl_node *new__cstl_node = _cstl_llist_create_node(data, elem_size);
 
   if (new__cstl_node == NULL) {
     return NULL;
@@ -199,7 +199,7 @@ cstl_list *cstl_list_push_front(cstl_list *l, void *data, size_t elem_size) {
   return l;
 }
 
-cstl_list *cstl_list_pop_front(cstl_list *l) {
+cstl_llist *cstl_llist_pop_front(cstl_llist *l) {
 
   if (l == NULL) {
     return NULL;
@@ -229,7 +229,7 @@ cstl_list *cstl_list_pop_front(cstl_list *l) {
   return l;
 }
 
-cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos,
+cstl_llist *cstl_llist_insert(cstl_llist *l, void *data, size_t pos,
                             size_t elem_size) {
 
   if (l == NULL || data == NULL || pos > l->size) {
@@ -237,14 +237,14 @@ cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos,
   }
 
   if (pos == l->size) {
-    return cstl_list_push_back(l, data, elem_size);
+    return cstl_llist_push_back(l, data, elem_size);
   }
 
   if (pos == 0) {
-    return cstl_list_push_front(l, data, elem_size);
+    return cstl_llist_push_front(l, data, elem_size);
   }
 
-  _cstl_node *n = cstl_list_create_node(data, elem_size);
+  _cstl_node *n = _cstl_llist_create_node(data, elem_size);
 
   if (n == NULL) {
     return NULL;
@@ -266,18 +266,18 @@ cstl_list *cstl_list_insert(cstl_list *l, void *data, size_t pos,
   return l;
 }
 
-cstl_list *cstl_list_erase(cstl_list *l, size_t pos) {
+cstl_llist *cstl_llist_erase(cstl_llist *l, size_t pos) {
 
   if (pos >= l->size) {
     return NULL;
   }
 
   if (pos == 0) {
-    return cstl_list_pop_front(l);
+    return cstl_llist_pop_front(l);
   }
 
   if (pos == l->size - 1) {
-    return cstl_list_pop_back(l);
+    return cstl_llist_pop_back(l);
   }
 
   _cstl_node *prev = l->head;
@@ -297,21 +297,21 @@ cstl_list *cstl_list_erase(cstl_list *l, size_t pos) {
   return l;
 }
 
-cstl_list *cstl_list_merge_two(cstl_list *l1, cstl_list *l2) {
+cstl_llist *cstl_llist_merge_two(cstl_llist *l1, cstl_llist *l2) {
 
   if (l1 == NULL || l2 == NULL) {
     return NULL;
   }
 
-  cstl_list *c_l1 = cstl_list_create_copy(l1);
-  cstl_list *c_l2 = cstl_list_create_copy(l2);
+  cstl_llist *c_l1 = cstl_llist_create_copy(l1);
+  cstl_llist *c_l2 = cstl_llist_create_copy(l2);
 
-  if (cstl_list_is_empty(c_l1)) {
+  if (cstl_llist_is_empty(c_l1)) {
     free(c_l1);
     return c_l2;
   }
 
-  if (cstl_list_is_empty(c_l2)) {
+  if (cstl_llist_is_empty(c_l2)) {
     free(c_l2);
     return c_l1;
   }
@@ -325,13 +325,13 @@ cstl_list *cstl_list_merge_two(cstl_list *l1, cstl_list *l2) {
   return c_l1;
 }
 
-cstl_list *cstl_list_clear(cstl_list *l) {
+cstl_llist *cstl_llist_clear(cstl_llist *l) {
 
   if (l == NULL) {
     return NULL;
   }
 
-  cstl_list_free_nodes(l);
+  cstl_llist_free_nodes(l);
   l->head = NULL;
   l->tail = NULL;
   l->size = 0;
@@ -339,13 +339,13 @@ cstl_list *cstl_list_clear(cstl_list *l) {
   return l;
 }
 
-size_t cstl_list_size(cstl_list *l) { return l->size; }
+size_t cstl_llist_size(cstl_llist *l) { return l->size; }
 
-bool cstl_list_is_empty(cstl_list *l) {
+bool cstl_llist_is_empty(cstl_llist *l) {
   return !l->size && !l->elem_size && !l->head && !l->tail;
 }
 
-void *cstl_list_get(cstl_list *l, size_t pos) {
+void *cstl_llist_get(cstl_llist *l, size_t pos) {
 
   if (l == NULL || pos >= l->size) {
     return NULL;
@@ -360,7 +360,7 @@ void *cstl_list_get(cstl_list *l, size_t pos) {
   return current->data;
 }
 
-cstl_list *cstl_list_set(cstl_list *l, size_t pos, void *data) {
+cstl_llist *cstl_llist_set(cstl_llist *l, size_t pos, void *data) {
 
   if (l == NULL || data == NULL || pos >= l->size) {
     return NULL;
@@ -386,7 +386,7 @@ cstl_list *cstl_list_set(cstl_list *l, size_t pos, void *data) {
   return l;
 }
 
-void cstl_list_free_nodes(cstl_list *l) {
+void cstl_llist_free_nodes(cstl_llist *l) {
 
   _cstl_node *current = l->head;
   _cstl_node *next = NULL;
@@ -399,8 +399,8 @@ void cstl_list_free_nodes(cstl_list *l) {
   }
 }
 
-void cstl_list_free(cstl_list *l){
-  cstl_list_free_nodes(l);
+void cstl_llist_free(cstl_llist *l){
+  cstl_llist_free_nodes(l);
   free(l);
 }
 
