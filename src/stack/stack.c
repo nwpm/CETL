@@ -24,7 +24,7 @@ cstl_stack *cstl_stack_create_empty() {
 
 cstl_stack *cstl_stack_create(void *data, size_t elem_size) {
 
-  if (data == NULL) {
+  if (data == NULL || elem_size == 0) {
     return NULL;
   }
 
@@ -54,6 +54,8 @@ cstl_stack *cstl_stack_create_copy(cstl_stack *s) {
 
   cstl_stack *res = cstl_stack_create_empty();
 
+  res->size = s->size;
+
   _cstl_node *current = s->data->head;
   size_t elem_size = s->data->elem_size;
 
@@ -62,7 +64,7 @@ cstl_stack *cstl_stack_create_copy(cstl_stack *s) {
     current = current->next;
   }
 
-  return s;
+  return res;
 }
 
 cstl_stack *cstl_stack_push(cstl_stack *s, void *data, size_t elem_size) {
