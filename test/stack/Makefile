@@ -5,13 +5,15 @@ CFLAGS = -g -O0 -fsanitize=address -Wall -Wextra -Wpedantic -std=c99
 # === Paths ===
 
 INCLUDE         = ../../include
-STACK_BIN_DIR     = ../../bin/stack
+STACK_BIN_DIR   = ../../bin/stack
 BUILD_DIR       = ../../build
-STACK_LIB_DIR     = $(BUILD_DIR)/stack
+STACK_LIB_DIR   = $(BUILD_DIR)/stack
 UNITY_LIB_DIR   = $(BUILD_DIR)/unity
+LIST_LIB_DIR    = $(BUILD_DIR)/list
 
-STACK_LIB   = $(STACK_LIB_DIR)/libstack.a
+STACK_LIB = $(STACK_LIB_DIR)/libstack.a
 UNITY_LIB = $(UNITY_LIB_DIR)/libunity.a 
+LIST_LIB  = $(LIST_LIB_DIR)/liblist.a
 
 STACK_TEST_SRC = test_stack.c
 STACK_TEST_OBJ = test_stack.o
@@ -22,12 +24,12 @@ STACK_TEST_BIN = $(STACK_BIN_DIR)/test_stack
 
 .PHONY: stest
 
-ltest: $(STACK_TEST_BIN)
+stest: $(STACK_TEST_BIN)
 
 # === Build rules ===
 
 $(STACK_TEST_BIN): $(STACK_TEST_OBJ)
-	$(CC) $(CFLAGS) $< -o $@ -L$(STACK_LIB_DIR) -lstack -L$(UNITY_LIB_DIR) -lunity
+	$(CC) $(CFLAGS) $< -o $@ -L$(STACK_LIB_DIR) -lstack -L$(UNITY_LIB_DIR) -lunity -L$(LIST_LIB_DIR) -llist
 	rm $(STACK_TEST_OBJ)
 
 $(STACK_TEST_OBJ) : $(STACK_TEST_SRC) $(STACK_BIN_DIR)
