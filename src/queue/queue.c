@@ -1,52 +1,125 @@
-#include "queue.h"
-#include <stdint.h>
+#include "../../include/cstl/cstl_queue.h"
 
-queue* queue_create(void){
+cstl_queue* cstl_queue_create_empty(){
 
-  queue* q = (queue*)malloc(sizeof(queue));
-  list* l = (list*)malloc(sizeof(list));
-
-  list_create(l);
-
-  q->data_ptr = l;
-  q->size = l->size;
-
-  return q;
-
-}
-
-int32_t queue_front(queue *q){
+  cstl_queue* q = malloc(sizeof(cstl_queue));
   
-  if(q->size == 0){
-    return -1; //???
+  if(q == NULL){
+    return NULL;
   }
 
-  return q->data_ptr->head->data;
-}
+  cstl_llist *llist = cstl_llist_create_empty();
 
-int32_t queue_back(queue *q){
-
-  if(q->size == 0){
-    return -1;
+  if(llist == NULL){
+    return NULL;
   }
 
-  return q->data_ptr->tail->data;
-}
+  q->size = 0;
+  q->data = llist;
 
-queue *queue_push(queue *q, int32_t value){
-  list_push_back(q->data_ptr, value);
   return q;
 }
 
-queue *queue_pop(queue *q, int32_t value){
-  list_pop_back(q->data_ptr);
+cstl_queue *cstl_queue_create(void *data, size_t elem_size){
+
+  if(data == NULL || elem_size == 0){
+    return NULL;
+  }
+
+  cstl_queue *q = cstl_queue_create_empty();
+
+  if(q == NULL){
+    return NULL;
+  }
+
+  cstl_llist_push_back(q->data, data, elem_size);
+
+  q->size = 1;
+
   return q;
 }
 
-void queue_free(queue *q){
+cstl_queue *cstl_queue_create_copy(cstl_queue *q){
 
-  list_free_nodes(q->data_ptr);
-  free(q->data_ptr);
+  if(q == NULL){
+    return NULL;
+  }
+
+  cstl_queue *c_q = cstl_queue_create_empty();
+
+  if(c_q == NULL){
+    return NULL;
+  }
+
+  c_q->size = q->size;
+
+  _cstl_node *current = q->data->head;
+  
+  while(current){
+    cstl_queue *res = cstl_queue_push(c_q, current->data, q->data->elem_size);
+    current = current->next;
+
+    if(res == NULL){
+      cstl_queue_free(c_q);
+      return NULL;
+    }
+  }
+  
+  return c_q;
+}
+
+void *cstl_queue_front(cstl_queue *q){
+  
+  if(q == NULL || q->size == 0){
+    return NULL;
+  }
+
+  return cstl_llist_get(q->data, 0);
+}
+
+void *cstl_queue_back(cstl_queue *q){
+
+  if(q == NULL || q->size == 0){
+    return NULL;
+  }
+
+  return cstl_llist_get(q->data, q->size - 1);
+}
+
+cstl_queue *cstl_queue_push(cstl_queue *q, void *data, size_t elem_size){
+  
+  if(q == NULL || data == NULL || elem_size == 0){
+    return NULL;
+  }
+
+  cstl_llist_push_back(q->data, data, elem_size);
+
+  return q;
+}
+
+cstl_queue *cstl_queue_pop(cstl_queue *q, void *data, size_t elem_size){
+  
+  if(q == NULL || data == NULL || elem_size == 0){
+    return NULL;
+  }
+
+  cstl_llist_pop_front(q->data);
+
+  return q;
+}
+
+size_t cstl_queue_size(cstl_queue *q){
+  return q->size;
+}
+
+bool cstl_queue_is_empty(cstl_queue *q){
+  return q && !q->size;
+}
+
+void cstl_queue_free(cstl_queue *q){
+
+  cstl_llist_free_nodes(q->data);
+  free(q->data);
   free(q);
 
 }
