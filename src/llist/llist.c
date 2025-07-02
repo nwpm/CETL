@@ -112,22 +112,22 @@ cstl_llist *cstl_llist_push_back(cstl_llist *l, void *data, size_t elem_size) {
     return NULL;
   }
 
-  _cstl_node *new__cstl_node = _cstl_llist_create_node(data, elem_size);
+  _cstl_node *node = _cstl_llist_create_node(data, elem_size);
 
-  if (new__cstl_node == NULL) {
+  if (node == NULL) {
     return NULL;
   }
 
   if (l->size == 0) {
     l->elem_size = elem_size;
-    l->head = new__cstl_node;
-    l->tail = new__cstl_node;
+    l->head = node;
+    l->tail = node;
     l->size++;
     return l;
   }
 
   _cstl_node *end = l->tail;
-  l->tail = new__cstl_node;
+  l->tail = node;
   end->next = l->tail;
 
   l->size++;
@@ -177,22 +177,22 @@ cstl_llist *cstl_llist_push_front(cstl_llist *l, void *data, size_t elem_size) {
     return NULL;
   }
 
-  _cstl_node *new__cstl_node = _cstl_llist_create_node(data, elem_size);
+  _cstl_node *node = _cstl_llist_create_node(data, elem_size);
 
-  if (new__cstl_node == NULL) {
+  if (node == NULL) {
     return NULL;
   }
 
   if (l->size == 0) {
     l->elem_size = elem_size;
-    l->head = new__cstl_node;
-    l->tail = new__cstl_node;
+    l->head = node;
+    l->tail = node;
     l->size++;
     return l;
   }
 
-  new__cstl_node->next = l->head;
-  l->head = new__cstl_node;
+  node->next = l->head;
+  l->head = node;
 
   l->size++;
 
@@ -230,7 +230,7 @@ cstl_llist *cstl_llist_pop_front(cstl_llist *l) {
 }
 
 cstl_llist *cstl_llist_insert(cstl_llist *l, void *data, size_t pos,
-                            size_t elem_size) {
+                              size_t elem_size) {
 
   if (l == NULL || data == NULL || pos > l->size) {
     return NULL;
@@ -341,9 +341,7 @@ cstl_llist *cstl_llist_clear(cstl_llist *l) {
 
 size_t cstl_llist_size(cstl_llist *l) { return l->size; }
 
-bool cstl_llist_is_empty(cstl_llist *l) {
-  return !l->size && !l->elem_size && !l->head && !l->tail;
-}
+bool cstl_llist_is_empty(cstl_llist *l) { return l && !l->size; }
 
 void *cstl_llist_get(cstl_llist *l, size_t pos) {
 
@@ -399,10 +397,7 @@ void cstl_llist_free_nodes(cstl_llist *l) {
   }
 }
 
-void cstl_llist_free(cstl_llist *l){
+void cstl_llist_free(cstl_llist *l) {
   cstl_llist_free_nodes(l);
   free(l);
 }
-
-
-
