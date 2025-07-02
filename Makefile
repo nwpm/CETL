@@ -11,7 +11,7 @@ UNITY_BUILD = $(BUILD_DIR)/unity
 
 # === TARGETS ===
 
-.PHONY: all vector string llist stack vtest strtest lltest stest unity clbuild
+.PHONY: all vector string llist dlist stack vtest strtest lltest stest dltest unity clbuild
 
 vector:
 	$(MAKE) -C src/vector
@@ -21,6 +21,9 @@ string:
 
 llist:
 	$(MAKE) -C src/llist
+
+dlist:
+	$(MAKE) -C src/dlist
 
 stack:
 	$(MAKE) -C src/stack
@@ -38,6 +41,9 @@ strtest:
 
 lltest:
 	$(MAKE) -C test/llist
+
+dltest:
+	$(MAKE) -C test/dlist
 
 stest:
 	$(MAKE) -C test/stack
