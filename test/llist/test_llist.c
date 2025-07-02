@@ -194,6 +194,9 @@ void test_cstl_llist_create_copy_independent() {
   for (size_t i = 0; i < l->size - 1; ++i) {
     TEST_ASSERT_EQUAL_INT(*((int *)n1->data), *((int *)n2->data));
     TEST_ASSERT_NOT_EQUAL(n1->data, n2->data);
+
+    n1 = n1->next;
+    n2 = n2->next;
   }
 
   cstl_llist_free(l);
