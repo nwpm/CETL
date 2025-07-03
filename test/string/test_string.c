@@ -1187,9 +1187,9 @@ int main() {
 
   printf("\n");
 
-  //RUN_TEST(test_cstl_str_swap);
-  //RUN_TEST(test_cstl_str_swap_with_empty);
-  //RUN_TEST(test_cstl_str_swap_one_null);
+  RUN_TEST(test_cstl_str_swap);
+  RUN_TEST(test_cstl_str_swap_with_empty);
+  RUN_TEST(test_cstl_str_swap_one_null);
 
   return UNITY_END();
 }

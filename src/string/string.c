@@ -372,24 +372,15 @@ int cstl_str_compare(cstl_string *s, const char *substr) {
   return strcmp(s->data, substr);
 }
 
-// TODO: wrong function
 void cstl_str_swap(cstl_string **s1, cstl_string **s2) {
 
   if (s1 == NULL || s2 == NULL) {
     return;
   }
 
-  cstl_string *tmp = &(**s2);
-  *s2 = *s1;
-  *s1 = &(*tmp);
-
-  size_t *tmp_l = &((*s1)->length);
-  (*s1)->length = (*s2)->length;
-  (*s2)->length = *tmp_l;
-
-  size_t *tmp_c = &((*s1)->capacity);
-  (*s1)->capacity = (*s2)->capacity;
-  (*s2)->capacity = *tmp_c;
+  cstl_string *tmp = *s1;
+  *s1 = *s2;
+  *s2 = tmp;
 }
 
 void cstl_str_free(cstl_string *s) { free(s->data); }
