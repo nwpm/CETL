@@ -11,7 +11,7 @@ UNITY_BUILD = $(BUILD_DIR)/unity
 
 # === TARGETS ===
 
-.PHONY: all vector string llist dlist stack vtest strtest lltest stest dltest unity clbuild
+.PHONY: all vector string llist dlist stack queue vtest strtest lltest stest dltest qtest unity clbuild
 
 vector:
 	$(MAKE) -C src/vector
@@ -27,6 +27,9 @@ dlist:
 
 stack:
 	$(MAKE) -C src/stack
+
+queue:
+	$(MAKE) -C src/queue
 
 unity: $(UNITY_BUILD)
 	cd $(UNITY_BUILD) && cmake ../../$(UNITY_DIR)
@@ -47,6 +50,9 @@ dltest:
 
 stest:
 	$(MAKE) -C test/stack
+
+qtest:
+	$(MAKE) -C test/queue
 
 clbuild:
 	rm -rf $(BIN_DIR)/*
