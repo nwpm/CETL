@@ -1,3 +1,4 @@
+#include "cstl_string_internal.h"
 #include "../../include/cstl/cstl_string.h"
 #include <stddef.h>
 #include <string.h>
@@ -371,6 +372,7 @@ int cstl_str_compare(cstl_string *s, const char *substr) {
   return strcmp(s->data, substr);
 }
 
+// TODO: wrong function
 void cstl_str_swap(cstl_string **s1, cstl_string **s2) {
 
   if (s1 == NULL || s2 == NULL) {

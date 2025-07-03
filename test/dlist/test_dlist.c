@@ -1,8 +1,10 @@
+#include "../../src/dlist/cstl_dlist_internal.h"
 #include "../../include/cstl/cstl_dlist.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void setUp() {}
 void tearDown() {}

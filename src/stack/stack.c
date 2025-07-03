@@ -1,6 +1,7 @@
+#include "cstl_stack_internal.h"
 #include "../../include/cstl/cstl_stack.h"
-#include <stddef.h>
-#include <stdint.h>
+#include "../../include/cstl/cstl_llist.h"
+#include <stdlib.h>
 
 cstl_stack *cstl_stack_create_empty() {
 

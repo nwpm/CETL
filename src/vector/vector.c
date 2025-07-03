@@ -1,7 +1,6 @@
+#include "cstl_vector_internal.h"
 #include "../../include/cstl/cstl_vector.h"
 
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -1,5 +1,7 @@
+#include "../../src/vector/cstl_vector_internal.h"
 #include "../../include/cstl/cstl_vector.h"
 #include "../../include/external/unity/unity.h"
+#include "../../include/external/unity/unity_internals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

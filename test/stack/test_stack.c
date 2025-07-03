@@ -1,3 +1,4 @@
+#include "../../src/stack/cstl_stack_internal.h"
 #include "../../include/cstl/cstl_stack.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"

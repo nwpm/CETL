@@ -1,16 +1,11 @@
 #ifndef CSTL_QUEUE_H
 #define CSTL_QUEUE_H
 
-#include "../cstl/cstl_llist.h"
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct cstl_cstl_queue {
-
-  size_t size;
-  cstl_llist *data;
-
-} cstl_queue;
+struct cstl_queue;
+typedef struct cstl_queue cstl_queue;
 
 cstl_queue *cstl_queue_create_empty();
 cstl_queue *cstl_queue_create(void *data, size_t elem_size);

@@ -3,26 +3,9 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
 
-// TODO: move all node part in internal header?
-typedef struct _cstl_node {
-
-  void *data;
-  struct _cstl_node *next;
-
-} _cstl_node;
-
-typedef struct cstl_llist {
-
-  size_t elem_size;
-  size_t size;
-  _cstl_node *head;
-  _cstl_node *tail;
-
-} cstl_llist;
-
-_cstl_node *_cstl_llist_create_node(void *data, size_t elem_size);
+struct cstl_llist;
+typedef struct cstl_llist cstl_llist;
 
 cstl_llist *cstl_llist_create_empty();
 cstl_llist *cstl_llist_create(void *data, size_t elem_size);

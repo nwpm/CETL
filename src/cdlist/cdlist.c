@@ -1,47 +1,50 @@
-#include "cycle_list.h"
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "../../include/cstl/cstl_cdlist.h"
 
-node *clist_create_node(int32_t data) {
+cstl_cdlist *cstl_cdlist_create_empty() {
 
-  node *n = (node *)malloc(sizeof(node));
+  cstl_cdlist *cdl = malloc(sizeof(cstl_cdlist));
 
-  n->data = data;
-  n->next = NULL;
+  if(cdl == NULL){
+    return NULL;
+  }
 
-  return n;
+  cstl_dlist *dl = cstl_dlist_create_empty();
+
+  if(dl == NULL){
+    free(cdl);
+    return NULL;
+  }
+
+  cdl->size = 0;
+  cdl->data = dl;
+
+  return cdl;
 }
 
-clist *clist_create(clist *l) {
+cstl_cdlist *cstl_cdlist_create(void *data, size_t elem_size) {
 
-  node *n = clist_create_node(0);
+  if(data == NULL || elem_size == 0){
+    return NULL;
+  }
 
-  l->head = n;
-  l->tail = n;
-  l->size = 1;
+  cstl_cdlist *cdl = cstl_cdlist_create_empty();
 
-  l->tail->next = l->head;
+  if(cdl == NULL){
+    return NULL;
+  }
 
-  return l;
+  cstl_dlist_push_back(cdl->data, data, elem_size);
+
+  cdl->size = 1;
+
+  cdl->data->tail->next = cdl->data->head;
+
+  return cdl;
 }
 
-clist *clist_create_init(clist *l, int32_t data) {
+cstl_cdlist *cstl_cdlist_push_back(cstl_cdlist *l, int32_t data) {
 
-  node *n = clist_create_node(data);
-
-  l->head = n;
-  l->tail = n;
-  l->size = 1;
-
-  l->tail->next = l->head;
-
-  return l;
-}
-
-clist *clist_push_back(clist *l, int32_t data) {
-
-  node *new_node = clist_create_node(data);
+  node *new_node = cstl_cdlist_create_node(data);
 
   l->tail->next = new_node;
   new_node->next = l->head;
@@ -52,9 +55,9 @@ clist *clist_push_back(clist *l, int32_t data) {
   return l;
 }
 
-clist *clist_push_front(clist *l, int32_t data) {
+cstl_cdlist *cstl_cdlist_push_front(cstl_cdlist *l, int32_t data) {
 
-  node *new_node = clist_create_node(data);
+  node *new_node = cstl_cdlist_create_node(data);
 
   new_node->next = l->head;
   l->tail->next = new_node;
@@ -65,7 +68,7 @@ clist *clist_push_front(clist *l, int32_t data) {
   return l;
 }
 
-clist *clist_pop_back(clist *l) {
+cstl_cdlist *cstl_cdlist_pop_back(cstl_cdlist *l) {
 
   if (l->size == 0) {
     return NULL;
@@ -92,7 +95,7 @@ clist *clist_pop_back(clist *l) {
   return l;
 }
 
-clist* clist_pop_front(clist *l){
+cstl_cdlist* cstl_cdlist_pop_front(cstl_cdlist *l){
 
   if(l->size == 0){
     return NULL;
@@ -116,7 +119,7 @@ clist* clist_pop_front(clist *l){
   return l;
 }
 
-clist* clist_insert(clist* l, node* n, size_t pos){
+cstl_cdlist* cstl_cdlist_insert(cstl_cdlist* l, node* n, size_t pos){
 
   if(pos > l->size){
     return NULL;
@@ -152,18 +155,18 @@ clist* clist_insert(clist* l, node* n, size_t pos){
   return l;
 }
 
-clist* clist_erase(clist* l, size_t pos){
+cstl_cdlist* cstl_cdlist_erase(cstl_cdlist* l, size_t pos){
   
   if(pos >= l->size){
     return NULL;
   }
 
   if(pos == 0){
-    return clist_pop_front(l);
+    return cstl_cdlist_pop_front(l);
   }
 
   if(pos == l->size - 1){
-    return clist_pop_back(l);
+    return cstl_cdlist_pop_back(l);
   }
 
   node *prev = l->head;
@@ -184,7 +187,7 @@ clist* clist_erase(clist* l, size_t pos){
 }
 
 
-void clist_print_data(clist *l) {
+void cstl_cdlist_print_data(cstl_cdlist *l) {
 
   if (l->size == 0) {
     return;
@@ -198,7 +201,7 @@ void clist_print_data(clist *l) {
   }
 }
 
-void clist_free_nodes(clist *l) {
+void cstl_cdlist_free_nodes(cstl_cdlist *l) {
 
   if (l->size == 0) {
     return;
@@ -220,27 +223,4 @@ void clist_free_nodes(clist *l) {
   }
 
   free(current);
-}
-
-int main(void) {
-
-  clist *l = (clist *)malloc(sizeof(clist));
-
-  clist_create_init(l, 10);
-
-  clist_push_back(l, 11);
-  clist_push_front(l, 9);
-
-  node *n = clist_create_node(2);
-
-  clist_insert(l, n, 2);
-
-  clist_erase(l, 1);
-
-  clist_print_data(l);
-
-  clist_free_nodes(l);
-  free(l);
-
-  return 0;
 }

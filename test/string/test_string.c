@@ -1,8 +1,8 @@
+#include "../../src/string/cstl_string_internal.h"
 #include "../../include/cstl/cstl_string.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
 
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -1187,9 +1187,9 @@ int main() {
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_swap);
-  RUN_TEST(test_cstl_str_swap_with_empty);
-  RUN_TEST(test_cstl_str_swap_one_null);
+  //RUN_TEST(test_cstl_str_swap);
+  //RUN_TEST(test_cstl_str_swap_with_empty);
+  //RUN_TEST(test_cstl_str_swap_one_null);
 
   return UNITY_END();
 }

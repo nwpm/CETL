@@ -1,5 +1,5 @@
+#include "cstl_dlist_internal.h"
 #include "../../include/cstl/cstl_dlist.h"
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -1,17 +1,11 @@
-#ifndef CSTL_cstl_stack_H
-#define CSTL_cstl_stack_H
+#ifndef CSTL_STACK_H
+#define CSTL_STACK_H
 
-#include "./cstl_llist.h"
-
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 
-typedef struct cstl_stack {
-
-  size_t size;
-  cstl_llist *data;
-
-} cstl_stack;
+struct cstl_stack;
+typedef struct cstl_stack cstl_stack;
 
 cstl_stack *cstl_stack_create_empty();
 cstl_stack *cstl_stack_create(void *data, size_t elem_size);
@@ -27,4 +21,4 @@ void* cstl_stack_top(cstl_stack *s);
 void cstl_stack_clear(cstl_stack *s);
 void cstl_stack_free(cstl_stack *s);
 
-#endif // CSTL_cstl_stack_H
+#endif // CSTL_STACK_H

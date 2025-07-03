@@ -1,5 +1,7 @@
+#include "cstl_queue_internal.h"
 #include "../../include/cstl/cstl_queue.h"
-#include <stddef.h>
+#include "../../include/cstl/cstl_llist.h"
+#include <stdlib.h>
 
 cstl_queue *cstl_queue_create_empty() {
 

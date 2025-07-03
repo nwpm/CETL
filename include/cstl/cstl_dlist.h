@@ -3,27 +3,9 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
 
-typedef struct _cstl_dnode {
-
-  void *data;
-  struct _cstl_dnode *next;
-  struct _cstl_dnode *prev;
-
-} _cstl_dnode;
-
-typedef struct cstl_dlist {
-
-  size_t elem_size;
-  size_t size;
-  _cstl_dnode *head;
-  _cstl_dnode *tail;
-
-} cstl_dlist;
-
-_cstl_dnode *_cstl_dlist_create_dnode(void *data, size_t elem_size);
+struct cstl_dlist;
+typedef struct cstl_dlist cstl_dlist;
 
 cstl_dlist *cstl_dlist_create_empty();
 cstl_dlist *cstl_dlist_create(void *data, size_t elem_size);

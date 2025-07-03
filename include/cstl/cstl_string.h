@@ -4,13 +4,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct cstl_string {
-
-  char *data;
-  size_t length;
-  size_t capacity;
-
-} cstl_string;
+struct cstl_string;
+typedef struct cstl_string cstl_string;
 
 cstl_string *cstl_str_create_empty();
 cstl_string *cstl_str_create(size_t len);

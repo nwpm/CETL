@@ -3,14 +3,9 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
-typedef struct cstl_vector {
-  size_t size;
-  size_t capacity;
-  size_t elem_size;
-  void *data;
-} cstl_vector;
+struct cstl_vector;
+typedef struct cstl_vector cstl_vector;
 
 cstl_vector *cstl_vec_create(size_t cstl_vec_capacity, size_t elem_size);
 cstl_vector *cstl_vec_create_copy(cstl_vector *v);
