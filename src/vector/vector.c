@@ -1,38 +1,6 @@
-#include "cstl_vector_internal.h"
 #include "../../include/cstl/cstl_vector.h"
+#include "cstl_vector_internal.h"
 
-#include <stdlib.h>
-#include <string.h>
-
-// TODO: rename to create empty
-cstl_vector *cstl_vec_create(size_t vec_capacity, size_t elem_size) {
-
-  if (vec_capacity <= 0 || elem_size <= 0) {
-    return NULL;
-  }
-
-  cstl_vector *v = malloc(sizeof(cstl_vector));
-
-  if (v == NULL) {
-    return NULL;
-  }
-
-  void *data = malloc(vec_capacity * elem_size);
-
-  if (data == NULL) {
-    free(v);
-    return NULL;
-  }
-
-  v->size = 0;
-  v->elem_size = elem_size;
-  v->data = data;
-  v->capacity = vec_capacity;
-
-  return v;
-}
-
-// TODO: delete
 cstl_vector *cstl_vec_create_empty() {
 
   cstl_vector *v = malloc(sizeof(cstl_vector));
@@ -49,53 +17,42 @@ cstl_vector *cstl_vec_create_empty() {
   return v;
 }
 
+cstl_vector *cstl_vec_create(const void *data, size_t elem_size) {
+
+  if (data == NULL || elem_size == 0) {
+    return NULL;
+  }
+
+  cstl_vector *v = cstl_vec_create_empty();
+
+  if (v == NULL) {
+    return NULL;
+  }
+
+  return cstl_vec_push_back(v, data, elem_size);
+}
+
 cstl_vector *cstl_vec_create_copy(cstl_vector *v) {
 
   if (v == NULL) {
     return NULL;
   }
 
-  cstl_vector *v_copy = cstl_vec_create(v->capacity, v->elem_size);
+  cstl_vector *v_copy = cstl_vec_create_empty();
 
   v_copy->size = v->size;
+  v_copy->capacity = v->capacity;
 
   if (v->data != NULL) {
     memcpy(v_copy->data, v->data, v->size * v->elem_size);
-  } else {
-    cstl_vec_free(v_copy);
-    v_copy->data = NULL;
   }
 
   return v_copy;
 }
 
-cstl_vector *cstl_vec_create_filled(size_t vec_capacity, size_t elem_size,
-                                    void *init_val) {
+size_t cstl_vec_size(cstl_vector *v) { return v->size; }
 
-  cstl_vector *v = cstl_vec_create(vec_capacity, elem_size);
-
-  if (v == NULL) {
-    return NULL;
-  }
-
-  for (size_t i = 0; i < vec_capacity; ++i) {
-    void *elem_ptr = (char *)v->data + i * elem_size;
-    memcpy(elem_ptr, init_val, elem_size);
-  }
-
-  v->capacity = vec_capacity;
-  v->size = vec_capacity;
-
-  return v;
-}
-
-size_t cstl_vec_size(cstl_vector *v) { 
-  return v->size; 
-}
-
-size_t cstl_vec_capacity(cstl_vector *v) { 
-  return v->capacity; 
-}
+size_t cstl_vec_capacity(cstl_vector *v) { return v->capacity; }
 
 void *cstl_vec_front(cstl_vector *v) {
 
@@ -124,16 +81,16 @@ void *cstl_vec_get(cstl_vector *v, size_t index) {
   return (char *)v->data + index * v->elem_size;
 }
 
-void *cstl_vec_data(cstl_vector *v) { 
-  
-  if(v == NULL){
+void *cstl_vec_data(cstl_vector *v) {
+
+  if (v == NULL) {
     return NULL;
   }
 
-  return v->data; 
+  return v->data;
 }
 
-int cstl_vec_set(cstl_vector *v, size_t index, void *elem_val) {
+int cstl_vec_set(cstl_vector *v, size_t index, const void *elem_val) {
 
   if (v == NULL || v->data == NULL || elem_val == NULL) {
     return -1;
@@ -171,9 +128,9 @@ cstl_vector *cstl_vec_resize(cstl_vector *v, size_t new_capacity) {
   return v;
 }
 
-cstl_vector *cstl_vec_push_back(cstl_vector *v, void *elem_val) {
+cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data, size_t elem_size) {
 
-  if (v == NULL || elem_val == NULL) {
+  if (v == NULL || data == NULL || elem_size == 0) {
     return NULL;
   }
 
@@ -184,14 +141,22 @@ cstl_vector *cstl_vec_push_back(cstl_vector *v, void *elem_val) {
     }
   }
 
+  void *data_copy = _cstl_vec_deep_copy(data, elem_size);
+
+  if (data_copy == NULL) {
+    return NULL;
+  }
+
   void *dest = v->data;
 
   if (v->size != 0) {
-    dest = (char *)v->data + v->size * v->elem_size;
+    dest = (char *)v->data + v->size * elem_size;
   }
 
-  memcpy(dest, elem_val, v->elem_size);
+  memcpy(dest, data_copy, elem_size);
 
+  // TODO: need better option for elem_size
+  v->elem_size = elem_size;
   v->size++;
 
   return v;
@@ -212,9 +177,7 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *v) {
   return v;
 }
 
-bool cstl_vec_is_empty(cstl_vector *v) {
-  return !v->size;
-}
+bool cstl_vec_is_empty(cstl_vector *v) { return !v->size; }
 
 cstl_vector *cstl_vec_shrink_to_fit(cstl_vector *v) {
 
@@ -236,9 +199,9 @@ cstl_vector *cstl_vec_clear(cstl_vector *v) {
   return v;
 }
 
-cstl_vector *cstl_vec_insert(cstl_vector *v, size_t index, void *elem_val) {
+cstl_vector *cstl_vec_insert(cstl_vector *v, size_t pos, const void *data, size_t elem_size) {
 
-  if (v == NULL || elem_val == NULL || index > v->size) {
+  if (v == NULL || data == NULL || pos > v->size) {
     return NULL;
   }
 
@@ -247,18 +210,23 @@ cstl_vector *cstl_vec_insert(cstl_vector *v, size_t index, void *elem_val) {
     cstl_vec_resize(v, new_capacity);
   }
 
-  if (index == v->size) {
-    cstl_vec_push_back(v, elem_val);
-    return v;
+  if (pos == v->size) {
+    return cstl_vec_push_back(v, data, elem_size);
   }
 
-  void *dest = (char *)v->data + (index + 1) * v->elem_size;
-  void *src = (char *)v->data + index * v->elem_size;
-  size_t move_size = (v->size - index) * v->elem_size;
+  void *dest = (char *)v->data + (pos + 1) * v->elem_size;
+  void *src = (char *)v->data + pos * v->elem_size;
+  size_t move_size = (v->size - pos) * v->elem_size;
   memmove(dest, src, move_size);
 
-  void *dest_insert = (char *)v->data + index * v->elem_size;
-  memcpy(dest_insert, elem_val, v->elem_size);
+  void *data_copy = _cstl_vec_deep_copy(data, elem_size);
+  
+  if(data_copy == NULL){
+    return NULL;
+  }
+
+  void *dest_insert = (char *)v->data + pos * v->elem_size;
+  memcpy(dest_insert, data, v->elem_size);
 
   v->size++;
 
@@ -271,7 +239,7 @@ cstl_vector *cstl_vec_erase(cstl_vector *v, size_t index) {
     return NULL;
   }
 
-  if(index == v->size - 1){
+  if (index == v->size - 1) {
     cstl_vec_pop_back(v);
     return v;
   }
@@ -286,14 +254,14 @@ cstl_vector *cstl_vec_erase(cstl_vector *v, size_t index) {
   return v;
 }
 
-cstl_vector *cstl_vec_insert_range(cstl_vector *v, void *range,
+cstl_vector *cstl_vec_insert_range(cstl_vector *v, const void *range,
                                    size_t range_size, size_t index) {
 
   if (v == NULL || range == NULL || index > v->size) {
     return NULL;
   }
 
-  if(range_size == 0){
+  if (range_size == 0) {
     return v;
   }
 
@@ -303,14 +271,13 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *v, void *range,
 
     size_t new_capacity = v->capacity;
 
-    while(new_capacity < new_size){
+    while (new_capacity < new_size) {
       new_capacity = (new_capacity > 0) ? new_capacity * 2 : 1;
     }
 
-    if(cstl_vec_resize(v, new_capacity) == NULL){
+    if (cstl_vec_resize(v, new_capacity) == NULL) {
       return NULL;
     }
-
   }
 
   void *dest = (char *)v->data + (index + range_size) * v->elem_size;
@@ -318,8 +285,14 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *v, void *range,
   size_t move_size = (v->size - index) * v->elem_size;
   memmove(dest, src, move_size);
 
+  void *range_copy = _cstl_vec_deep_copy(range, range_size);
+
+  if(range_copy == NULL){
+    return NULL;
+  }
+
   void *dest_r = (char *)v->data + index * v->elem_size;
-  memcpy(dest_r, range, range_size * v->elem_size);
+  memcpy(dest_r, range_copy, range_size * v->elem_size);
 
   v->size = new_size;
 
@@ -332,11 +305,11 @@ cstl_vector *cstl_vec_erase_range(cstl_vector *v, size_t index, size_t len) {
     return NULL;
   }
 
-  if(len == 0){
+  if (len == 0) {
     return v;
   }
 
-  if(index + len == v->size){
+  if (index + len == v->size) {
     v->size -= len;
     return v;
   }
