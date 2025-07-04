@@ -4,15 +4,15 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct cstl_vector;
-typedef struct cstl_vector cstl_vector;
+#include "../../src/type/type.h"
 
-cstl_vector *cstl_vec_create_empty();
-cstl_vector *cstl_vec_create(const void *data, size_t elem_size);
+struct cstl_vector;
+
+cstl_vector *cstl_vec_create_empty(cstl_type *type);
 cstl_vector *cstl_vec_create_copy(cstl_vector *v);
 
 cstl_vector *cstl_vec_resize(cstl_vector *v, size_t new_capacity);
-cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data, size_t elem_size);
+cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data);
 cstl_vector *cstl_vec_pop_back(cstl_vector *v);
 cstl_vector *cstl_vec_shrink_to_fit(cstl_vector *v);
 cstl_vector *cstl_vec_clear(cstl_vector *v);

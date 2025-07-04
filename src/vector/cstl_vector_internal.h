@@ -1,17 +1,16 @@
 #ifndef CSTL_VECTOR_INTERNAL_H
 #define CSTL_VECTOR_INTERNAL_H
 
+#include "../type/type.h"
 #include <stddef.h>
 
-typedef void* (*cstl_copy_func)(const void *data);
-typedef void (*cstl_free_func)(void *data);
+#define CSTL_VEC_START_CAPACITY 8
 
-struct cstl_vector {
+typedef struct cstl_vector {
   size_t size;
   size_t capacity;
-  size_t elem_size;
   void *data;
-};
+  cstl_type *type;
+} cstl_vector;
 
 #endif // CSTL_VECTOR_INTERNAL_H
-

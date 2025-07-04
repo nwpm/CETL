@@ -1,7 +1,14 @@
 #include "../../include/cstl/cstl_vector.h"
 #include "cstl_vector_internal.h"
 
-cstl_vector *cstl_vec_create_empty() {
+#include <stdlib.h>
+#include <string.h>
+
+cstl_vector *cstl_vec_create_empty(cstl_type *type) {
+
+  if (type == NULL) {
+    return NULL;
+  }
 
   cstl_vector *v = malloc(sizeof(cstl_vector));
 
@@ -10,26 +17,11 @@ cstl_vector *cstl_vec_create_empty() {
   }
 
   v->size = 0;
-  v->elem_size = 0;
   v->data = NULL;
-  v->capacity = 0;
+  v->capacity = CSTL_VEC_START_CAPACITY;
+  v->type = type;
 
   return v;
-}
-
-cstl_vector *cstl_vec_create(const void *data, size_t elem_size) {
-
-  if (data == NULL || elem_size == 0) {
-    return NULL;
-  }
-
-  cstl_vector *v = cstl_vec_create_empty();
-
-  if (v == NULL) {
-    return NULL;
-  }
-
-  return cstl_vec_push_back(v, data, elem_size);
 }
 
 cstl_vector *cstl_vec_create_copy(cstl_vector *v) {
@@ -38,13 +30,16 @@ cstl_vector *cstl_vec_create_copy(cstl_vector *v) {
     return NULL;
   }
 
-  cstl_vector *v_copy = cstl_vec_create_empty();
+  cstl_vector *v_copy = cstl_vec_create_empty(v->type);
 
   v_copy->size = v->size;
   v_copy->capacity = v->capacity;
 
-  if (v->data != NULL) {
-    memcpy(v_copy->data, v->data, v->size * v->elem_size);
+  void *current = NULL;
+
+  for (size_t i = 0; i < v->size; ++i) {
+    current = (char *)v->data + i * v->type->size;
+    cstl_vec_push_back(v_copy, current);
   }
 
   return v_copy;
@@ -115,12 +110,21 @@ cstl_vector *cstl_vec_resize(cstl_vector *v, size_t new_capacity) {
     return v;
   }
 
-  void *n_ptr = malloc(new_capacity * v->elem_size);
+  void *n_ptr = malloc(new_capacity * v->type->size);
 
-  v->size = (v->size >= new_capacity) ? new_capacity : v->size;
+  if (v->size > new_capacity) {
+
+    for (size_t i = new_capacity; i < v->size; ++i) {
+      void *current = (char *)v->data + i * v->type->size;
+      v->type->dtor(current);
+    }
+
+    v->size = new_capacity;
+  }
+
   v->capacity = new_capacity;
 
-  memmove(n_ptr, v->data, v->size * v->elem_size);
+  memmove(n_ptr, v->data, v->size * v->type->size);
 
   free(v->data);
   v->data = n_ptr;
@@ -128,9 +132,9 @@ cstl_vector *cstl_vec_resize(cstl_vector *v, size_t new_capacity) {
   return v;
 }
 
-cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data, size_t elem_size) {
+cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data) {
 
-  if (v == NULL || data == NULL || elem_size == 0) {
+  if (v == NULL || data == NULL) {
     return NULL;
   }
 
@@ -141,22 +145,14 @@ cstl_vector *cstl_vec_push_back(cstl_vector *v, const void *data, size_t elem_si
     }
   }
 
-  void *data_copy = _cstl_vec_deep_copy(data, elem_size);
+  void *dest = (char *)v->data + v->size * v->type->size;
 
-  if (data_copy == NULL) {
-    return NULL;
+  if (v->type->ctor) {
+    v->type->ctor(dest, data);
+  } else {
+    memcpy(dest, data, v->type->size);
   }
 
-  void *dest = v->data;
-
-  if (v->size != 0) {
-    dest = (char *)v->data + v->size * elem_size;
-  }
-
-  memcpy(dest, data_copy, elem_size);
-
-  // TODO: need better option for elem_size
-  v->elem_size = elem_size;
   v->size++;
 
   return v;
@@ -170,6 +166,11 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *v) {
 
   if (v->size == 0) {
     return v;
+  }
+
+  if (v->type->dtor) {
+    void *data = (char *)v->data + (v->size - 1) * v->type->size;
+    v->type->dtor(data);
   }
 
   v->size--;
@@ -199,7 +200,8 @@ cstl_vector *cstl_vec_clear(cstl_vector *v) {
   return v;
 }
 
-cstl_vector *cstl_vec_insert(cstl_vector *v, size_t pos, const void *data, size_t elem_size) {
+cstl_vector *cstl_vec_insert(cstl_vector *v, size_t pos, const void *data,
+                             size_t elem_size) {
 
   if (v == NULL || data == NULL || pos > v->size) {
     return NULL;
@@ -220,8 +222,8 @@ cstl_vector *cstl_vec_insert(cstl_vector *v, size_t pos, const void *data, size_
   memmove(dest, src, move_size);
 
   void *data_copy = _cstl_vec_deep_copy(data, elem_size);
-  
-  if(data_copy == NULL){
+
+  if (data_copy == NULL) {
     return NULL;
   }
 
@@ -287,7 +289,7 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *v, const void *range,
 
   void *range_copy = _cstl_vec_deep_copy(range, range_size);
 
-  if(range_copy == NULL){
+  if (range_copy == NULL) {
     return NULL;
   }
 
