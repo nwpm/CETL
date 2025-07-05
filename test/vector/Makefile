@@ -1,6 +1,6 @@
 # === Compiler ===
 CC     = gcc
-CFLAGS = -g -O0 -fsanitize=address -Wall -Wextra -Wpedantic -std=c99
+CFLAGS = -g -O0 -fsanitize=address -Wall -Wextra -pedantic -std=gnu99
 
 # === Paths ===
 
