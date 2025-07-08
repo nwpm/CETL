@@ -1,9 +1,9 @@
-#include "cstl_llist_internal.h"
 #include "../../include/cstl/cstl_llist.h"
+#include "cstl_llist_internal.h"
 #include <stdlib.h>
 #include <string.h>
 
-_cstl_node *_cstl_llist_create_node(void *data, size_t elem_size) {
+static _cstl_node *_cstl_llist_create_node(const void *data, cstl_llist *llist) {
 
   if (data == NULL) {
     return NULL;
@@ -15,242 +15,200 @@ _cstl_node *_cstl_llist_create_node(void *data, size_t elem_size) {
     return NULL;
   }
 
-  void *data_copy = malloc(elem_size);
-
-  if (data_copy == NULL) {
-    free(node);
-    return NULL;
+  if (llist->type->ctor) {
+    llist->type->ctor(node->data, data);
+  } else {
+    memcpy(node->data, data, llist->type->size);
   }
 
-  memcpy(data_copy, data, elem_size);
-
-  node->data = data_copy;
   node->next = NULL;
 
   return node;
 }
 
-cstl_llist *cstl_llist_create_empty() {
-
-  cstl_llist *l = malloc(sizeof(cstl_llist));
-
-  if (l == NULL) {
-    return NULL;
+static void _cstl_llist_free_node_data(cstl_llist *llist, void *data) {
+  if (llist->type && llist->type->dtor) {
+    llist->type->dtor(data);
+  } else {
+    free(data);
   }
-
-  l->head = NULL;
-  l->tail = NULL;
-  l->elem_size = 0;
-  l->size = 0;
-
-  return l;
 }
 
-cstl_llist *cstl_llist_create(void *data, size_t elem_size) {
+cstl_llist *cstl_llist_create_empty(cstl_type *type) {
 
-  if (data == NULL || elem_size == 0) {
+  cstl_llist *llist = malloc(sizeof(cstl_llist));
+
+  if (llist == NULL) {
     return NULL;
   }
 
-  cstl_llist *l = cstl_llist_create_empty();
+  llist->head = NULL;
+  llist->tail = NULL;
+  llist->type = type;
+  llist->size = 0;
 
-  if (l == NULL) {
-    return NULL;
-  }
-
-  _cstl_node *head = _cstl_llist_create_node(data, elem_size);
-
-  if (head == NULL) {
-    return NULL;
-  }
-
-  l->elem_size = elem_size;
-  l->head = head;
-  l->tail = head;
-  l->size = 1;
-
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_create_copy(cstl_llist *l) {
+cstl_llist *cstl_llist_create_copy(cstl_llist *llist) {
 
-  if (l == NULL) {
+  if (llist == NULL) {
     return NULL;
   }
 
-  cstl_llist *l_copy = cstl_llist_create_empty();
+  cstl_llist *llist_copy = cstl_llist_create_empty(llist->type);
 
-  if (l_copy == NULL) {
+  if (llist_copy == NULL) {
     return NULL;
   }
 
-  if (cstl_llist_is_empty(l)) {
-    return l_copy;
+  if (cstl_llist_is_empty(llist)) {
+    return llist_copy;
   }
 
-  l_copy->elem_size = l->elem_size;
+  llist_copy->type = llist->type;
 
-  _cstl_node *current = l->head;
+  _cstl_node *current = llist->head;
 
   while (current) {
-    cstl_llist *res = cstl_llist_push_back(l_copy, current->data, l->elem_size);
+    cstl_llist *res = cstl_llist_push_back(llist_copy, current->data);
     current = current->next;
 
     if (res == NULL) {
-      cstl_llist_free_nodes(l_copy);
-      free(l_copy);
+      cstl_llist_free_nodes(llist_copy);
+      free(llist_copy);
       return NULL;
     }
   }
 
-  return l_copy;
+  return llist_copy;
 }
 
-cstl_llist *cstl_llist_push_back(cstl_llist *l, void *data, size_t elem_size) {
+cstl_llist *cstl_llist_push_back(cstl_llist *llist, const void *data) {
 
-  if (l == NULL || data == NULL || elem_size == 0) {
+  if (llist == NULL || data == NULL) {
     return NULL;
   }
 
-  _cstl_node *node = _cstl_llist_create_node(data, elem_size);
+  _cstl_node *node = _cstl_llist_create_node(data, llist);
 
   if (node == NULL) {
     return NULL;
   }
 
-  if (l->size == 0) {
-    l->elem_size = elem_size;
-    l->head = node;
-    l->tail = node;
-    l->size++;
-    return l;
+  if (llist->size == 0) {
+    llist->head = node;
+    llist->tail = node;
+    llist->size++;
+    return llist;
   }
 
-  _cstl_node *end = l->tail;
-  l->tail = node;
-  end->next = l->tail;
+  _cstl_node *end = llist->tail;
+  llist->tail = node;
+  end->next = llist->tail;
 
-  l->size++;
+  llist->size++;
 
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_pop_back(cstl_llist *l) {
+cstl_llist *cstl_llist_pop_back(cstl_llist *llist) {
 
-  if (l == NULL) {
+  if (llist == NULL || llist->size == 0) {
+    return llist;
+  }
+
+  _cstl_node *to_delete = llist->tail;
+
+  if (llist->size == 1) {
+    llist->head = NULL;
+    llist->tail = NULL;
+  } else {
+
+    _cstl_node *current = llist->head;
+
+    while (current->next->next != NULL) {
+      current = current->next;
+    }
+    current->next = NULL;
+    llist->tail = current;
+  }
+
+  _cstl_llist_free_node_data(llist, to_delete->data);
+
+  free(to_delete);
+  llist->size--;
+
+  return llist;
+}
+
+cstl_llist *cstl_llist_push_front(cstl_llist *llist, const void *data) {
+
+  if (llist == NULL || data == NULL) {
     return NULL;
   }
 
-  if (l->size == 0) {
-    return l;
-  }
-
-  if (l->size == 1) {
-    free(l->tail->data);
-    free(l->tail);
-    l->head = NULL;
-    l->tail = NULL;
-    l->size = 0;
-    return l;
-  }
-
-  _cstl_node *current = l->head;
-
-  while (current->next->next != NULL) {
-    current = current->next;
-  }
-
-  free(l->tail->data);
-  free(l->tail);
-
-  current->next = NULL;
-  l->tail = current;
-
-  l->size--;
-
-  return l;
-}
-
-cstl_llist *cstl_llist_push_front(cstl_llist *l, void *data, size_t elem_size) {
-
-  if (l == NULL || data == NULL || elem_size == 0) {
-    return NULL;
-  }
-
-  _cstl_node *node = _cstl_llist_create_node(data, elem_size);
+  _cstl_node *node = _cstl_llist_create_node(data, llist);
 
   if (node == NULL) {
     return NULL;
   }
 
-  if (l->size == 0) {
-    l->elem_size = elem_size;
-    l->head = node;
-    l->tail = node;
-    l->size++;
-    return l;
+  if (llist->size == 0) {
+    llist->head = node;
+    llist->tail = node;
+  } else {
+    node->next = llist->head;
+    llist->head = node;
   }
 
-  node->next = l->head;
-  l->head = node;
+  llist->size++;
 
-  l->size++;
-
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_pop_front(cstl_llist *l) {
+cstl_llist *cstl_llist_pop_front(cstl_llist *llist) {
 
-  if (l == NULL) {
-    return NULL;
+  if (llist == NULL || llist->size == 0) {
+    return llist;
   }
 
-  if (l->size == 0) {
-    return l;
+  _cstl_node *to_delete = llist->head;
+
+  if (llist->size == 1) {
+    llist->head = NULL;
+    llist->tail = NULL;
+  } else {
+    llist->head = llist->head->next;
   }
 
-  if (l->size == 1) {
-    free(l->tail->data);
-    free(l->tail);
-    l->head = NULL;
-    l->tail = NULL;
-    l->size = 0;
-    return l;
-  }
+  _cstl_llist_free_node_data(llist, llist->head->data);
+  free(to_delete);
 
-  _cstl_node *tmp_head = l->head;
+  llist->size--;
 
-  l->head = l->head->next;
-  free(tmp_head->data);
-  free(tmp_head);
-
-  l->size--;
-
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_insert(cstl_llist *l, void *data, size_t pos,
-                              size_t elem_size) {
+cstl_llist *cstl_llist_insert(cstl_llist *llist, const void *data, size_t pos) {
 
-  if (l == NULL || data == NULL || pos > l->size) {
+  if (llist == NULL || data == NULL || pos > llist->size) {
     return NULL;
   }
 
-  if (pos == l->size) {
-    return cstl_llist_push_back(l, data, elem_size);
+  if (pos == llist->size) {
+    return cstl_llist_push_back(llist, data);
+  }else if (pos == 0) {
+    return cstl_llist_push_front(llist, data);
   }
 
-  if (pos == 0) {
-    return cstl_llist_push_front(l, data, elem_size);
-  }
+  _cstl_node *node = _cstl_llist_create_node(data, llist);
 
-  _cstl_node *n = _cstl_llist_create_node(data, elem_size);
-
-  if (n == NULL) {
+  if (node == NULL) {
     return NULL;
   }
 
-  _cstl_node *prev = l->head;
+  _cstl_node *prev = llist->head;
 
   for (size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
@@ -258,29 +216,27 @@ cstl_llist *cstl_llist_insert(cstl_llist *l, void *data, size_t pos,
 
   _cstl_node *next = prev->next;
 
-  prev->next = n;
-  n->next = next;
+  prev->next = node;
+  node->next = next;
 
-  l->size++;
+  llist->size++;
 
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_erase(cstl_llist *l, size_t pos) {
+cstl_llist *cstl_llist_erase(cstl_llist *llist, size_t pos) {
 
-  if (pos >= l->size) {
+  if (llist == NULL || pos >= llist->size) {
     return NULL;
   }
 
   if (pos == 0) {
-    return cstl_llist_pop_front(l);
+    return cstl_llist_pop_front(llist);
+  }else if (pos == llist->size - 1) {
+    return cstl_llist_pop_back(llist);
   }
 
-  if (pos == l->size - 1) {
-    return cstl_llist_pop_back(l);
-  }
-
-  _cstl_node *prev = l->head;
+  _cstl_node *prev = llist->head;
 
   for (size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
@@ -288,68 +244,65 @@ cstl_llist *cstl_llist_erase(cstl_llist *l, size_t pos) {
 
   _cstl_node *next = prev->next->next;
 
-  free(prev->next->data);
+  _cstl_llist_free_node_data(llist, prev->next->data);
   free(prev->next);
+
   prev->next = next;
 
-  l->size--;
+  llist->size--;
 
-  return l;
+  return llist;
 }
 
-cstl_llist *cstl_llist_merge_two(cstl_llist *l1, cstl_llist *l2) {
+cstl_llist *cstl_llist_merge_two(cstl_llist *llist1, cstl_llist *llist2) {
 
-  if (l1 == NULL || l2 == NULL) {
+  if (llist1 == NULL || llist2 == NULL) {
     return NULL;
   }
 
-  cstl_llist *c_l1 = cstl_llist_create_copy(l1);
-  cstl_llist *c_l2 = cstl_llist_create_copy(l2);
-
-  if (cstl_llist_is_empty(c_l1)) {
-    free(c_l1);
-    return c_l2;
+  if (cstl_llist_is_empty(llist1)) {
+    return cstl_llist_create_copy(llist2);
+  }else if (cstl_llist_is_empty(llist2)) {
+    return cstl_llist_create_copy(llist1);
   }
 
-  if (cstl_llist_is_empty(c_l2)) {
-    free(c_l2);
-    return c_l1;
-  }
+  cstl_llist *copy_llist1 = cstl_llist_create_copy(llist1);
+  cstl_llist *copy_llist2 = cstl_llist_create_copy(llist2);
 
-  c_l1->tail->next = c_l2->head;
-  c_l1->tail = c_l2->tail;
-  c_l1->size += c_l2->size;
+  copy_llist1->tail->next = copy_llist2->head;
+  copy_llist1->tail = copy_llist2->tail;
+  copy_llist1->size += copy_llist2->size;
 
-  free(c_l2);
+  cstl_llist_free(copy_llist2);
 
-  return c_l1;
+  return copy_llist1;
 }
 
-cstl_llist *cstl_llist_clear(cstl_llist *l) {
+cstl_llist *cstl_llist_clear(cstl_llist *llist) {
 
-  if (l == NULL) {
+  if (llist == NULL) {
     return NULL;
   }
 
-  cstl_llist_free_nodes(l);
-  l->head = NULL;
-  l->tail = NULL;
-  l->size = 0;
+  cstl_llist_free_nodes(llist);
+  llist->head = NULL;
+  llist->tail = NULL;
+  llist->size = 0;
 
-  return l;
+  return llist;
 }
 
-size_t cstl_llist_size(cstl_llist *l) { return l->size; }
+size_t cstl_llist_size(cstl_llist *llist) { return llist->size; }
 
-bool cstl_llist_is_empty(cstl_llist *l) { return l && !l->size; }
+bool cstl_llist_is_empty(cstl_llist *llist) { return llist && !llist->size; }
 
-void *cstl_llist_get(cstl_llist *l, size_t pos) {
+void *cstl_llist_get(cstl_llist *llist, size_t pos) {
 
-  if (l == NULL || pos >= l->size) {
+  if (llist == NULL || pos >= llist->size) {
     return NULL;
   }
 
-  _cstl_node *current = l->head;
+  _cstl_node *current = llist->head;
 
   for (size_t i = 0; i < pos; ++i) {
     current = current->next;
@@ -358,42 +311,37 @@ void *cstl_llist_get(cstl_llist *l, size_t pos) {
   return current->data;
 }
 
-cstl_llist *cstl_llist_set(cstl_llist *l, size_t pos, void *data) {
+cstl_llist *cstl_llist_set(cstl_llist *llist, size_t pos, const void *data) {
 
-  if (l == NULL || data == NULL || pos >= l->size) {
+  if (llist == NULL || data == NULL || pos >= llist->size) {
     return NULL;
   }
 
-  _cstl_node *current = l->head;
+  _cstl_node *target = llist->head;
 
   for (size_t i = 0; i < pos; ++i) {
-    current = current->next;
+    target = target->next;
   }
 
-  void *data_copy = malloc(l->elem_size);
+  _cstl_llist_free_node_data(llist, target->data);
 
-  if (data_copy == NULL) {
-    return NULL;
+  if(llist->type && llist->type->ctor){
+    llist->type->ctor(target->data, data);
+  }else{
+    memcpy(target->data, data, llist->type->size);
   }
 
-  memcpy(data_copy, data, l->elem_size);
-
-  free(current->data);
-  current->data = data_copy;
-
-  return l;
+  return llist;
 }
 
-void cstl_llist_free_nodes(cstl_llist *l) {
+void cstl_llist_free_nodes(cstl_llist *llist) {
 
-  _cstl_node *current = l->head;
-  _cstl_node *next = NULL;
+  _cstl_node *current = llist->head;
 
-  while (current != NULL) {
-    next = current->next;
-    free(current->data);
+  while (current) {
+    _cstl_llist_free_node_data(llist, current->data);
     free(current);
-    current = next;
+    current = current->next;
   }
 }
 
