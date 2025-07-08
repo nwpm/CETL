@@ -4,8 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../src/type/type.h"
-
+typedef struct cstl_type cstl_type;
 typedef struct cstl_vector cstl_vector;
 
 cstl_vector *cstl_vec_create_empty(cstl_type *type);
