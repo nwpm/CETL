@@ -3,7 +3,11 @@
 #include "../../include/cstl/cstl_llist.h"
 #include <stdlib.h>
 
-cstl_stack *cstl_stack_create_empty() {
+cstl_stack *cstl_stack_create_empty(cstl_type *t) {
+
+  if(t == NULL){
+    return NULL;
+  }
 
   cstl_stack *s = malloc(sizeof(cstl_stack));
 
@@ -11,7 +15,7 @@ cstl_stack *cstl_stack_create_empty() {
     return NULL;
   }
 
-  cstl_llist *l = cstl_llist_create_empty();
+  cstl_llist *l = cstl_llist_create_empty(t);
 
   if (l == NULL) {
     return NULL;
@@ -23,47 +27,19 @@ cstl_stack *cstl_stack_create_empty() {
   return s;
 }
 
-cstl_stack *cstl_stack_create(void *data, size_t elem_size) {
-
-  if (data == NULL || elem_size == 0) {
-    return NULL;
-  }
-
-  cstl_stack *s = malloc(sizeof(cstl_stack));
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  cstl_llist *l = cstl_llist_create(data, elem_size);
-
-  if (l == NULL) {
-    return NULL;
-  }
-
-  s->size = 1;
-  s->data = l;
-
-  return s;
-}
-
 cstl_stack *cstl_stack_create_copy(cstl_stack *s) {
 
   if (s == NULL) {
     return NULL;
   }
 
-  cstl_stack *res = cstl_stack_create_empty();
+  cstl_stack *res = cstl_stack_create_empty(s->type);
 
-  res->size = s->size;
-
-  _cstl_node *current = s->data->head;
-  size_t elem_size = s->data->elem_size;
-
-  while(current){
-    cstl_llist_push_back(res->data, current->data, elem_size);
-    current = current->next;
+  if(res == NULL){
+    return NULL;
   }
+
+  //TODO: make copy procces with iterator
 
   return res;
 }
