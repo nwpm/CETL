@@ -112,11 +112,12 @@ char *create_string_of_char(size_t len, int ch) {
   return str;
 }
 
-void vec_fill_with_test_heap_str(cstl_vector *v, size_t size, size_t s_len) {
+void vec_fill_with_test_heap_str(cstl_vector *v, size_t size, size_t s_len,
+                                 int ch) {
 
   for (size_t i = 0; i < size; ++i) {
 
-    char *str = create_string_of_char(s_len, 'A');
+    char *str = create_string_of_char(s_len, ch);
     TestHeapStr *test_heap_str = make_test_heap_str(i, i, str);
     cstl_vec_push_back(v, test_heap_str);
     free(test_heap_str->s);
@@ -174,7 +175,8 @@ OwnedString *make_owned_string(char *s, size_t len) {
   return owned_string;
 }
 
-void vec_fill_with_owned_string(cstl_vector *v, size_t num, size_t s_len, int ch) {
+void vec_fill_with_owned_string(cstl_vector *v, size_t num, size_t s_len,
+                                int ch) {
 
   for (size_t i = 0; i < num; ++i) {
     char *s = create_string_of_char(s_len, ch);
@@ -369,7 +371,12 @@ void test_create_copy_from_size_10_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  vec_fill_with_test_heap_str(v, 10, 15);
+  size_t num_test_heap_str_objects = 10;
+  size_t str_len = 15;
+  int char_for_string = 'S';
+
+  vec_fill_with_test_heap_str(v, num_test_heap_str_objects, str_len,
+                              char_for_string);
 
   cstl_vector *c_v = cstl_vec_create_copy(v);
 
@@ -409,7 +416,12 @@ void test_create_copy_from_size_1000_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  vec_fill_with_test_heap_str(v, 1000, 50);
+  size_t num_test_heap_str_objects = 1000;
+  size_t str_len = 50;
+  int char_for_string = 'S';
+
+  vec_fill_with_test_heap_str(v, num_test_heap_str_objects, str_len,
+                              char_for_string);
 
   cstl_vector *c_v = cstl_vec_create_copy(v);
 
@@ -621,14 +633,16 @@ void test_push_back_to_size_1_type_test_heap_str() {
 
   size_t num_test_heap_str_objects = 1;
   size_t str_len = 10;
+  int char_for_string = 'S';
 
-  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len);
+  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
+                              char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(1, vec->size);
   TEST_ASSERT_EQUAL_size_t(CSTL_VEC_START_CAPACITY, vec->capacity);
   TEST_ASSERT_EQUAL(test_heap_str_type, vec->type);
 
-  char *expected_string = create_string_of_char(str_len, 'A');
+  char *expected_string = create_string_of_char(str_len, char_for_string);
   TestHeapStr *expected_test_heap_str =
       make_test_heap_str(0, 0, expected_string);
 
@@ -659,8 +673,10 @@ void test_push_back_to_size_10_type_test_heap_str() {
 
   size_t num_test_heap_str_objects = 10;
   size_t str_len = 40;
+  int char_for_string = 'Q';
 
-  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len);
+  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
+                              char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(num_test_heap_str_objects, vec->size);
   TEST_ASSERT_EQUAL_size_t(16, vec->capacity);
@@ -668,7 +684,7 @@ void test_push_back_to_size_10_type_test_heap_str() {
 
   for (size_t i = 0; i < num_test_heap_str_objects; ++i) {
 
-    char *expected_string = create_string_of_char(str_len, 'A');
+    char *expected_string = create_string_of_char(str_len, char_for_string);
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -702,8 +718,10 @@ void test_push_back_to_size_1000_type_test_heap_str() {
 
   size_t num_test_heap_str_objects = 1000;
   size_t str_len = 40;
+  int char_for_string = 'F';
 
-  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len);
+  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
+                              char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(num_test_heap_str_objects, vec->size);
   TEST_ASSERT_EQUAL_size_t(1024, vec->capacity);
@@ -711,7 +729,7 @@ void test_push_back_to_size_1000_type_test_heap_str() {
 
   for (size_t i = 0; i < num_test_heap_str_objects; ++i) {
 
-    char *expected_string = create_string_of_char(str_len, 'A');
+    char *expected_string = create_string_of_char(str_len, char_for_string);
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -819,21 +837,96 @@ void test_pop_back_size_10_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  char char_for_string = 'A';
-  vec_fill_with_owned_string(vec, 10, 20, char_for_string);
+  size_t num_owned_string_objects = 10;
+  size_t str_len = 20;
+  int char_for_string = 'F';
+
+  vec_fill_with_owned_string(vec, num_owned_string_objects, str_len,
+                             char_for_string);
 
   TEST_ASSERT_EQUAL_PTR(vec, cstl_vec_pop_back(vec));
   TEST_ASSERT_EQUAL_size_t(9, vec->size);
 
-  char *expected_owned_string = create_string_of_char(20, char_for_string);
+  char *expected_owned_string = create_string_of_char(str_len, char_for_string);
 
-  for(size_t i = 0; i < vec->size; ++i){
-    TEST_ASSERT_EQUAL_STRING(expected_owned_string, ((OwnedString*)cstl_vec_get(vec, i))->data);
+  for (size_t i = 0; i < vec->size; ++i) {
+    TEST_ASSERT_EQUAL_STRING(expected_owned_string,
+                             ((OwnedString *)cstl_vec_get(vec, i))->data);
   }
 
   cstl_vec_free(vec);
   free(owned_string_type);
   free(expected_owned_string);
+}
+
+void test_pop_back_size_0_type_test_heap_str() {
+
+  cstl_type *test_heap_str_type = create_test_heap_str_type();
+
+  TEST_ASSERT_NOT_NULL(test_heap_str_type);
+
+  cstl_vector *vec = cstl_vec_create_empty(test_heap_str_type);
+
+  TEST_ASSERT_NOT_NULL(vec);
+
+  TEST_ASSERT_EQUAL_PTR(vec, cstl_vec_pop_back(vec));
+  TEST_ASSERT_EQUAL_size_t(0, vec->size);
+
+  cstl_vec_free(vec);
+  free(test_heap_str_type);
+}
+
+void test_pop_back_size_1_type_test_heap_str() {
+
+  cstl_type *test_heap_str_type = create_test_heap_str_type();
+
+  TEST_ASSERT_NOT_NULL(test_heap_str_type);
+
+  cstl_vector *vec = cstl_vec_create_empty(test_heap_str_type);
+
+  TEST_ASSERT_NOT_NULL(vec);
+
+  size_t num_test_heap_str_objects = 1;
+  size_t str_len = 10;
+  int char_for_string = 'F';
+
+  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
+                              char_for_string);
+
+  cstl_vec_pop_back(vec);
+
+  TEST_ASSERT_EQUAL_size_t(0, vec->size);
+
+  cstl_vec_free(vec);
+  free(test_heap_str_type);
+}
+
+void test_pop_back_size_10_type_test_heap_str() {
+
+  cstl_type *test_heap_str_type = create_test_heap_str_type();
+
+  TEST_ASSERT_NOT_NULL(test_heap_str_type);
+
+  cstl_vector *vec = cstl_vec_create_empty(test_heap_str_type);
+
+  TEST_ASSERT_NOT_NULL(vec);
+
+  size_t num_test_heap_str_objects = 10;
+  size_t str_len = 50;
+  int char_for_string = 'F';
+
+  vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len, char_for_string);
+
+  cstl_vec_pop_back(vec);
+
+  TEST_ASSERT_EQUAL_size_t(9, vec->size);
+
+  for (size_t i = 0; i < vec->size; ++i) {
+    TEST_ASSERT_EQUAL_INT(i, i);
+  }
+
+  cstl_vec_free(vec);
+  free(test_heap_str_type);
 }
 
 int main() {
@@ -879,6 +972,10 @@ int main() {
 
   RUN_TEST(test_pop_back_size_0_type_owned_string);
   RUN_TEST(test_pop_back_size_10_type_owned_string);
+
+  RUN_TEST(test_pop_back_size_0_type_test_heap_str);
+  RUN_TEST(test_pop_back_size_10_type_test_heap_str);
+
 
   return UNITY_END();
 }
