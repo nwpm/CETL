@@ -302,13 +302,13 @@ void *cstl_llist_get(cstl_llist *llist, size_t pos) {
     return NULL;
   }
 
-  _cstl_node *current = llist->head;
+  _cstl_node *target = llist->head;
 
   for (size_t i = 0; i < pos; ++i) {
-    current = current->next;
+    target = target->next;
   }
 
-  return current->data;
+  return target->data;
 }
 
 cstl_llist *cstl_llist_set(cstl_llist *llist, size_t pos, const void *data) {
