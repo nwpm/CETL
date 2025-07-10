@@ -11,7 +11,7 @@ struct cstl_vector {
   size_t size;
   size_t capacity;
   void *data;
-  cstl_type *type;
+  const cstl_type *type;
 };
 
 #endif // CSTL_VECTOR_INTERNAL_H

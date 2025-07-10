@@ -4,7 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-cstl_vector *cstl_vec_create_empty(cstl_type *type) {
+static void _cstl_vec_free_data(cstl_vector *vec) {
+
+  if (vec->type->dtor) {
+    for (size_t i = 0; i < vec->size; ++i) {
+      void *current = (char *)vec->data + i * vec->type->size;
+      vec->type->dtor(current);
+    }
+  }
+
+  free(vec->data);
+}
+
+cstl_vector *cstl_vec_create_empty(const cstl_type *type) {
 
   if (type == NULL) {
     return NULL;
@@ -31,31 +43,35 @@ cstl_vector *cstl_vec_create_empty(cstl_type *type) {
   return vec;
 }
 
-cstl_vector *cstl_vec_create_copy(cstl_vector *vec) {
+cstl_vector *cstl_vec_create_copy(const cstl_vector *src_vec) {
 
-  if (vec == NULL) {
+  if (src_vec == NULL) {
     return NULL;
   }
 
-  cstl_vector *vec_copy = cstl_vec_create_empty(vec->type);
+  cstl_vector *new_vec = cstl_vec_create_empty(src_vec->type);
 
-  cstl_vec_resize(vec_copy, vec->capacity);
-
-  void *current = NULL;
-
-  for (size_t i = 0; i < vec->size; ++i) {
-    current = (char *)vec->data + i * vec->type->size;
-    cstl_vec_push_back(vec_copy, current);
+  if (new_vec == NULL || cstl_vec_is_empty(src_vec)) {
+    return new_vec;
   }
 
-  return vec_copy;
+  cstl_vec_resize(new_vec, src_vec->capacity);
+
+  void *src_elem = NULL;
+
+  for (size_t i = 0; i < src_vec->size; ++i) {
+    src_elem = (char *)src_vec->data + i * src_vec->type->size;
+    cstl_vec_push_back(new_vec, src_elem);
+  }
+
+  return new_vec;
 }
 
-size_t cstl_vec_size(cstl_vector *vec) { return vec->size; }
+size_t cstl_vec_size(const cstl_vector *vec) { return vec->size; }
 
-size_t cstl_vec_capacity(cstl_vector *vec) { return vec->capacity; }
+size_t cstl_vec_capacity(const cstl_vector *vec) { return vec->capacity; }
 
-void *cstl_vec_front(cstl_vector *vec) {
+void *cstl_vec_front(const cstl_vector *vec) {
 
   if (vec == NULL || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -64,7 +80,7 @@ void *cstl_vec_front(cstl_vector *vec) {
   return vec->data;
 }
 
-void *cstl_vec_back(cstl_vector *vec) {
+void *cstl_vec_back(const cstl_vector *vec) {
 
   if (vec == NULL || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -73,7 +89,7 @@ void *cstl_vec_back(cstl_vector *vec) {
   return (char *)vec->data + (vec->size - 1) * vec->type->size;
 }
 
-void *cstl_vec_get(cstl_vector *vec, size_t pos) {
+void *cstl_vec_get(const cstl_vector *vec, size_t pos) {
 
   if (vec == NULL || pos >= vec->size || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -82,7 +98,7 @@ void *cstl_vec_get(cstl_vector *vec, size_t pos) {
   return (char *)vec->data + pos * vec->type->size;
 }
 
-void *cstl_vec_data(cstl_vector *vec) {
+void *cstl_vec_data(const cstl_vector *vec) {
 
   if (vec == NULL) {
     return NULL;
@@ -91,9 +107,9 @@ void *cstl_vec_data(cstl_vector *vec) {
   return vec->data;
 }
 
-int cstl_vec_set(cstl_vector *vec, size_t pos, const void *elem_val) {
+int cstl_vec_set(cstl_vector *vec, size_t pos, const void *new_val) {
 
-  if (vec == NULL || vec->data == NULL || elem_val == NULL) {
+  if (vec == NULL || vec->data == NULL || new_val == NULL) {
     return -1;
   }
 
@@ -105,9 +121,9 @@ int cstl_vec_set(cstl_vector *vec, size_t pos, const void *elem_val) {
 
   if (vec->type->ctor) {
     vec->type->dtor(dest);
-    vec->type->ctor(dest, elem_val);
+    vec->type->ctor(dest, new_val);
   } else {
-    memcpy(dest, elem_val, vec->type->size);
+    memcpy(dest, new_val, vec->type->size);
   }
 
   return 0;
@@ -123,7 +139,7 @@ cstl_vector *cstl_vec_resize(cstl_vector *vec, size_t new_capacity) {
     return vec;
   }
 
-  void *n_ptr = malloc(new_capacity * vec->type->size);
+  void *new_ptr = malloc(new_capacity * vec->type->size);
 
   if (vec->size > new_capacity) {
 
@@ -137,23 +153,24 @@ cstl_vector *cstl_vec_resize(cstl_vector *vec, size_t new_capacity) {
 
   vec->capacity = new_capacity;
 
-  memmove(n_ptr, vec->data, vec->size * vec->type->size);
+  memmove(new_ptr, vec->data, vec->size * vec->type->size);
 
   free(vec->data);
-  vec->data = n_ptr;
+  vec->data = new_ptr;
 
   return vec;
 }
 
-cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *data) {
+cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *new_val) {
 
-  if (vec == NULL || data == NULL) {
+  if (vec == NULL || new_val == NULL) {
     return NULL;
   }
 
   if (vec->size == vec->capacity) {
-    size_t new_capacity =
-        (vec->capacity > 0) ? vec->capacity * 2 : CSTL_VEC_START_CAPACITY;
+    size_t new_capacity = (vec->capacity > 0)
+                              ? vec->capacity * CSTL_VEC_GROW_RATE
+                              : CSTL_VEC_START_CAPACITY;
     if (cstl_vec_resize(vec, new_capacity) == NULL) {
       return NULL;
     }
@@ -162,9 +179,9 @@ cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *data) {
   void *dest = (char *)vec->data + vec->size * vec->type->size;
 
   if (vec->type->ctor) {
-    vec->type->ctor(dest, data);
+    vec->type->ctor(dest, new_val);
   } else {
-    memcpy(dest, data, vec->type->size);
+    memcpy(dest, new_val, vec->type->size);
   }
 
   vec->size++;
@@ -183,7 +200,7 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *vec) {
   }
 
   if (vec->type->dtor) {
-    void *data = (char *)vec->data + (vec->size - 1) * vec->type->size;
+    void *data = cstl_vec_back(vec);
     vec->type->dtor(data);
   }
 
@@ -192,15 +209,11 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *vec) {
   return vec;
 }
 
-bool cstl_vec_is_empty(cstl_vector *vec) { return !vec->size; }
+bool cstl_vec_is_empty(const cstl_vector *vec) { return !vec->size; }
 
 cstl_vector *cstl_vec_shrink_to_fit(cstl_vector *vec) {
 
-  if (vec == NULL) {
-    return NULL;
-  }
-
-  if (vec->size == vec->capacity) {
+  if (vec == NULL || vec->size == vec->capacity) {
     return vec;
   }
 
@@ -208,26 +221,33 @@ cstl_vector *cstl_vec_shrink_to_fit(cstl_vector *vec) {
 }
 
 cstl_vector *cstl_vec_clear(cstl_vector *vec) {
+
+  if (vec == NULL) {
+    return NULL;
+  }
+
   _cstl_vec_free_data(vec);
   vec->data = NULL;
   vec->size = 0;
   return vec;
 }
 
-cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos, const void *data) {
+cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos,
+                             const void *new_val) {
 
-  if (vec == NULL || data == NULL || pos > vec->size) {
+  if (vec == NULL || new_val == NULL || pos > vec->size) {
     return NULL;
   }
 
   if (vec->size + 1 > vec->capacity) {
-    size_t new_capacity = (vec->capacity > 0) ? vec->capacity * CSTL_VEC_GROW_RATE
-                                            : CSTL_VEC_START_CAPACITY;
+    size_t new_capacity = (vec->capacity > 0)
+                              ? vec->capacity * CSTL_VEC_GROW_RATE
+                              : CSTL_VEC_START_CAPACITY;
     cstl_vec_resize(vec, new_capacity);
   }
 
   if (pos == vec->size) {
-    return cstl_vec_push_back(vec, data);
+    return cstl_vec_push_back(vec, new_val);
   }
 
   void *move_next = (char *)vec->data + (pos + 1) * vec->type->size;
@@ -238,9 +258,9 @@ cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos, const void *data) {
   void *insert_to = (char *)vec->data + pos * vec->type->size;
 
   if (vec->type->ctor) {
-    vec->type->ctor(insert_to, data);
+    vec->type->ctor(insert_to, new_val);
   } else {
-    memcpy(insert_to, data, vec->type->size);
+    memcpy(insert_to, new_val, vec->type->size);
   }
 
   vec->size++;
@@ -292,8 +312,8 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *vec, const void *range,
     size_t new_capacity = vec->capacity;
 
     while (new_capacity < new_size) {
-      new_capacity =
-          (new_capacity > 0) ? new_capacity * 2 : CSTL_VEC_START_CAPACITY;
+      new_capacity = (new_capacity > 0) ? new_capacity * CSTL_VEC_GROW_RATE
+                                        : CSTL_VEC_START_CAPACITY;
     }
 
     if (cstl_vec_resize(vec, new_capacity) == NULL) {
@@ -352,23 +372,6 @@ cstl_vector *cstl_vec_erase_range(cstl_vector *vec, size_t pos, size_t len) {
   return vec;
 }
 
-void _cstl_vec_free_data(cstl_vector *vec) {
-
-  if (vec == NULL) {
-    return;
-  }
-
-  if (vec->type->dtor) {
-
-    for (size_t i = 0; i < vec->size; ++i) {
-      void *current = (char *)vec->data + i * vec->type->size;
-      vec->type->dtor(current);
-    }
-  }
-
-  free(vec->data);
-}
-
 void cstl_vec_free(cstl_vector *vec) {
 
   if (vec == NULL) {
@@ -376,6 +379,5 @@ void cstl_vec_free(cstl_vector *vec) {
   }
 
   _cstl_vec_free_data(vec);
-
   free(vec);
 }
