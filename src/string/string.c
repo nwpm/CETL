@@ -1,386 +1,371 @@
-#include "cstl_string_internal.h"
 #include "../../include/cstl/cstl_string.h"
+#include "cstl_string_internal.h"
 #include <stddef.h>
 #include <string.h>
 
-// NOTE: create functions
+static cstl_string *_cstl_str_ensure_capacity(cstl_string *string) {
 
-cstl_string *cstl_str_create(size_t len) {
-
-  cstl_string *s = malloc(sizeof(cstl_string));
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  char *str = malloc(len + 1);
-
-  if (str == NULL) {
-    free(s);
-    return NULL;
-  }
-
-  str[len] = '\0';
-
-  s->data = str;
-  s->capacity = len + 1;
-  s->length = len;
-
-  return s;
-}
-
-cstl_string *cstl_str_create_empty() { return cstl_str_create(0); }
-
-cstl_string *cstl_str_create_filled(size_t len, int c) {
-
-  cstl_string *s = cstl_str_create(len);
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  memset(s->data, c, len);
-
-  return s;
-}
-
-cstl_string *cstl_str_create_from_cstr(const char *str) {
-
-  if (str == NULL) {
-    return NULL;
-  }
-
-  size_t len_str = strlen(str);
-
-  cstl_string *s = cstl_str_create(len_str);
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  memcpy(s->data, str, len_str);
-
-  return s;
-}
-
-cstl_string *cstl_str_create_copy(cstl_string *s) {
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  cstl_string *s_copy = cstl_str_create(s->length);
-
-  if (s_copy == NULL) {
-    return NULL;
-  }
-
-  memcpy(s_copy->data, s->data, s->length);
-
-  return s_copy;
-}
-
-// NOTE: get info functions
-
-size_t cstl_str_length(cstl_string *s) { return s->length; }
-
-size_t cstl_str_capacity(cstl_string *s) { return s->capacity; }
-
-char *cstl_str_data(cstl_string *s) {
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  return s->data;
-}
-
-bool cstl_str_is_empty(cstl_string *s) { return !s->length; }
-
-// NOTE: change str functions
-
-cstl_string *cstl_str_resize(cstl_string *s, size_t new_len) {
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  if (new_len + 1 == s->capacity) {
-    return s;
-  }
-
-  char *new_str = malloc(new_len + 1);
-
-  if (new_str == NULL) {
-    return NULL;
-  }
-
-  s->length = (s->length > new_len) ? new_len : s->length;
-  s->capacity = new_len + 1;
-
-  new_str[s->length] = '\0';
-  memmove(new_str, s->data, s->length);
-
-  free(s->data);
-  s->data = new_str;
-
-  return s;
-}
-
-cstl_string *cstl_str_append(cstl_string *s, const char *c_s) {
-
-  if (s == NULL || c_s == NULL) {
-    return NULL;
-  }
-
-  size_t cstr_len = strlen(c_s);
-
-  if (cstr_len == 0) {
-    return s;
-  }
-
-  size_t res_len = s->length + cstr_len;
-
-  if (cstr_len + s->length >= s->capacity) {
-
-    size_t new_capacity = s->capacity;
-    while (new_capacity < res_len + 1) {
-
-      new_capacity = (s->capacity > 0) ? s->capacity * 2 : 1;
-
-      if (cstl_str_resize(s, new_capacity - 1) == NULL) {
-        return NULL;
-      }
-    }
-  }
-
-  memcpy(s->data + s->length, c_s, cstr_len);
-
-  s->length = res_len;
-  s->data[s->length] = '\0';
-
-  return s;
-}
-
-cstl_string *cstl_str_append_char(cstl_string *s, int c) {
-
-  if (s == NULL) {
-    return NULL;
-  }
-
-  if (s->length + 1 >= s->capacity) {
-    size_t new_capacity = (s->capacity > 0) ? s->capacity * 2 : 1;
-    if (cstl_str_resize(s, new_capacity - 1) == NULL) {
+  if (string->length + 1 >= string->capacity) {
+    size_t new_capacity = string->capacity * CSTL_STR_GROW_RATE;
+    if (cstl_str_resize(string, new_capacity - 1) == NULL) {
       return NULL;
     }
   }
-
-  s->data[s->length + 1] = '\0';
-  s->data[s->length] = c;
-
-  s->length++;
-
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_insert(cstl_string *s, size_t pos, int c) {
+static cstl_string *_cstl_str_reserve_until(cstl_string *string,
+                                            size_t new_len) {
 
-  if (s == NULL || pos > s->length) {
-    return NULL;
-  }
+  if (new_len >= string->capacity) {
 
-  if (s->length + 1 >= s->capacity) {
-    size_t new_capacity = (s->capacity > 0) ? s->capacity * 2 : 2;
-    cstl_str_resize(s, new_capacity - 1);
-  }
-
-  if (pos == s->length) {
-    cstl_str_append_char(s, c);
-    return s;
-  }
-
-  char *dest = s->data + pos + 1;
-  char *src = s->data + pos;
-  memmove(dest, src, s->length - pos);
-
-  char *dest_insert = s->data + pos;
-  memset(dest_insert, c, sizeof(char));
-
-  s->length++;
-  s->data[s->length] = '\0';
-
-  return s;
-}
-
-cstl_string *cstl_str_insert_range(cstl_string *s, size_t pos,
-                                   const char *c_s) {
-
-  if (s == NULL || c_s == NULL || pos > s->length) {
-    return NULL;
-  }
-
-  size_t c_s_len = strlen(c_s);
-
-  if (c_s_len == 0) {
-    return s;
-  }
-
-  size_t new_len = s->length + c_s_len;
-
-  if (new_len > s->capacity) {
-
-    size_t new_capacity = s->capacity;
+    size_t new_capacity = string->capacity;
 
     while (new_capacity - 1 < new_len) {
 
-      new_capacity = (s->capacity > 0) ? s->capacity * 2 : 1;
-      if (cstl_str_resize(s, new_capacity - 1) == NULL) {
+      new_capacity = string->capacity * CSTL_STR_GROW_RATE;
+      if (cstl_str_resize(string, new_capacity - 1) == NULL) {
         return NULL;
       }
     }
   }
 
-  char *dest = s->data + pos + c_s_len;
-  char *src = s->data + pos;
-  memmove(dest, src, s->length - pos);
-
-  char *dest_r = s->data + pos;
-  memcpy(dest_r, c_s, c_s_len);
-
-  s->length = new_len;
-  s->data[s->length] = '\0';
-
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_erase(cstl_string *s, size_t pos) {
+cstl_string *cstl_str_create_uninit(size_t len) {
 
-  if (s == NULL || s->length == 0 || pos >= s->length) {
+  cstl_string *string = malloc(sizeof(cstl_string));
+
+  if (string == NULL) {
     return NULL;
   }
 
-  if (pos == s->length - 1) {
-    return cstl_str_pop_back(s);
+  char *cstr = malloc(len + 1);
+
+  if (cstr == NULL) {
+    free(string);
+    return NULL;
   }
 
-  char *dest = s->data + pos;
-  char *src = s->data + pos + 1;
-  size_t move_size = s->length - pos - 1;
-  memmove(dest, src, move_size);
+  cstr[len] = '\0';
 
-  s->length--;
-  s->data[s->length] = '\0';
+  string->data = cstr;
+  string->capacity = len + 1;
+  string->length = len;
 
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_erase_range(cstl_string *s, size_t pos, size_t len) {
+cstl_string *cstl_str_create_empty() { return cstl_str_create_uninit(0); }
 
-  if (s == NULL || pos >= s->length || pos + len > s->length) {
+cstl_string *cstl_str_create_filled(size_t len, int ch) {
+
+  cstl_string *string = cstl_str_create_uninit(len);
+
+  if (string == NULL) {
+    return NULL;
+  }
+
+  memset(string->data, ch, len);
+
+  return string;
+}
+
+cstl_string *cstl_str_create_from_cstr(const char *cstr) {
+
+  if (cstr == NULL) {
+    return NULL;
+  }
+
+  size_t len_cstr = strlen(cstr);
+
+  cstl_string *string = cstl_str_create_uninit(len_cstr);
+
+  if (string == NULL) {
+    return NULL;
+  }
+
+  memcpy(string->data, cstr, len_cstr);
+
+  return string;
+}
+
+cstl_string *cstl_str_create_copy(const cstl_string *src_string) {
+
+  if (src_string == NULL) {
+    return NULL;
+  }
+
+  cstl_string *new_string = cstl_str_create_uninit(src_string->length);
+
+  if (new_string == NULL) {
+    return NULL;
+  }
+
+  memcpy(new_string->data, src_string->data, src_string->length);
+
+  return new_string;
+}
+
+size_t cstl_str_length(const cstl_string *string) { return string->length; }
+
+size_t cstl_str_capacity(const cstl_string *string) { return string->capacity; }
+
+char *cstl_str_data(const cstl_string *string) {
+
+  if (string == NULL) {
+    return NULL;
+  }
+
+  return string->data;
+}
+
+bool cstl_str_is_empty(const cstl_string *string) { return !string->length; }
+
+cstl_string *cstl_str_resize(cstl_string *string, size_t new_len) {
+
+  if (string == NULL || (new_len + 1) == string->capacity) {
+    return string;
+  }
+
+  char *new_ptr = malloc(new_len + 1);
+
+  if (new_ptr == NULL) {
+    return NULL;
+  }
+
+  string->length = (string->length > new_len) ? new_len : string->length;
+  string->capacity = new_len + 1;
+
+  new_ptr[string->length] = '\0';
+  memmove(new_ptr, string->data, string->length);
+
+  free(string->data);
+  string->data = new_ptr;
+
+  return string;
+}
+
+cstl_string *cstl_str_append_cstr(cstl_string *string, const char *cstr) {
+
+  if (string == NULL || cstr == NULL) {
+    return NULL;
+  }
+
+  size_t cstr_len = strlen(cstr);
+
+  if (cstr_len == 0) {
+    return string;
+  }
+
+  size_t new_len = string->length + cstr_len;
+
+  if (_cstl_str_reserve_until(string, new_len) == NULL) {
+    return NULL;
+  }
+
+  memcpy(string->data + string->length, cstr, cstr_len);
+
+  string->length = new_len;
+  string->data[string->length] = '\0';
+
+  return string;
+}
+
+cstl_string *cstl_str_append_char(cstl_string *string, int ch) {
+
+  if (string == NULL || _cstl_str_ensure_capacity(string) == NULL) {
+    return NULL;
+  }
+
+  string->data[string->length + 1] = '\0';
+  string->data[string->length] = ch;
+
+  string->length++;
+
+  return string;
+}
+
+cstl_string *cstl_str_insert_char(cstl_string *string, size_t pos, int ch) {
+
+  if (string == NULL || pos > string->length ||
+      _cstl_str_ensure_capacity(string)) {
+    return NULL;
+  }
+
+  if (pos == string->length) {
+    cstl_str_append_char(string, ch);
+    return string;
+  }
+
+  char *dest = string->data + pos + 1;
+  char *src = string->data + pos;
+  memmove(dest, src, string->length - pos);
+
+  char *dest_insert = string->data + pos;
+  memset(dest_insert, ch, sizeof(char));
+
+  string->length++;
+  string->data[string->length] = '\0';
+
+  return string;
+}
+
+cstl_string *cstl_str_insert_cstr(cstl_string *string, size_t pos,
+                                  const char *cstr) {
+
+  if (string == NULL || cstr == NULL || pos > string->length) {
+    return NULL;
+  }
+
+  size_t cstr_len = strlen(cstr);
+
+  if (cstr_len == 0) {
+    return string;
+  }
+
+  size_t new_len = string->length + cstr_len;
+
+  if (_cstl_str_reserve_until(string, new_len) == NULL) {
+    return NULL;
+  }
+
+  char *dest = string->data + pos + cstr_len;
+  char *src = string->data + pos;
+  memmove(dest, src, string->length - pos);
+
+  char *dest_r = string->data + pos;
+  memcpy(dest_r, cstr, cstr_len);
+
+  string->length = new_len;
+  string->data[string->length] = '\0';
+
+  return string;
+}
+
+cstl_string *cstl_str_erase_char(cstl_string *string, size_t pos) {
+
+  if (string == NULL || string->length == 0 || pos >= string->length) {
+    return NULL;
+  }
+
+  if (pos == string->length - 1) {
+    return cstl_str_pop_back(string);
+  }
+
+  char *dest = string->data + pos;
+  char *src = string->data + pos + 1;
+  size_t move_size = string->length - pos - 1;
+  memmove(dest, src, move_size);
+
+  string->length--;
+  string->data[string->length] = '\0';
+
+  return string;
+}
+
+cstl_string *cstl_str_erase_span(cstl_string *string, size_t pos, size_t len) {
+
+  if (string == NULL || pos >= string->length || pos + len > string->length) {
     return NULL;
   }
 
   if (len == 0) {
-    return s;
+    return string;
   }
 
-  if (pos + len == s->length) {
-    s->length -= len;
-    s->data[pos] = '\0';
-    return s;
+  if (pos + len == string->length) {
+    string->length -= len;
+    string->data[pos] = '\0';
+    return string;
   }
 
-  char *dest = s->data + pos;
-  char *src = s->data + pos + len;
-  size_t move_size = s->length - pos - len;
+  char *dest = string->data + pos;
+  char *src = string->data + pos + len;
+  size_t move_size = string->length - pos - len;
   memmove(dest, src, move_size);
 
-  s->length -= len;
-  s->data[s->length] = '\0';
+  string->length -= len;
+  string->data[string->length] = '\0';
 
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_clear(cstl_string *s) {
+cstl_string *cstl_str_clear(cstl_string *string) {
 
-  if (s == NULL) {
+  if (string == NULL) {
     return NULL;
   }
 
-  s->length = 0;
-  s->data[0] = '\0';
+  string->length = 0;
+  string->data[0] = '\0';
 
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_shrink_to_fit(cstl_string *s) {
+cstl_string *cstl_str_shrink_to_fit(cstl_string *string) {
 
-  if (s == NULL) {
+  if (string == NULL) {
     return NULL;
   }
 
-  return cstl_str_resize(s, s->length);
+  return cstl_str_resize(string, string->length);
 }
 
-cstl_string *cstl_str_pop_back(cstl_string *s) {
+cstl_string *cstl_str_pop_back(cstl_string *string) {
 
-  if (s == NULL) {
+  if (string == NULL || string->length == 0) {
+    return string;
+  }
+
+  string->length--;
+  string->data[string->length] = '\0';
+
+  return string;
+}
+
+cstl_string *cstl_str_replace(cstl_string *string, size_t pos, size_t len,
+                              const char *substr) {
+
+  if (string == NULL || substr == NULL || (len + pos > string->length)) {
     return NULL;
   }
 
-  if (s->length == 0) {
-    return s;
+  if (len == 0) {
+    return string;
   }
 
-  s->length--;
-  s->data[s->length] = '\0';
+  memcpy(string->data + pos, substr, len);
 
-  return s;
+  return string;
 }
 
-cstl_string *cstl_str_replace(cstl_string *s, const char *substr, size_t pos) {
+const char *cstl_str_find(const cstl_string *string, const char *substr) {
 
-  if (s == NULL || substr == NULL || pos >= s->length) {
+  if (string == NULL || substr == NULL) {
     return NULL;
   }
 
-  size_t substr_len = strlen(substr);
-
-  if (substr_len + pos > s->length) {
-    return NULL;
-  }
-
-  if (substr_len == 0) {
-    return s;
-  }
-
-  memcpy(s->data + pos, substr, substr_len);
-
-  return s;
+  return strstr(string->data, substr);
 }
 
-const char *cstl_str_find(cstl_string *s, const char *substr) {
-
-  if (s == NULL || substr == NULL) {
-    return NULL;
-  }
-
-  return strstr(s->data, substr);
+int cstl_str_compare(const cstl_string *string, const char *substr) {
+  return strcmp(string->data, substr);
 }
 
-int cstl_str_compare(cstl_string *s, const char *substr) {
-  return strcmp(s->data, substr);
-}
+void cstl_str_swap(cstl_string **string1, cstl_string **string2) {
 
-void cstl_str_swap(cstl_string **s1, cstl_string **s2) {
-
-  if (s1 == NULL || s2 == NULL) {
+  if (string1 == NULL || string2 == NULL) {
     return;
   }
 
-  cstl_string *tmp = *s1;
-  *s1 = *s2;
-  *s2 = tmp;
+  cstl_string *tmp = *string1;
+  *string1 = *string2;
+  *string2 = tmp;
 }
 
-void cstl_str_free(cstl_string *s) { free(s->data); }
+void cstl_str_free(cstl_string *string) {
+  free(string->data);
+  free(string);
+}

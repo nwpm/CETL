@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define CSTL_STR_GROW_RATE 2
+
 struct cstl_string {
 
   char *data;
