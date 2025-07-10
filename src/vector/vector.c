@@ -139,13 +139,15 @@ cstl_vector *cstl_vec_resize(cstl_vector *vec, size_t new_capacity) {
     return vec;
   }
 
-  void *new_ptr = malloc(new_capacity * vec->type->size);
+  void *new_ptr =
+      (new_capacity == 0) ? NULL : malloc(new_capacity * vec->type->size);
 
   if (vec->size > new_capacity) {
-
-    for (size_t i = new_capacity; i < vec->size; ++i) {
-      void *current = (char *)vec->data + i * vec->type->size;
-      vec->type->dtor(current);
+    if (vec->type->dtor) {
+      for (size_t i = new_capacity; i < vec->size; ++i) {
+        void *current = (char *)vec->data + i * vec->type->size;
+        vec->type->dtor(current);
+      }
     }
 
     vec->size = new_capacity;
