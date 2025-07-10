@@ -1,123 +1,113 @@
-#include "cstl_queue_internal.h"
-#include "../../include/cstl/cstl_queue.h"
 #include "../../include/cstl/cstl_llist.h"
+#include "../../include/cstl/cstl_queue.h"
+#include "cstl_queue_internal.h"
 #include <stdlib.h>
 
-cstl_queue *cstl_queue_create_empty() {
 
-  cstl_queue *q = malloc(sizeof(cstl_queue));
+typedef struct cstl_llist cstl_llist;
 
-  if (q == NULL) {
+cstl_queue *cstl_queue_create_empty(const cstl_type *type) {
+
+  if (type == NULL) {
     return NULL;
   }
 
-  cstl_llist *llist = cstl_llist_create_empty();
+  cstl_queue *queue = malloc(sizeof(cstl_queue));
+
+  if (queue == NULL) {
+    return NULL;
+  }
+
+  cstl_llist *llist = cstl_llist_create_empty(type);
 
   if (llist == NULL) {
+    free(queue);
     return NULL;
   }
 
-  q->size = 0;
-  q->data = llist;
+  queue->size = 0;
+  queue->data = llist;
 
-  return q;
+  return queue;
 }
 
-cstl_queue *cstl_queue_create(void *data, size_t elem_size) {
+cstl_queue *cstl_queue_create_copy(const cstl_queue *src_queue) {
 
-  if (data == NULL || elem_size == 0) {
+  if (src_queue == NULL) {
     return NULL;
   }
 
-  cstl_queue *q = cstl_queue_create_empty();
+  cstl_queue *new_queue = cstl_queue_create_empty(src_queue->type);
 
-  if (q == NULL) {
+  if (new_queue == NULL || cstl_queue_is_empty(src_queue)) {
+    return new_queue;
+  }
+
+  cstl_llist *llist_copy = cstl_llist_create_copy(src_queue->data);
+
+  if (llist_copy == NULL) {
+    cstl_queue_free(new_queue);
     return NULL;
   }
 
-  cstl_llist_push_back(q->data, data, elem_size);
+  new_queue->size = src_queue->size;
+  new_queue->data = llist_copy;
 
-  q->size = 1;
-
-  return q;
+  return new_queue;
 }
 
-cstl_queue *cstl_queue_create_copy(cstl_queue *q) {
-
-  if (q == NULL) {
-    return NULL;
-  }
-
-  cstl_queue *c_q = cstl_queue_create_empty();
-
-  if (c_q == NULL) {
-    return NULL;
-  }
-
-  _cstl_node *current = q->data->head;
-
-  while (current) {
-    cstl_queue *res = cstl_queue_push(c_q, current->data, q->data->elem_size);
-    current = current->next;
-
-    if (res == NULL) {
-      cstl_queue_free(c_q);
-      return NULL;
-    }
-  }
-
-  return c_q;
+void *cstl_queue_front(const cstl_queue *queue) {
+  return cstl_llist_get(queue->data, 0);
 }
 
-void *cstl_queue_front(cstl_queue *q) {
+void *cstl_queue_back(const cstl_queue *queue) {
+  return cstl_llist_get(queue->data, queue->size - 1);
+}
 
-  if (q == NULL || q->size == 0) {
+cstl_queue *cstl_queue_push(cstl_queue *queue, const void *data) {
+
+  if(cstl_llist_push_back(queue->data, data) == NULL){
+    return NULL;
+  }
+  
+  queue->size++;
+
+  return queue;
+}
+
+cstl_queue *cstl_queue_pop(cstl_queue *queue) {
+
+  if (cstl_llist_pop_front(queue->data) == NULL) {
     return NULL;
   }
 
-  return cstl_llist_get(q->data, 0);
+  queue->size--;
+
+  return queue;
 }
 
-void *cstl_queue_back(cstl_queue *q) {
+size_t cstl_queue_size(const cstl_queue *queue) { return queue->size; }
 
-  if (q == NULL || q->size == 0) {
-    return NULL;
+bool cstl_queue_is_empty(const cstl_queue *queue) { return queue && !queue->size; }
+
+void cstl_queue_swap(cstl_queue **queue1, cstl_queue **queue2){
+
+  if(queue1 == NULL || queue2 == NULL){
+    return;
   }
 
-  return cstl_llist_get(q->data, q->size - 1);
+  cstl_queue *tmp = *queue1;
+  *queue1 = *queue2;
+  *queue2 = tmp;
+
 }
 
-cstl_queue *cstl_queue_push(cstl_queue *q, void *data, size_t elem_size) {
+void cstl_queue_free(cstl_queue *queue) {
 
-  if (q == NULL || data == NULL || elem_size == 0) {
-    return NULL;
+  if(queue == NULL){
+    return;
   }
 
-  cstl_llist_push_back(q->data, data, elem_size);
-  q->size++;
-
-  return q;
-}
-
-cstl_queue *cstl_queue_pop(cstl_queue *q) {
-
-  if (q == NULL) {
-    return NULL;
-  }
-
-  cstl_llist_pop_front(q->data);
-  q->size--;
-
-  return q;
-}
-
-size_t cstl_queue_size(cstl_queue *q) { return q->size; }
-
-bool cstl_queue_is_empty(cstl_queue *q) { return q && !q->size; }
-
-void cstl_queue_free(cstl_queue *q) {
-
-  cstl_llist_free_nodes(q->data);
-  free(q->data);
-  free(q);
+  cstl_llist_free(queue->data);
+  free(queue);
 }
