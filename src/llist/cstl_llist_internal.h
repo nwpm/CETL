@@ -16,7 +16,7 @@ struct cstl_llist {
   size_t size;
   _cstl_node *head;
   _cstl_node *tail;
-  cstl_type* type;
+  const cstl_type* type;
 
 };
 
