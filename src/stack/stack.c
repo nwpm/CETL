@@ -1,94 +1,86 @@
-#include "cstl_stack_internal.h"
-#include "../../include/cstl/cstl_stack.h"
 #include "../../include/cstl/cstl_llist.h"
+#include "../../include/cstl/cstl_stack.h"
+#include "cstl_stack_internal.h"
 #include <stdlib.h>
 
-cstl_stack *cstl_stack_create_empty(cstl_type *t) {
+cstl_stack *cstl_stack_create_empty(const cstl_type *type) {
 
-  if(t == NULL){
+  if (type == NULL) {
     return NULL;
   }
 
-  cstl_stack *s = malloc(sizeof(cstl_stack));
+  cstl_stack *stack = malloc(sizeof(cstl_stack));
 
-  if (s == NULL) {
+  if (stack == NULL) {
     return NULL;
   }
 
-  cstl_llist *l = cstl_llist_create_empty(t);
+  cstl_llist *llist = cstl_llist_create_empty(type);
 
-  if (l == NULL) {
+  if (llist == NULL) {
+    free(stack);
     return NULL;
   }
 
-  s->size = 0;
-  s->data = l;
+  stack->size = 0;
+  stack->data = llist;
 
-  return s;
+  return stack;
 }
 
-cstl_stack *cstl_stack_create_copy(cstl_stack *s) {
+cstl_stack *cstl_stack_create_copy(const cstl_stack *src_stack) {
 
-  if (s == NULL) {
+  if (src_stack == NULL) {
     return NULL;
   }
 
-  cstl_stack *res = cstl_stack_create_empty(s->type);
+  cstl_stack *new_stack = cstl_stack_create_empty(src_stack->type);
 
-  if(res == NULL){
+  if (new_stack == NULL || cstl_stack_is_empty(src_stack)) {
+    return new_stack;
+  }
+
+  cstl_llist *llist_copy = cstl_llist_create_copy(src_stack->data);
+
+  new_stack->size = src_stack->size;
+  new_stack->data = llist_copy;
+
+  return new_stack;
+}
+
+cstl_stack *cstl_stack_push(cstl_stack *stack, const void *data) {
+
+  if (cstl_llist_push_back(stack->data, data) == NULL) {
     return NULL;
   }
 
-  //TODO: make copy procces with iterator
+  stack->size++;
 
-  return res;
+  return stack;
 }
 
-cstl_stack *cstl_stack_push(cstl_stack *s, void *data, size_t elem_size) {
+cstl_stack *cstl_stack_pop(cstl_stack *stack) {
 
-  if (s == NULL || data == NULL) {
+  if (cstl_llist_pop_back(stack->data) == NULL) {
     return NULL;
   }
 
-  cstl_llist_push_back(s->data, data, elem_size);
-  s->size++;
+  stack->size--;
 
-  return s;
+  return stack;
 }
 
-cstl_stack *cstl_stack_pop(cstl_stack *s) {
-
-  if (s == NULL || s->size == 0) {
-    return NULL;
-  }
-
-  cstl_llist_pop_back(s->data);
-  s->size--;
-
-  return s;
+bool cstl_stack_is_empty(const cstl_stack *stack) {
+  return cstl_llist_is_empty(stack->data);
 }
 
-bool cstl_stack_is_empty(cstl_stack *s){
-  return cstl_llist_is_empty(s->data);
+void *cstl_stack_top(const cstl_stack *stack) {
+  return cstl_llist_get(stack->data, stack->size - 1);
 }
 
-void *cstl_stack_top(cstl_stack *s) {
-
-  if (s == NULL || s->size == 0) {
-    return NULL;
-  }
-
-  return s->data->tail->data;
-}
-
-void cstl_stack_clear(cstl_stack *s){
-
-  if(s == NULL){
-    return;
-  }
-
-  cstl_llist_clear(s->data);
-  s->size = 0;
+void cstl_stack_clear(cstl_stack *stack) {
+  cstl_llist_clear(stack->data);
+  stack->size = 0;
 }
 
 void cstl_stack_free(cstl_stack *s) {
