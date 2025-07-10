@@ -17,7 +17,7 @@ struct cstl_dlist {
   size_t size;
   _cstl_dnode *head;
   _cstl_dnode *tail;
-  cstl_type *type;
+  const cstl_type *type;
 
 };
 

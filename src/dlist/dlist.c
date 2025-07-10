@@ -1,13 +1,10 @@
-#include "cstl_dlist_internal.h"
 #include "../../include/cstl/cstl_dlist.h"
+#include "cstl_dlist_internal.h"
 #include <stdlib.h>
 #include <string.h>
 
-static _cstl_dnode *_cstl_dlist_create_dnode(const void *data, cstl_dlist *dlist) {
-
-  if (data == NULL) {
-    return NULL;
-  }
+static _cstl_dnode *_cstl_dlist_create_dnode(const void *data,
+                                             cstl_dlist *dlist) {
 
   _cstl_dnode *dnode = malloc(sizeof(_cstl_dnode));
 
@@ -15,9 +12,9 @@ static _cstl_dnode *_cstl_dlist_create_dnode(const void *data, cstl_dlist *dlist
     return NULL;
   }
 
-  if(dlist->type->ctor){
+  if (dlist->type->ctor) {
     dlist->type->ctor(dnode->data, data);
-  }else{
+  } else {
     memcpy(dnode->data, data, dlist->type->size);
   }
 
@@ -27,15 +24,15 @@ static _cstl_dnode *_cstl_dlist_create_dnode(const void *data, cstl_dlist *dlist
   return dnode;
 }
 
-static void _cstl_dlist_free_node_data(cstl_dlist *dlist, void *data){
-  if(dlist->type->dtor){
+static void _cstl_dlist_free_node_data(cstl_dlist *dlist, void *data) {
+  if (dlist->type->dtor) {
     dlist->type->dtor(data);
-  }else{
+  } else {
     free(data);
   }
 }
 
-cstl_dlist *cstl_dlist_create_empty(cstl_type *type) {
+cstl_dlist *cstl_dlist_create_empty(const cstl_type *type) {
 
   cstl_dlist *dlist = malloc(sizeof(cstl_dlist));
 
@@ -51,36 +48,33 @@ cstl_dlist *cstl_dlist_create_empty(cstl_type *type) {
   return dlist;
 }
 
-cstl_dlist *cstl_dlist_create_copy(cstl_dlist *dlist) {
+cstl_dlist *cstl_dlist_create_copy(const cstl_dlist *src_dlist) {
 
-  if (dlist == NULL) {
+  if (src_dlist == NULL) {
     return NULL;
   }
 
-  cstl_dlist *dlist_copy = cstl_dlist_create_empty(dlist->type);
+  cstl_dlist *new_dlist = cstl_dlist_create_empty(src_dlist->type);
 
-  if (dlist_copy == NULL || cstl_dlist_is_empty(dlist)) {
-    return dlist_copy;
+  if (new_dlist == NULL || cstl_dlist_is_empty(src_dlist)) {
+    return new_dlist;
   }
 
-  _cstl_dnode *current = dlist->head;
+  _cstl_dnode *current = src_dlist->head;
 
   while (current) {
-    cstl_dlist *res =
-        cstl_dlist_push_back(dlist_copy, current->data);
-    current = current->next;
-
-    if (res == NULL) {
-      cstl_dlist_free_nodes(dlist_copy);
-      free(dlist_copy);
+    if (cstl_dlist_push_back(new_dlist, current->data) == NULL) {
+      cstl_dlist_free_nodes(new_dlist);
+      free(new_dlist);
       return NULL;
     }
+    current = current->next;
   }
 
-  return dlist_copy;
+  return new_dlist;
 }
 
-cstl_dlist *cstl_dlist_push_back(cstl_dlist *dlist, void *data) {
+cstl_dlist *cstl_dlist_push_back(cstl_dlist *dlist, const void *data) {
 
   if (dlist == NULL || data == NULL) {
     return NULL;
@@ -109,7 +103,7 @@ cstl_dlist *cstl_dlist_push_back(cstl_dlist *dlist, void *data) {
   return dlist;
 }
 
-cstl_dlist *cstl_dlist_push_front(cstl_dlist *dlist, void *data) {
+cstl_dlist *cstl_dlist_push_front(cstl_dlist *dlist, const void *data) {
 
   if (dlist == NULL || data == NULL) {
     return NULL;
@@ -182,7 +176,7 @@ cstl_dlist *cstl_dlist_pop_front(cstl_dlist *dlist) {
   return dlist;
 }
 
-cstl_dlist *cstl_dlist_insert(cstl_dlist *dlist, void *data, size_t pos) {
+cstl_dlist *cstl_dlist_insert(cstl_dlist *dlist, const void *data, size_t pos) {
 
   if (dlist == NULL || data == NULL || pos > dlist->size) {
     return NULL;
@@ -190,7 +184,7 @@ cstl_dlist *cstl_dlist_insert(cstl_dlist *dlist, void *data, size_t pos) {
 
   if (pos == dlist->size) {
     return cstl_dlist_push_back(dlist, data);
-  }else if (pos == 0) {
+  } else if (pos == 0) {
     return cstl_dlist_push_front(dlist, data);
   }
 
@@ -227,7 +221,7 @@ cstl_dlist *cstl_dlist_erase(cstl_dlist *dlist, size_t pos) {
 
   if (pos == 0) {
     return cstl_dlist_pop_front(dlist);
-  }else if (pos == dlist->size - 1) {
+  } else if (pos == dlist->size - 1) {
     return cstl_dlist_pop_back(dlist);
   }
 
@@ -250,7 +244,8 @@ cstl_dlist *cstl_dlist_erase(cstl_dlist *dlist, size_t pos) {
   return dlist;
 }
 
-cstl_dlist *cstl_dlist_merge_two(cstl_dlist *dlist1, cstl_dlist *dlist2) {
+cstl_dlist *cstl_dlist_merge_two(const cstl_dlist *dlist1,
+                                 const cstl_dlist *dlist2) {
 
   if (dlist1 == NULL || dlist2 == NULL) {
     return NULL;
@@ -258,7 +253,7 @@ cstl_dlist *cstl_dlist_merge_two(cstl_dlist *dlist1, cstl_dlist *dlist2) {
 
   if (cstl_dlist_is_empty(dlist1)) {
     return cstl_dlist_create_copy(dlist2);
-  }else if (cstl_dlist_is_empty(dlist2)) {
+  } else if (cstl_dlist_is_empty(dlist2)) {
     return cstl_dlist_create_copy(dlist1);
   }
 
@@ -290,7 +285,7 @@ cstl_dlist *cstl_dlist_clear(cstl_dlist *dlist) {
   return dlist;
 }
 
-cstl_dlist *cstl_dlist_set(cstl_dlist *dlist, size_t pos, void *data) {
+cstl_dlist *cstl_dlist_set(cstl_dlist *dlist, size_t pos, const void *data) {
 
   if (dlist == NULL || data == NULL || pos >= dlist->size) {
     return NULL;
@@ -304,18 +299,18 @@ cstl_dlist *cstl_dlist_set(cstl_dlist *dlist, size_t pos, void *data) {
 
   _cstl_dlist_free_node_data(dlist, target->data);
 
-  if(dlist->type && dlist->type->ctor){
+  if (dlist->type && dlist->type->ctor) {
     dlist->type->ctor(target->data, data);
-  }else{
+  } else {
     memcpy(target->data, data, dlist->type->size);
   }
 
   return dlist;
 }
 
-size_t cstl_dlist_size(cstl_dlist *dlist) { return dlist->size; }
+size_t cstl_dlist_size(const cstl_dlist *dlist) { return dlist->size; }
 
-void *cstl_dlist_get(cstl_dlist *dlist, size_t pos) {
+void *cstl_dlist_get(const cstl_dlist *dlist, size_t pos) {
 
   if (dlist == NULL || pos >= dlist->size) {
     return NULL;
@@ -330,7 +325,7 @@ void *cstl_dlist_get(cstl_dlist *dlist, size_t pos) {
   return target->data;
 }
 
-bool cstl_dlist_is_empty(cstl_dlist *dlist) { return dlist && !dlist->size; }
+bool cstl_dlist_is_empty(const cstl_dlist *dlist) { return dlist && !dlist->size; }
 
 void cstl_dlist_free_nodes(cstl_dlist *dlist) {
 
