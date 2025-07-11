@@ -1,20 +1,20 @@
-#include "../../include/cstl/cstl_string.h"
-#include "cstl_string_internal.h"
+#include "../../include/cetl/cetl_string.h"
+#include "cetl_string_internal.h"
 #include <stddef.h>
 #include <string.h>
 
-static cstl_string *_cstl_str_ensure_capacity(cstl_string *string) {
+static cetl_string *_cetl_str_ensure_capacity(cetl_string *string) {
 
   if (string->length + 1 >= string->capacity) {
-    size_t new_capacity = string->capacity * CSTL_STR_GROW_RATE;
-    if (cstl_str_resize(string, new_capacity - 1) == NULL) {
+    size_t new_capacity = string->capacity * CETL_STR_GROW_RATE;
+    if (cetl_str_resize(string, new_capacity - 1) == NULL) {
       return NULL;
     }
   }
   return string;
 }
 
-static cstl_string *_cstl_str_reserve_until(cstl_string *string,
+static cetl_string *_cetl_str_reserve_until(cetl_string *string,
                                             size_t new_len) {
 
   if (new_len >= string->capacity) {
@@ -23,8 +23,8 @@ static cstl_string *_cstl_str_reserve_until(cstl_string *string,
 
     while (new_capacity - 1 < new_len) {
 
-      new_capacity = string->capacity * CSTL_STR_GROW_RATE;
-      if (cstl_str_resize(string, new_capacity - 1) == NULL) {
+      new_capacity = string->capacity * CETL_STR_GROW_RATE;
+      if (cetl_str_resize(string, new_capacity - 1) == NULL) {
         return NULL;
       }
     }
@@ -33,9 +33,9 @@ static cstl_string *_cstl_str_reserve_until(cstl_string *string,
   return string;
 }
 
-cstl_string *cstl_str_create_uninit(size_t len) {
+cetl_string *cetl_str_create_uninit(size_t len) {
 
-  cstl_string *string = malloc(sizeof(cstl_string));
+  cetl_string *string = malloc(sizeof(cetl_string));
 
   if (string == NULL) {
     return NULL;
@@ -57,11 +57,11 @@ cstl_string *cstl_str_create_uninit(size_t len) {
   return string;
 }
 
-cstl_string *cstl_str_create_empty() { return cstl_str_create_uninit(0); }
+cetl_string *cetl_str_create_empty() { return cetl_str_create_uninit(0); }
 
-cstl_string *cstl_str_create_filled(size_t len, int ch) {
+cetl_string *cetl_str_create_filled(size_t len, int ch) {
 
-  cstl_string *string = cstl_str_create_uninit(len);
+  cetl_string *string = cetl_str_create_uninit(len);
 
   if (string == NULL) {
     return NULL;
@@ -72,7 +72,7 @@ cstl_string *cstl_str_create_filled(size_t len, int ch) {
   return string;
 }
 
-cstl_string *cstl_str_create_from_cstr(const char *cstr) {
+cetl_string *cetl_str_create_from_cstr(const char *cstr) {
 
   if (cstr == NULL) {
     return NULL;
@@ -80,7 +80,7 @@ cstl_string *cstl_str_create_from_cstr(const char *cstr) {
 
   size_t len_cstr = strlen(cstr);
 
-  cstl_string *string = cstl_str_create_uninit(len_cstr);
+  cetl_string *string = cetl_str_create_uninit(len_cstr);
 
   if (string == NULL) {
     return NULL;
@@ -91,13 +91,13 @@ cstl_string *cstl_str_create_from_cstr(const char *cstr) {
   return string;
 }
 
-cstl_string *cstl_str_create_copy(const cstl_string *src_string) {
+cetl_string *cetl_str_create_copy(const cetl_string *src_string) {
 
   if (src_string == NULL) {
     return NULL;
   }
 
-  cstl_string *new_string = cstl_str_create_uninit(src_string->length);
+  cetl_string *new_string = cetl_str_create_uninit(src_string->length);
 
   if (new_string == NULL) {
     return NULL;
@@ -108,11 +108,11 @@ cstl_string *cstl_str_create_copy(const cstl_string *src_string) {
   return new_string;
 }
 
-size_t cstl_str_length(const cstl_string *string) { return string->length; }
+size_t cetl_str_length(const cetl_string *string) { return string->length; }
 
-size_t cstl_str_capacity(const cstl_string *string) { return string->capacity; }
+size_t cetl_str_capacity(const cetl_string *string) { return string->capacity; }
 
-char *cstl_str_data(const cstl_string *string) {
+char *cetl_str_data(const cetl_string *string) {
 
   if (string == NULL) {
     return NULL;
@@ -121,9 +121,9 @@ char *cstl_str_data(const cstl_string *string) {
   return string->data;
 }
 
-bool cstl_str_is_empty(const cstl_string *string) { return !string->length; }
+bool cetl_str_is_empty(const cetl_string *string) { return !string->length; }
 
-cstl_string *cstl_str_resize(cstl_string *string, size_t new_len) {
+cetl_string *cetl_str_resize(cetl_string *string, size_t new_len) {
 
   if (string == NULL || (new_len + 1) == string->capacity) {
     return string;
@@ -147,7 +147,7 @@ cstl_string *cstl_str_resize(cstl_string *string, size_t new_len) {
   return string;
 }
 
-cstl_string *cstl_str_append_cstr(cstl_string *string, const char *cstr) {
+cetl_string *cetl_str_append_cstr(cetl_string *string, const char *cstr) {
 
   if (string == NULL || cstr == NULL) {
     return NULL;
@@ -161,7 +161,7 @@ cstl_string *cstl_str_append_cstr(cstl_string *string, const char *cstr) {
 
   size_t new_len = string->length + cstr_len;
 
-  if (_cstl_str_reserve_until(string, new_len) == NULL) {
+  if (_cetl_str_reserve_until(string, new_len) == NULL) {
     return NULL;
   }
 
@@ -173,9 +173,9 @@ cstl_string *cstl_str_append_cstr(cstl_string *string, const char *cstr) {
   return string;
 }
 
-cstl_string *cstl_str_append_char(cstl_string *string, int ch) {
+cetl_string *cetl_str_append_char(cetl_string *string, int ch) {
 
-  if (string == NULL || _cstl_str_ensure_capacity(string) == NULL) {
+  if (string == NULL || _cetl_str_ensure_capacity(string) == NULL) {
     return NULL;
   }
 
@@ -187,15 +187,15 @@ cstl_string *cstl_str_append_char(cstl_string *string, int ch) {
   return string;
 }
 
-cstl_string *cstl_str_insert_char(cstl_string *string, size_t pos, int ch) {
+cetl_string *cetl_str_insert_char(cetl_string *string, size_t pos, int ch) {
 
   if (string == NULL || pos > string->length ||
-      _cstl_str_ensure_capacity(string)) {
+      _cetl_str_ensure_capacity(string)) {
     return NULL;
   }
 
   if (pos == string->length) {
-    cstl_str_append_char(string, ch);
+    cetl_str_append_char(string, ch);
     return string;
   }
 
@@ -212,7 +212,7 @@ cstl_string *cstl_str_insert_char(cstl_string *string, size_t pos, int ch) {
   return string;
 }
 
-cstl_string *cstl_str_insert_cstr(cstl_string *string, size_t pos,
+cetl_string *cetl_str_insert_cstr(cetl_string *string, size_t pos,
                                   const char *cstr) {
 
   if (string == NULL || cstr == NULL || pos > string->length) {
@@ -227,7 +227,7 @@ cstl_string *cstl_str_insert_cstr(cstl_string *string, size_t pos,
 
   size_t new_len = string->length + cstr_len;
 
-  if (_cstl_str_reserve_until(string, new_len) == NULL) {
+  if (_cetl_str_reserve_until(string, new_len) == NULL) {
     return NULL;
   }
 
@@ -244,14 +244,14 @@ cstl_string *cstl_str_insert_cstr(cstl_string *string, size_t pos,
   return string;
 }
 
-cstl_string *cstl_str_erase_char(cstl_string *string, size_t pos) {
+cetl_string *cetl_str_erase_char(cetl_string *string, size_t pos) {
 
   if (string == NULL || string->length == 0 || pos >= string->length) {
     return NULL;
   }
 
   if (pos == string->length - 1) {
-    return cstl_str_pop_back(string);
+    return cetl_str_pop_back(string);
   }
 
   char *dest = string->data + pos;
@@ -265,7 +265,7 @@ cstl_string *cstl_str_erase_char(cstl_string *string, size_t pos) {
   return string;
 }
 
-cstl_string *cstl_str_erase_span(cstl_string *string, size_t pos, size_t len) {
+cetl_string *cetl_str_erase_span(cetl_string *string, size_t pos, size_t len) {
 
   if (string == NULL || pos >= string->length || pos + len > string->length) {
     return NULL;
@@ -292,7 +292,7 @@ cstl_string *cstl_str_erase_span(cstl_string *string, size_t pos, size_t len) {
   return string;
 }
 
-cstl_string *cstl_str_clear(cstl_string *string) {
+cetl_string *cetl_str_clear(cetl_string *string) {
 
   if (string == NULL) {
     return NULL;
@@ -304,16 +304,16 @@ cstl_string *cstl_str_clear(cstl_string *string) {
   return string;
 }
 
-cstl_string *cstl_str_shrink_to_fit(cstl_string *string) {
+cetl_string *cetl_str_shrink_to_fit(cetl_string *string) {
 
   if (string == NULL) {
     return NULL;
   }
 
-  return cstl_str_resize(string, string->length);
+  return cetl_str_resize(string, string->length);
 }
 
-cstl_string *cstl_str_pop_back(cstl_string *string) {
+cetl_string *cetl_str_pop_back(cetl_string *string) {
 
   if (string == NULL || string->length == 0) {
     return string;
@@ -325,7 +325,7 @@ cstl_string *cstl_str_pop_back(cstl_string *string) {
   return string;
 }
 
-cstl_string *cstl_str_replace(cstl_string *string, size_t pos, size_t len,
+cetl_string *cetl_str_replace(cetl_string *string, size_t pos, size_t len,
                               const char *substr) {
 
   if (string == NULL || substr == NULL || (len + pos > string->length)) {
@@ -341,7 +341,7 @@ cstl_string *cstl_str_replace(cstl_string *string, size_t pos, size_t len,
   return string;
 }
 
-const char *cstl_str_find(const cstl_string *string, const char *substr) {
+const char *cetl_str_find(const cetl_string *string, const char *substr) {
 
   if (string == NULL || substr == NULL) {
     return NULL;
@@ -350,22 +350,22 @@ const char *cstl_str_find(const cstl_string *string, const char *substr) {
   return strstr(string->data, substr);
 }
 
-int cstl_str_compare(const cstl_string *string, const char *substr) {
+int cetl_str_compare(const cetl_string *string, const char *substr) {
   return strcmp(string->data, substr);
 }
 
-void cstl_str_swap(cstl_string **string1, cstl_string **string2) {
+void cetl_str_swap(cetl_string **string1, cetl_string **string2) {
 
   if (string1 == NULL || string2 == NULL) {
     return;
   }
 
-  cstl_string *tmp = *string1;
+  cetl_string *tmp = *string1;
   *string1 = *string2;
   *string2 = tmp;
 }
 
-void cstl_str_free(cstl_string *string) {
+void cetl_str_free(cetl_string *string) {
   free(string->data);
   free(string);
 }

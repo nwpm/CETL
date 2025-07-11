@@ -1,9 +1,9 @@
-#ifndef CSTL_ELEMENT_H
-#define CSTL_ELEMENT_H
+#ifndef CETL_ELEMENT_H
+#define CETL_ELEMENT_H
 
 #include <stddef.h>
 
-struct cstl_type{
+struct cetl_type{
 
   size_t size;
   void *(*ctor)(void* dest, const void* data);

@@ -1,14 +1,14 @@
-#include "../../include/cstl/cstl_cdlist.h"
+#include "../../include/cetl/cetl_cdlist.h"
 
-cstl_cdlist *cstl_cdlist_create_empty() {
+cetl_cdlist *cetl_cdlist_create_empty() {
 
-  cstl_cdlist *cdl = malloc(sizeof(cstl_cdlist));
+  cetl_cdlist *cdl = malloc(sizeof(cetl_cdlist));
 
   if(cdl == NULL){
     return NULL;
   }
 
-  cstl_dlist *dl = cstl_dlist_create_empty();
+  cetl_dlist *dl = cetl_dlist_create_empty();
 
   if(dl == NULL){
     free(cdl);
@@ -21,19 +21,19 @@ cstl_cdlist *cstl_cdlist_create_empty() {
   return cdl;
 }
 
-cstl_cdlist *cstl_cdlist_create(void *data, size_t elem_size) {
+cetl_cdlist *cetl_cdlist_create(void *data, size_t elem_size) {
 
   if(data == NULL || elem_size == 0){
     return NULL;
   }
 
-  cstl_cdlist *cdl = cstl_cdlist_create_empty();
+  cetl_cdlist *cdl = cetl_cdlist_create_empty();
 
   if(cdl == NULL){
     return NULL;
   }
 
-  cstl_dlist_push_back(cdl->data, data, elem_size);
+  cetl_dlist_push_back(cdl->data, data, elem_size);
 
   cdl->size = 1;
 
@@ -42,9 +42,9 @@ cstl_cdlist *cstl_cdlist_create(void *data, size_t elem_size) {
   return cdl;
 }
 
-cstl_cdlist *cstl_cdlist_push_back(cstl_cdlist *l, int32_t data) {
+cetl_cdlist *cetl_cdlist_push_back(cetl_cdlist *l, int32_t data) {
 
-  node *new_node = cstl_cdlist_create_node(data);
+  node *new_node = cetl_cdlist_create_node(data);
 
   l->tail->next = new_node;
   new_node->next = l->head;
@@ -55,9 +55,9 @@ cstl_cdlist *cstl_cdlist_push_back(cstl_cdlist *l, int32_t data) {
   return l;
 }
 
-cstl_cdlist *cstl_cdlist_push_front(cstl_cdlist *l, int32_t data) {
+cetl_cdlist *cetl_cdlist_push_front(cetl_cdlist *l, int32_t data) {
 
-  node *new_node = cstl_cdlist_create_node(data);
+  node *new_node = cetl_cdlist_create_node(data);
 
   new_node->next = l->head;
   l->tail->next = new_node;
@@ -68,7 +68,7 @@ cstl_cdlist *cstl_cdlist_push_front(cstl_cdlist *l, int32_t data) {
   return l;
 }
 
-cstl_cdlist *cstl_cdlist_pop_back(cstl_cdlist *l) {
+cetl_cdlist *cetl_cdlist_pop_back(cetl_cdlist *l) {
 
   if (l->size == 0) {
     return NULL;
@@ -95,7 +95,7 @@ cstl_cdlist *cstl_cdlist_pop_back(cstl_cdlist *l) {
   return l;
 }
 
-cstl_cdlist* cstl_cdlist_pop_front(cstl_cdlist *l){
+cetl_cdlist* cetl_cdlist_pop_front(cetl_cdlist *l){
 
   if(l->size == 0){
     return NULL;
@@ -119,7 +119,7 @@ cstl_cdlist* cstl_cdlist_pop_front(cstl_cdlist *l){
   return l;
 }
 
-cstl_cdlist* cstl_cdlist_insert(cstl_cdlist* l, node* n, size_t pos){
+cetl_cdlist* cetl_cdlist_insert(cetl_cdlist* l, node* n, size_t pos){
 
   if(pos > l->size){
     return NULL;
@@ -155,18 +155,18 @@ cstl_cdlist* cstl_cdlist_insert(cstl_cdlist* l, node* n, size_t pos){
   return l;
 }
 
-cstl_cdlist* cstl_cdlist_erase(cstl_cdlist* l, size_t pos){
+cetl_cdlist* cetl_cdlist_erase(cetl_cdlist* l, size_t pos){
   
   if(pos >= l->size){
     return NULL;
   }
 
   if(pos == 0){
-    return cstl_cdlist_pop_front(l);
+    return cetl_cdlist_pop_front(l);
   }
 
   if(pos == l->size - 1){
-    return cstl_cdlist_pop_back(l);
+    return cetl_cdlist_pop_back(l);
   }
 
   node *prev = l->head;
@@ -187,7 +187,7 @@ cstl_cdlist* cstl_cdlist_erase(cstl_cdlist* l, size_t pos){
 }
 
 
-void cstl_cdlist_print_data(cstl_cdlist *l) {
+void cetl_cdlist_print_data(cetl_cdlist *l) {
 
   if (l->size == 0) {
     return;
@@ -201,7 +201,7 @@ void cstl_cdlist_print_data(cstl_cdlist *l) {
   }
 }
 
-void cstl_cdlist_free_nodes(cstl_cdlist *l) {
+void cetl_cdlist_free_nodes(cetl_cdlist *l) {
 
   if (l->size == 0) {
     return;

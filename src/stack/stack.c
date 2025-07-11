@@ -1,21 +1,21 @@
-#include "../../include/cstl/cstl_llist.h"
-#include "../../include/cstl/cstl_stack.h"
-#include "cstl_stack_internal.h"
+#include "../../include/cetl/cetl_llist.h"
+#include "../../include/cetl/cetl_stack.h"
+#include "cetl_stack_internal.h"
 #include <stdlib.h>
 
-cstl_stack *cstl_stack_create_empty(const cstl_type *type) {
+cetl_stack *cetl_stack_create_empty(const cetl_type *type) {
 
   if (type == NULL) {
     return NULL;
   }
 
-  cstl_stack *stack = malloc(sizeof(cstl_stack));
+  cetl_stack *stack = malloc(sizeof(cetl_stack));
 
   if (stack == NULL) {
     return NULL;
   }
 
-  cstl_llist *llist = cstl_llist_create_empty(type);
+  cetl_llist *llist = cetl_llist_create_empty(type);
 
   if (llist == NULL) {
     free(stack);
@@ -28,19 +28,19 @@ cstl_stack *cstl_stack_create_empty(const cstl_type *type) {
   return stack;
 }
 
-cstl_stack *cstl_stack_create_copy(const cstl_stack *src_stack) {
+cetl_stack *cetl_stack_create_copy(const cetl_stack *src_stack) {
 
   if (src_stack == NULL) {
     return NULL;
   }
 
-  cstl_stack *new_stack = cstl_stack_create_empty(src_stack->type);
+  cetl_stack *new_stack = cetl_stack_create_empty(src_stack->type);
 
-  if (new_stack == NULL || cstl_stack_is_empty(src_stack)) {
+  if (new_stack == NULL || cetl_stack_is_empty(src_stack)) {
     return new_stack;
   }
 
-  cstl_llist *llist_copy = cstl_llist_create_copy(src_stack->data);
+  cetl_llist *llist_copy = cetl_llist_create_copy(src_stack->data);
 
   new_stack->size = src_stack->size;
   new_stack->data = llist_copy;
@@ -48,9 +48,9 @@ cstl_stack *cstl_stack_create_copy(const cstl_stack *src_stack) {
   return new_stack;
 }
 
-cstl_stack *cstl_stack_push(cstl_stack *stack, const void *data) {
+cetl_stack *cetl_stack_push(cetl_stack *stack, const void *data) {
 
-  if (cstl_llist_push_back(stack->data, data) == NULL) {
+  if (cetl_llist_push_back(stack->data, data) == NULL) {
     return NULL;
   }
 
@@ -59,9 +59,9 @@ cstl_stack *cstl_stack_push(cstl_stack *stack, const void *data) {
   return stack;
 }
 
-cstl_stack *cstl_stack_pop(cstl_stack *stack) {
+cetl_stack *cetl_stack_pop(cetl_stack *stack) {
 
-  if (cstl_llist_pop_back(stack->data) == NULL) {
+  if (cetl_llist_pop_back(stack->data) == NULL) {
     return NULL;
   }
 
@@ -70,25 +70,25 @@ cstl_stack *cstl_stack_pop(cstl_stack *stack) {
   return stack;
 }
 
-bool cstl_stack_is_empty(const cstl_stack *stack) {
-  return cstl_llist_is_empty(stack->data);
+bool cetl_stack_is_empty(const cetl_stack *stack) {
+  return cetl_llist_is_empty(stack->data);
 }
 
-void *cstl_stack_top(const cstl_stack *stack) {
-  return cstl_llist_get(stack->data, stack->size - 1);
+void *cetl_stack_top(const cetl_stack *stack) {
+  return cetl_llist_get(stack->data, stack->size - 1);
 }
 
-void cstl_stack_clear(cstl_stack *stack) {
-  cstl_llist_clear(stack->data);
+void cetl_stack_clear(cetl_stack *stack) {
+  cetl_llist_clear(stack->data);
   stack->size = 0;
 }
 
-void cstl_stack_free(cstl_stack *s) {
+void cetl_stack_free(cetl_stack *s) {
 
   if (s == NULL) {
     return;
   }
 
-  cstl_llist_free(s->data);
+  cetl_llist_free(s->data);
   free(s);
 }

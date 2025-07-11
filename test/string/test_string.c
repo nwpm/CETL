@@ -1,5 +1,5 @@
-#include "../../src/string/cstl_string_internal.h"
-#include "../../include/cstl/cstl_string.h"
+#include "../../src/string/cetl_string_internal.h"
+#include "../../include/cetl/cetl_string.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
 
@@ -9,9 +9,9 @@
 void setUp() {}
 void tearDown() {}
 
-void test_cstl_str_create_empty() {
+void test_cetl_str_create_empty() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(0, s->length);
@@ -19,13 +19,13 @@ void test_cstl_str_create_empty() {
   TEST_ASSERT_NOT_NULL(s->data);
   TEST_ASSERT_EQUAL('\0', s->data[0]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create() {
+void test_cetl_str_create() {
 
-  cstl_string *s = cstl_str_create(10);
+  cetl_string *s = cetl_str_create(10);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(10, s->length);
@@ -33,13 +33,13 @@ void test_cstl_str_create() {
   TEST_ASSERT_NOT_NULL(s->data);
   TEST_ASSERT_EQUAL('\0', s->data[10]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_len_zero() {
+void test_cetl_str_create_len_zero() {
 
-  cstl_string *s = cstl_str_create(0);
+  cetl_string *s = cetl_str_create(0);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(0, s->length);
@@ -47,13 +47,13 @@ void test_cstl_str_create_len_zero() {
   TEST_ASSERT_NOT_NULL(s->data);
   TEST_ASSERT_EQUAL('\0', s->data[0]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_len_very_large() {
+void test_cetl_str_create_len_very_large() {
 
-  cstl_string *s = cstl_str_create(INT32_MAX - 1);
+  cetl_string *s = cetl_str_create(INT32_MAX - 1);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(INT32_MAX - 1, s->length);
@@ -61,13 +61,13 @@ void test_cstl_str_create_len_very_large() {
   TEST_ASSERT_NOT_NULL(s->data);
   TEST_ASSERT_EQUAL('\0', s->data[INT32_MAX - 1]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_filled() {
+void test_cetl_str_create_filled() {
 
-  cstl_string *s = cstl_str_create_filled(50, 65);
+  cetl_string *s = cetl_str_create_filled(50, 65);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(50, s->length);
@@ -79,26 +79,26 @@ void test_cstl_str_create_filled() {
 
   TEST_ASSERT_EQUAL('\0', s->data[50]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_filled_len_zero() {
+void test_cetl_str_create_filled_len_zero() {
 
-  cstl_string *s = cstl_str_create_filled(0, 65);
+  cetl_string *s = cetl_str_create_filled(0, 65);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(1, s->capacity);
   TEST_ASSERT_EQUAL('\0', s->data[0]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_filled_ASCII_greater_127() {
+void test_cetl_str_create_filled_ASCII_greater_127() {
 
-  cstl_string *s = cstl_str_create_filled(10, 230);
+  cetl_string *s = cetl_str_create_filled(10, 230);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(10, s->length);
@@ -110,16 +110,16 @@ void test_cstl_str_create_filled_ASCII_greater_127() {
 
   TEST_ASSERT_EQUAL('\0', s->data[10]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_from_str() {
+void test_cetl_str_create_from_str() {
 
   const char *cstr = "string";
   size_t cstr_len = strlen(cstr);
 
-  cstl_string *s = cstl_str_create_from_cstr(cstr);
+  cetl_string *s = cetl_str_create_from_cstr(cstr);
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(cstr_len, s->length);
@@ -127,34 +127,34 @@ void test_cstl_str_create_from_str() {
   TEST_ASSERT_EQUAL_STRING(cstr, s->data);
   TEST_ASSERT_EQUAL('\0', s->data[cstr_len]);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_from_empty_str() {
+void test_cetl_str_create_from_empty_str() {
 
-  cstl_string *s = cstl_str_create_from_cstr("");
+  cetl_string *s = cetl_str_create_from_cstr("");
 
   TEST_ASSERT_NOT_NULL(s);
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(1, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_create_from_null_str() {
+void test_cetl_str_create_from_null_str() {
 
-  cstl_string *s = cstl_str_create_from_cstr(NULL);
+  cetl_string *s = cetl_str_create_from_cstr(NULL);
 
   TEST_ASSERT_NULL(s);
 }
 
-void test_cstl_str_create_copy() {
+void test_cetl_str_create_copy() {
 
-  cstl_string *s_orig = cstl_str_create_from_cstr("string");
-  cstl_string *s_copy = cstl_str_create_copy(s_orig);
+  cetl_string *s_orig = cetl_str_create_from_cstr("string");
+  cetl_string *s_copy = cetl_str_create_copy(s_orig);
 
   TEST_ASSERT_NOT_NULL(s_copy);
 
@@ -165,17 +165,17 @@ void test_cstl_str_create_copy() {
   TEST_ASSERT_EQUAL_STRING("string", s_copy->data);
   TEST_ASSERT_TRUE(s_orig->data != s_copy->data);
 
-  cstl_str_free(s_orig);
+  cetl_str_free(s_orig);
   free(s_orig);
 
-  cstl_str_free(s_copy);
+  cetl_str_free(s_copy);
   free(s_copy);
 }
 
-void test_cstl_str_create_copy_empty_cstl_string() {
+void test_cetl_str_create_copy_empty_cetl_string() {
 
-  cstl_string *s_orig = cstl_str_create_from_cstr("");
-  cstl_string *s_copy = cstl_str_create_copy(s_orig);
+  cetl_string *s_orig = cetl_str_create_from_cstr("");
+  cetl_string *s_copy = cetl_str_create_copy(s_orig);
 
   TEST_ASSERT_NOT_NULL(s_copy);
 
@@ -186,822 +186,822 @@ void test_cstl_str_create_copy_empty_cstl_string() {
   TEST_ASSERT_EQUAL_STRING("", s_copy->data);
   TEST_ASSERT_TRUE(s_orig->data != s_copy->data);
 
-  cstl_str_free(s_orig);
+  cetl_str_free(s_orig);
   free(s_orig);
 
-  cstl_str_free(s_copy);
+  cetl_str_free(s_copy);
   free(s_copy);
 }
 
-void test_cstl_str_create_copy_cstl_string_null() {
+void test_cetl_str_create_copy_cetl_string_null() {
 
-  cstl_string *s = cstl_str_create_copy(NULL);
+  cetl_string *s = cetl_str_create_copy(NULL);
 
   TEST_ASSERT_NULL(s);
 }
 
-void test_cstl_str_resize_positive() {
+void test_cetl_str_resize_positive() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_resize(s, 15);
+  cetl_str_resize(s, 15);
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(16, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_resize_negative() {
+void test_cetl_str_resize_negative() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_resize(s, 3);
+  cetl_str_resize(s, 3);
 
   TEST_ASSERT_EQUAL_size_t(3, s->length);
   TEST_ASSERT_EQUAL_size_t(4, s->capacity);
   TEST_ASSERT_EQUAL_STRING("str", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_resize_new_len_zero() {
+void test_cetl_str_resize_new_len_zero() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_resize(s, 0);
+  cetl_str_resize(s, 0);
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(1, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_resize_cstl_string_null() {
+void test_cetl_str_resize_cetl_string_null() {
 
-  cstl_string *s = cstl_str_resize(NULL, 3);
+  cetl_string *s = cetl_str_resize(NULL, 3);
 
   TEST_ASSERT_NULL(s);
 }
 
-void test_cstl_str_append() {
+void test_cetl_str_append() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append(s, "12345");
+  cetl_str_append(s, "12345");
 
   TEST_ASSERT_EQUAL_size_t(11, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string12345", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_empty_string() {
+void test_cetl_str_append_empty_string() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append(s, "");
+  cetl_str_append(s, "");
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_to_empty_string() {
+void test_cetl_str_append_to_empty_string() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append(s, "string");
+  cetl_str_append(s, "string");
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(8, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_null() {
+void test_cetl_str_append_null() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_append(s, NULL));
+  TEST_ASSERT_NULL(cetl_str_append(s, NULL));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_char() {
+void test_cetl_str_append_char() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append_char(s, 'A');
+  cetl_str_append_char(s, 'A');
 
   TEST_ASSERT_EQUAL_size_t(7, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("stringA", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_char_in_empty_str() {
+void test_cetl_str_append_char_in_empty_str() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append_char(s, 'A');
+  cetl_str_append_char(s, 'A');
 
   TEST_ASSERT_EQUAL_size_t(1, s->length);
   TEST_ASSERT_EQUAL_size_t(2, s->capacity);
   TEST_ASSERT_EQUAL_STRING("A", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_append_char_several_tms_in_row() {
+void test_cetl_str_append_char_several_tms_in_row() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_append_char(s, 'A');
-  cstl_str_append_char(s, 'B');
-  cstl_str_append_char(s, 'C');
+  cetl_str_append_char(s, 'A');
+  cetl_str_append_char(s, 'B');
+  cetl_str_append_char(s, 'C');
 
   TEST_ASSERT_EQUAL_size_t(3, s->length);
   TEST_ASSERT_EQUAL_size_t(4, s->capacity);
   TEST_ASSERT_EQUAL_STRING("ABC", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_pos_begin() {
+void test_cetl_str_insert_range_pos_begin() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_insert_range(s, 0, "12345");
+  cetl_str_insert_range(s, 0, "12345");
 
   TEST_ASSERT_EQUAL_size_t(11, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("12345string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_pos_end() {
+void test_cetl_str_insert_range_pos_end() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_insert_range(s, 6, "12345");
+  cetl_str_insert_range(s, 6, "12345");
 
   TEST_ASSERT_EQUAL_size_t(11, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string12345", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_pos_middle() {
+void test_cetl_str_insert_range_pos_middle() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_insert_range(s, 2, "12345");
+  cetl_str_insert_range(s, 2, "12345");
 
   TEST_ASSERT_EQUAL_size_t(11, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("st12345ring", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_empty() {
+void test_cetl_str_insert_range_empty() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_insert_range(s, 6, "");
+  cetl_str_insert_range(s, 6, "");
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_pos_greater_length() {
+void test_cetl_str_insert_range_pos_greater_length() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_insert_range(s, 20, "12345"));
+  TEST_ASSERT_NULL(cetl_str_insert_range(s, 20, "12345"));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_range_null() {
+void test_cetl_str_insert_range_null() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_insert_range(s, 0, NULL));
+  TEST_ASSERT_NULL(cetl_str_insert_range(s, 0, NULL));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_range_begin() {
+void test_cetl_str_erase_range_begin() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase_range(s, 0, 3));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase_range(s, 0, 3));
 
   TEST_ASSERT_EQUAL_size_t(3, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("ing", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_range_end() {
+void test_cetl_str_erase_range_end() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase_range(s, 3, 3));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase_range(s, 3, 3));
 
   TEST_ASSERT_EQUAL_size_t(3, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("str", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_range_middle() {
+void test_cetl_str_erase_range_middle() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase_range(s, 1, 4));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase_range(s, 1, 4));
 
   TEST_ASSERT_EQUAL_size_t(2, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("sg", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_range_len_zero() {
+void test_cetl_str_erase_range_len_zero() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase_range(s, 3, 0));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase_range(s, 3, 0));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_range_out_of_bound() {
+void test_cetl_str_erase_range_out_of_bound() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_erase_range(s, 10, 3));
+  TEST_ASSERT_NULL(cetl_str_erase_range(s, 10, 3));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_begin() {
+void test_cetl_str_insert_begin() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_insert(s, 0, 'A'));
+  TEST_ASSERT_NOT_NULL(cetl_str_insert(s, 0, 'A'));
 
   TEST_ASSERT_EQUAL_size_t(7, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("Astring", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_end() {
+void test_cetl_str_insert_end() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_insert(s, s->length, 'A'));
+  TEST_ASSERT_NOT_NULL(cetl_str_insert(s, s->length, 'A'));
 
   TEST_ASSERT_EQUAL_size_t(7, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("stringA", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_middle() {
+void test_cetl_str_insert_middle() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_insert(s, s->length / 2, 'A'));
+  TEST_ASSERT_NOT_NULL(cetl_str_insert(s, s->length / 2, 'A'));
 
   TEST_ASSERT_EQUAL_size_t(7, s->length);
   TEST_ASSERT_EQUAL_size_t(14, s->capacity);
   TEST_ASSERT_EQUAL_STRING("strAing", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_insert_out_of_bound() {
+void test_cetl_str_insert_out_of_bound() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_insert(s, 100, 'A'));
+  TEST_ASSERT_NULL(cetl_str_insert(s, 100, 'A'));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_begin() {
+void test_cetl_str_erase_begin() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase(s, 0));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase(s, 0));
 
   TEST_ASSERT_EQUAL_size_t(5, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("tring", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_end() {
+void test_cetl_str_erase_end() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase(s, s->length - 1));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase(s, s->length - 1));
 
   TEST_ASSERT_EQUAL_size_t(5, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("strin", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_middle() {
+void test_cetl_str_erase_middle() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_erase(s, s->length / 2));
+  TEST_ASSERT_NOT_NULL(cetl_str_erase(s, s->length / 2));
 
   TEST_ASSERT_EQUAL_size_t(5, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("strng", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_erase_out_of_bound() {
+void test_cetl_str_erase_out_of_bound() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_erase(s, 10));
+  TEST_ASSERT_NULL(cetl_str_erase(s, 10));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_clear() {
+void test_cetl_str_clear() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_clear(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_clear(s));
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_clear_double_clean() {
+void test_cetl_str_clear_double_clean() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_clear(s));
-  TEST_ASSERT_NOT_NULL(cstl_str_clear(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_clear(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_clear(s));
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_replace() {
+void test_cetl_str_replace() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_replace(s, "test", 1));
+  TEST_ASSERT_NOT_NULL(cetl_str_replace(s, "test", 1));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("stestg", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_replace_pos_equal_length() {
+void test_cetl_str_replace_pos_equal_length() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_replace(s, "test", s->length));
+  TEST_ASSERT_NULL(cetl_str_replace(s, "test", s->length));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_replace_pos_out_of_bound() {
+void test_cetl_str_replace_pos_out_of_bound() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_replace(s, "test", 150));
+  TEST_ASSERT_NULL(cetl_str_replace(s, "test", 150));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_replace_substr_null() {
+void test_cetl_str_replace_substr_null() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NULL(cstl_str_replace(s, NULL, 2));
+  TEST_ASSERT_NULL(cetl_str_replace(s, NULL, 2));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_shrink_to_fit() {
+void test_cetl_str_shrink_to_fit() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_resize(s, 20);
+  cetl_str_resize(s, 20);
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(21, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_shrink_to_fit(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_shrink_to_fit(s));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_shrink_to_fit_double_fit() {
+void test_cetl_str_shrink_to_fit_double_fit() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_resize(s, 20);
+  cetl_str_resize(s, 20);
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(21, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_shrink_to_fit(s));
-  TEST_ASSERT_NOT_NULL(cstl_str_shrink_to_fit(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_shrink_to_fit(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_shrink_to_fit(s));
 
   TEST_ASSERT_EQUAL_size_t(6, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_pop_back() {
+void test_cetl_str_pop_back() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_pop_back(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_pop_back(s));
 
   TEST_ASSERT_EQUAL_size_t(5, s->length);
   TEST_ASSERT_EQUAL_size_t(7, s->capacity);
   TEST_ASSERT_EQUAL_STRING("strin", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_pop_back_len_one() {
+void test_cetl_str_pop_back_len_one() {
 
-  cstl_string *s = cstl_str_create_from_cstr("s");
+  cetl_string *s = cetl_str_create_from_cstr("s");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_pop_back(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_pop_back(s));
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(2, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_pop_back_len_zero() {
+void test_cetl_str_pop_back_len_zero() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_NOT_NULL(cstl_str_pop_back(s));
+  TEST_ASSERT_NOT_NULL(cetl_str_pop_back(s));
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(1, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_find() {
+void test_cetl_str_find() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  const char *ptr = cstl_str_find(s, "tri");
+  const char *ptr = cetl_str_find(s, "tri");
 
   TEST_ASSERT_NOT_NULL(ptr);
   TEST_ASSERT_EQUAL(s->data + 1, ptr);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_find_not_exist_substr() {
+void test_cetl_str_find_not_exist_substr() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  const char *ptr = cstl_str_find(s, "test");
+  const char *ptr = cetl_str_find(s, "test");
 
   TEST_ASSERT_NULL(ptr);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_length() {
+void test_cetl_str_length() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(6, cstl_str_length(s));
+  TEST_ASSERT_EQUAL_size_t(6, cetl_str_length(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_length_empty() {
+void test_cetl_str_length_empty() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(0, cstl_str_length(s));
+  TEST_ASSERT_EQUAL_size_t(0, cetl_str_length(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_capacity() {
+void test_cetl_str_capacity() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(7, cstl_str_capacity(s));
+  TEST_ASSERT_EQUAL_size_t(7, cetl_str_capacity(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_capacity_empty() {
+void test_cetl_str_capacity_empty() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(1, cstl_str_capacity(s));
+  TEST_ASSERT_EQUAL_size_t(1, cetl_str_capacity(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_find_substr_empty() {
+void test_cetl_str_find_substr_empty() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  const char *ptr = cstl_str_find(s, "");
+  const char *ptr = cetl_str_find(s, "");
 
   TEST_ASSERT_NOT_NULL(ptr);
   TEST_ASSERT_EQUAL_STRING("string", ptr);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_find_substr_null() {
+void test_cetl_str_find_substr_null() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  const char *ptr = cstl_str_find(s, NULL);
+  const char *ptr = cetl_str_find(s, NULL);
 
   TEST_ASSERT_NULL(ptr);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_is_empty() {
+void test_cetl_str_is_empty() {
 
-  cstl_string *s = cstl_str_create_from_cstr("string");
+  cetl_string *s = cetl_str_create_from_cstr("string");
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(0, cstl_str_is_empty(s));
+  TEST_ASSERT_EQUAL_size_t(0, cetl_str_is_empty(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_is_empty_len_zero() {
+void test_cetl_str_is_empty_len_zero() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  TEST_ASSERT_EQUAL_size_t(1, cstl_str_is_empty(s));
+  TEST_ASSERT_EQUAL_size_t(1, cetl_str_is_empty(s));
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 }
 
-void test_cstl_str_swap() {
+void test_cetl_str_swap() {
 
-  cstl_string *s1 = cstl_str_create_from_cstr("string");
-  cstl_string *s2 = cstl_str_create_from_cstr("test");
+  cetl_string *s1 = cetl_str_create_from_cstr("string");
+  cetl_string *s2 = cetl_str_create_from_cstr("test");
 
   TEST_ASSERT_NOT_NULL(s1);
   TEST_ASSERT_NOT_NULL(s2);
 
-  cstl_str_swap(&s1, &s2);
+  cetl_str_swap(&s1, &s2);
 
   TEST_ASSERT_EQUAL_size_t(4, s1->length);
   TEST_ASSERT_EQUAL_size_t(5, s1->capacity);
@@ -1011,22 +1011,22 @@ void test_cstl_str_swap() {
   TEST_ASSERT_EQUAL_size_t(7, s2->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s2->data);
 
-  cstl_str_free(s1);
+  cetl_str_free(s1);
   free(s1);
 
-  cstl_str_free(s2);
+  cetl_str_free(s2);
   free(s2);
 }
 
-void test_cstl_str_swap_with_empty() {
+void test_cetl_str_swap_with_empty() {
 
-  cstl_string *s1 = cstl_str_create_from_cstr("string");
-  cstl_string *s2 = cstl_str_create_empty();
+  cetl_string *s1 = cetl_str_create_from_cstr("string");
+  cetl_string *s2 = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s1);
   TEST_ASSERT_NOT_NULL(s2);
 
-  cstl_str_swap(&s1, &s2);
+  cetl_str_swap(&s1, &s2);
 
   TEST_ASSERT_EQUAL_size_t(0, s1->length);
   TEST_ASSERT_EQUAL_size_t(1, s1->capacity);
@@ -1036,26 +1036,26 @@ void test_cstl_str_swap_with_empty() {
   TEST_ASSERT_EQUAL_size_t(7, s2->capacity);
   TEST_ASSERT_EQUAL_STRING("string", s2->data);
 
-  cstl_str_free(s1);
+  cetl_str_free(s1);
   free(s1);
 
-  cstl_str_free(s2);
+  cetl_str_free(s2);
   free(s2);
 }
 
-void test_cstl_str_swap_one_null() {
+void test_cetl_str_swap_one_null() {
 
-  cstl_string *s = cstl_str_create_empty();
+  cetl_string *s = cetl_str_create_empty();
 
   TEST_ASSERT_NOT_NULL(s);
 
-  cstl_str_swap(NULL, &s);
+  cetl_str_swap(NULL, &s);
 
   TEST_ASSERT_EQUAL_size_t(0, s->length);
   TEST_ASSERT_EQUAL_size_t(1, s->capacity);
   TEST_ASSERT_EQUAL_STRING("", s->data);
 
-  cstl_str_free(s);
+  cetl_str_free(s);
   free(s);
 
 }
@@ -1066,130 +1066,130 @@ int main() {
 
   printf("STR_CREATE\n");
 
-  RUN_TEST(test_cstl_str_create_empty);
-  RUN_TEST(test_cstl_str_create);
-  RUN_TEST(test_cstl_str_create_len_zero);
-  RUN_TEST(test_cstl_str_create_len_very_large);
+  RUN_TEST(test_cetl_str_create_empty);
+  RUN_TEST(test_cetl_str_create);
+  RUN_TEST(test_cetl_str_create_len_zero);
+  RUN_TEST(test_cetl_str_create_len_very_large);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_create_filled);
-  RUN_TEST(test_cstl_str_create_filled_len_zero);
-  RUN_TEST(test_cstl_str_create_filled_ASCII_greater_127);
+  RUN_TEST(test_cetl_str_create_filled);
+  RUN_TEST(test_cetl_str_create_filled_len_zero);
+  RUN_TEST(test_cetl_str_create_filled_ASCII_greater_127);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_create_from_str);
-  RUN_TEST(test_cstl_str_create_from_empty_str);
-  RUN_TEST(test_cstl_str_create_from_null_str);
+  RUN_TEST(test_cetl_str_create_from_str);
+  RUN_TEST(test_cetl_str_create_from_empty_str);
+  RUN_TEST(test_cetl_str_create_from_null_str);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_create_copy);
-  RUN_TEST(test_cstl_str_create_copy_empty_cstl_string);
-  RUN_TEST(test_cstl_str_create_copy_cstl_string_null);
+  RUN_TEST(test_cetl_str_create_copy);
+  RUN_TEST(test_cetl_str_create_copy_empty_cetl_string);
+  RUN_TEST(test_cetl_str_create_copy_cetl_string_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_resize_positive);
-  RUN_TEST(test_cstl_str_resize_negative);
-  RUN_TEST(test_cstl_str_resize_new_len_zero);
-  RUN_TEST(test_cstl_str_resize_cstl_string_null);
+  RUN_TEST(test_cetl_str_resize_positive);
+  RUN_TEST(test_cetl_str_resize_negative);
+  RUN_TEST(test_cetl_str_resize_new_len_zero);
+  RUN_TEST(test_cetl_str_resize_cetl_string_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_append);
-  RUN_TEST(test_cstl_str_append_empty_string);
-  RUN_TEST(test_cstl_str_append_to_empty_string);
-  RUN_TEST(test_cstl_str_append_null);
+  RUN_TEST(test_cetl_str_append);
+  RUN_TEST(test_cetl_str_append_empty_string);
+  RUN_TEST(test_cetl_str_append_to_empty_string);
+  RUN_TEST(test_cetl_str_append_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_append_char);
-  RUN_TEST(test_cstl_str_append_char_in_empty_str);
-  RUN_TEST(test_cstl_str_append_char_several_tms_in_row);
+  RUN_TEST(test_cetl_str_append_char);
+  RUN_TEST(test_cetl_str_append_char_in_empty_str);
+  RUN_TEST(test_cetl_str_append_char_several_tms_in_row);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_insert_range_pos_begin);
-  RUN_TEST(test_cstl_str_insert_range_pos_end);
-  RUN_TEST(test_cstl_str_insert_range_pos_middle);
-  RUN_TEST(test_cstl_str_insert_range_empty);
-  RUN_TEST(test_cstl_str_insert_range_pos_greater_length);
-  RUN_TEST(test_cstl_str_insert_range_null);
+  RUN_TEST(test_cetl_str_insert_range_pos_begin);
+  RUN_TEST(test_cetl_str_insert_range_pos_end);
+  RUN_TEST(test_cetl_str_insert_range_pos_middle);
+  RUN_TEST(test_cetl_str_insert_range_empty);
+  RUN_TEST(test_cetl_str_insert_range_pos_greater_length);
+  RUN_TEST(test_cetl_str_insert_range_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_erase_range_begin);
-  RUN_TEST(test_cstl_str_erase_range_end);
-  RUN_TEST(test_cstl_str_erase_range_middle);
-  RUN_TEST(test_cstl_str_erase_range_len_zero);
-  RUN_TEST(test_cstl_str_erase_range_out_of_bound);
+  RUN_TEST(test_cetl_str_erase_range_begin);
+  RUN_TEST(test_cetl_str_erase_range_end);
+  RUN_TEST(test_cetl_str_erase_range_middle);
+  RUN_TEST(test_cetl_str_erase_range_len_zero);
+  RUN_TEST(test_cetl_str_erase_range_out_of_bound);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_insert_begin);
-  RUN_TEST(test_cstl_str_insert_end);
-  RUN_TEST(test_cstl_str_insert_middle);
-  RUN_TEST(test_cstl_str_insert_out_of_bound);
+  RUN_TEST(test_cetl_str_insert_begin);
+  RUN_TEST(test_cetl_str_insert_end);
+  RUN_TEST(test_cetl_str_insert_middle);
+  RUN_TEST(test_cetl_str_insert_out_of_bound);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_erase_begin);
-  RUN_TEST(test_cstl_str_erase_end);
-  RUN_TEST(test_cstl_str_erase_middle);
-  RUN_TEST(test_cstl_str_erase_out_of_bound);
+  RUN_TEST(test_cetl_str_erase_begin);
+  RUN_TEST(test_cetl_str_erase_end);
+  RUN_TEST(test_cetl_str_erase_middle);
+  RUN_TEST(test_cetl_str_erase_out_of_bound);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_clear);
-  RUN_TEST(test_cstl_str_clear_double_clean);
+  RUN_TEST(test_cetl_str_clear);
+  RUN_TEST(test_cetl_str_clear_double_clean);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_replace);
-  RUN_TEST(test_cstl_str_replace_pos_equal_length);
-  RUN_TEST(test_cstl_str_replace_pos_out_of_bound);
-  RUN_TEST(test_cstl_str_replace_substr_null);
+  RUN_TEST(test_cetl_str_replace);
+  RUN_TEST(test_cetl_str_replace_pos_equal_length);
+  RUN_TEST(test_cetl_str_replace_pos_out_of_bound);
+  RUN_TEST(test_cetl_str_replace_substr_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_shrink_to_fit);
-  RUN_TEST(test_cstl_str_shrink_to_fit_double_fit);
+  RUN_TEST(test_cetl_str_shrink_to_fit);
+  RUN_TEST(test_cetl_str_shrink_to_fit_double_fit);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_pop_back);
-  RUN_TEST(test_cstl_str_pop_back_len_one);
-  RUN_TEST(test_cstl_str_pop_back_len_zero);
+  RUN_TEST(test_cetl_str_pop_back);
+  RUN_TEST(test_cetl_str_pop_back_len_one);
+  RUN_TEST(test_cetl_str_pop_back_len_zero);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_find);
-  RUN_TEST(test_cstl_str_find_not_exist_substr);
-  RUN_TEST(test_cstl_str_find_substr_empty);
-  RUN_TEST(test_cstl_str_find_substr_null);
+  RUN_TEST(test_cetl_str_find);
+  RUN_TEST(test_cetl_str_find_not_exist_substr);
+  RUN_TEST(test_cetl_str_find_substr_empty);
+  RUN_TEST(test_cetl_str_find_substr_null);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_length);
-  RUN_TEST(test_cstl_str_length_empty);
+  RUN_TEST(test_cetl_str_length);
+  RUN_TEST(test_cetl_str_length_empty);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_capacity);
-  RUN_TEST(test_cstl_str_capacity_empty);
+  RUN_TEST(test_cetl_str_capacity);
+  RUN_TEST(test_cetl_str_capacity_empty);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_is_empty);
-  RUN_TEST(test_cstl_str_is_empty_len_zero);
+  RUN_TEST(test_cetl_str_is_empty);
+  RUN_TEST(test_cetl_str_is_empty_len_zero);
 
   printf("\n");
 
-  RUN_TEST(test_cstl_str_swap);
-  RUN_TEST(test_cstl_str_swap_with_empty);
-  RUN_TEST(test_cstl_str_swap_one_null);
+  RUN_TEST(test_cetl_str_swap);
+  RUN_TEST(test_cetl_str_swap_with_empty);
+  RUN_TEST(test_cetl_str_swap_one_null);
 
   return UNITY_END();
 }

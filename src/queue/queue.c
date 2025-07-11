@@ -1,24 +1,24 @@
-#include "../../include/cstl/cstl_llist.h"
-#include "../../include/cstl/cstl_queue.h"
-#include "cstl_queue_internal.h"
+#include "../../include/cetl/cetl_llist.h"
+#include "../../include/cetl/cetl_queue.h"
+#include "cetl_queue_internal.h"
 #include <stdlib.h>
 
 
-typedef struct cstl_llist cstl_llist;
+typedef struct cetl_llist cetl_llist;
 
-cstl_queue *cstl_queue_create_empty(const cstl_type *type) {
+cetl_queue *cetl_queue_create_empty(const cetl_type *type) {
 
   if (type == NULL) {
     return NULL;
   }
 
-  cstl_queue *queue = malloc(sizeof(cstl_queue));
+  cetl_queue *queue = malloc(sizeof(cetl_queue));
 
   if (queue == NULL) {
     return NULL;
   }
 
-  cstl_llist *llist = cstl_llist_create_empty(type);
+  cetl_llist *llist = cetl_llist_create_empty(type);
 
   if (llist == NULL) {
     free(queue);
@@ -31,22 +31,22 @@ cstl_queue *cstl_queue_create_empty(const cstl_type *type) {
   return queue;
 }
 
-cstl_queue *cstl_queue_create_copy(const cstl_queue *src_queue) {
+cetl_queue *cetl_queue_create_copy(const cetl_queue *src_queue) {
 
   if (src_queue == NULL) {
     return NULL;
   }
 
-  cstl_queue *new_queue = cstl_queue_create_empty(src_queue->type);
+  cetl_queue *new_queue = cetl_queue_create_empty(src_queue->type);
 
-  if (new_queue == NULL || cstl_queue_is_empty(src_queue)) {
+  if (new_queue == NULL || cetl_queue_is_empty(src_queue)) {
     return new_queue;
   }
 
-  cstl_llist *llist_copy = cstl_llist_create_copy(src_queue->data);
+  cetl_llist *llist_copy = cetl_llist_create_copy(src_queue->data);
 
   if (llist_copy == NULL) {
-    cstl_queue_free(new_queue);
+    cetl_queue_free(new_queue);
     return NULL;
   }
 
@@ -56,17 +56,17 @@ cstl_queue *cstl_queue_create_copy(const cstl_queue *src_queue) {
   return new_queue;
 }
 
-void *cstl_queue_front(const cstl_queue *queue) {
-  return cstl_llist_get(queue->data, 0);
+void *cetl_queue_front(const cetl_queue *queue) {
+  return cetl_llist_get(queue->data, 0);
 }
 
-void *cstl_queue_back(const cstl_queue *queue) {
-  return cstl_llist_get(queue->data, queue->size - 1);
+void *cetl_queue_back(const cetl_queue *queue) {
+  return cetl_llist_get(queue->data, queue->size - 1);
 }
 
-cstl_queue *cstl_queue_push(cstl_queue *queue, const void *data) {
+cetl_queue *cetl_queue_push(cetl_queue *queue, const void *data) {
 
-  if(cstl_llist_push_back(queue->data, data) == NULL){
+  if(cetl_llist_push_back(queue->data, data) == NULL){
     return NULL;
   }
   
@@ -75,9 +75,9 @@ cstl_queue *cstl_queue_push(cstl_queue *queue, const void *data) {
   return queue;
 }
 
-cstl_queue *cstl_queue_pop(cstl_queue *queue) {
+cetl_queue *cetl_queue_pop(cetl_queue *queue) {
 
-  if (cstl_llist_pop_front(queue->data) == NULL) {
+  if (cetl_llist_pop_front(queue->data) == NULL) {
     return NULL;
   }
 
@@ -86,28 +86,28 @@ cstl_queue *cstl_queue_pop(cstl_queue *queue) {
   return queue;
 }
 
-size_t cstl_queue_size(const cstl_queue *queue) { return queue->size; }
+size_t cetl_queue_size(const cetl_queue *queue) { return queue->size; }
 
-bool cstl_queue_is_empty(const cstl_queue *queue) { return queue && !queue->size; }
+bool cetl_queue_is_empty(const cetl_queue *queue) { return queue && !queue->size; }
 
-void cstl_queue_swap(cstl_queue **queue1, cstl_queue **queue2){
+void cetl_queue_swap(cetl_queue **queue1, cetl_queue **queue2){
 
   if(queue1 == NULL || queue2 == NULL){
     return;
   }
 
-  cstl_queue *tmp = *queue1;
+  cetl_queue *tmp = *queue1;
   *queue1 = *queue2;
   *queue2 = tmp;
 
 }
 
-void cstl_queue_free(cstl_queue *queue) {
+void cetl_queue_free(cetl_queue *queue) {
 
   if(queue == NULL){
     return;
   }
 
-  cstl_llist_free(queue->data);
+  cetl_llist_free(queue->data);
   free(queue);
 }

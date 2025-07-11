@@ -1,10 +1,10 @@
-#include "../../include/cstl/cstl_vector.h"
-#include "cstl_vector_internal.h"
+#include "../../include/cetl/cetl_vector.h"
+#include "cetl_vector_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-static void _cstl_vec_free_data(cstl_vector *vec) {
+static void _cetl_vec_free_data(cetl_vector *vec) {
 
   if (vec->type->dtor) {
     for (size_t i = 0; i < vec->size; ++i) {
@@ -16,19 +16,19 @@ static void _cstl_vec_free_data(cstl_vector *vec) {
   free(vec->data);
 }
 
-cstl_vector *cstl_vec_create_empty(const cstl_type *type) {
+cetl_vector *cetl_vec_create_empty(const cetl_type *type) {
 
   if (type == NULL) {
     return NULL;
   }
 
-  cstl_vector *vec = malloc(sizeof(cstl_vector));
+  cetl_vector *vec = malloc(sizeof(cetl_vector));
 
   if (vec == NULL) {
     return NULL;
   }
 
-  void *alloc_data = malloc(CSTL_VEC_START_CAPACITY * type->size);
+  void *alloc_data = malloc(cetl_VEC_START_CAPACITY * type->size);
 
   if (alloc_data == NULL) {
     free(vec);
@@ -37,41 +37,41 @@ cstl_vector *cstl_vec_create_empty(const cstl_type *type) {
 
   vec->size = 0;
   vec->data = alloc_data;
-  vec->capacity = CSTL_VEC_START_CAPACITY;
+  vec->capacity = cetl_VEC_START_CAPACITY;
   vec->type = type;
 
   return vec;
 }
 
-cstl_vector *cstl_vec_create_copy(const cstl_vector *src_vec) {
+cetl_vector *cetl_vec_create_copy(const cetl_vector *src_vec) {
 
   if (src_vec == NULL) {
     return NULL;
   }
 
-  cstl_vector *new_vec = cstl_vec_create_empty(src_vec->type);
+  cetl_vector *new_vec = cetl_vec_create_empty(src_vec->type);
 
-  if (new_vec == NULL || cstl_vec_is_empty(src_vec)) {
+  if (new_vec == NULL || cetl_vec_is_empty(src_vec)) {
     return new_vec;
   }
 
-  cstl_vec_resize(new_vec, src_vec->capacity);
+  cetl_vec_resize(new_vec, src_vec->capacity);
 
   void *src_elem = NULL;
 
   for (size_t i = 0; i < src_vec->size; ++i) {
     src_elem = (char *)src_vec->data + i * src_vec->type->size;
-    cstl_vec_push_back(new_vec, src_elem);
+    cetl_vec_push_back(new_vec, src_elem);
   }
 
   return new_vec;
 }
 
-size_t cstl_vec_size(const cstl_vector *vec) { return vec->size; }
+size_t cetl_vec_size(const cetl_vector *vec) { return vec->size; }
 
-size_t cstl_vec_capacity(const cstl_vector *vec) { return vec->capacity; }
+size_t cetl_vec_capacity(const cetl_vector *vec) { return vec->capacity; }
 
-void *cstl_vec_front(const cstl_vector *vec) {
+void *cetl_vec_front(const cetl_vector *vec) {
 
   if (vec == NULL || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -80,7 +80,7 @@ void *cstl_vec_front(const cstl_vector *vec) {
   return vec->data;
 }
 
-void *cstl_vec_back(const cstl_vector *vec) {
+void *cetl_vec_back(const cetl_vector *vec) {
 
   if (vec == NULL || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -89,7 +89,7 @@ void *cstl_vec_back(const cstl_vector *vec) {
   return (char *)vec->data + (vec->size - 1) * vec->type->size;
 }
 
-void *cstl_vec_get(const cstl_vector *vec, size_t pos) {
+void *cetl_vec_get(const cetl_vector *vec, size_t pos) {
 
   if (vec == NULL || pos >= vec->size || vec->size == 0 || vec->data == NULL) {
     return NULL;
@@ -98,7 +98,7 @@ void *cstl_vec_get(const cstl_vector *vec, size_t pos) {
   return (char *)vec->data + pos * vec->type->size;
 }
 
-void *cstl_vec_data(const cstl_vector *vec) {
+void *cetl_vec_data(const cetl_vector *vec) {
 
   if (vec == NULL) {
     return NULL;
@@ -107,7 +107,7 @@ void *cstl_vec_data(const cstl_vector *vec) {
   return vec->data;
 }
 
-int cstl_vec_set(cstl_vector *vec, size_t pos, const void *new_val) {
+int cetl_vec_set(cetl_vector *vec, size_t pos, const void *new_val) {
 
   if (vec == NULL || vec->data == NULL || new_val == NULL) {
     return -1;
@@ -129,7 +129,7 @@ int cstl_vec_set(cstl_vector *vec, size_t pos, const void *new_val) {
   return 0;
 }
 
-cstl_vector *cstl_vec_resize(cstl_vector *vec, size_t new_capacity) {
+cetl_vector *cetl_vec_resize(cetl_vector *vec, size_t new_capacity) {
 
   if (vec == NULL) {
     return NULL;
@@ -163,7 +163,7 @@ cstl_vector *cstl_vec_resize(cstl_vector *vec, size_t new_capacity) {
   return vec;
 }
 
-cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *new_val) {
+cetl_vector *cetl_vec_push_back(cetl_vector *vec, const void *new_val) {
 
   if (vec == NULL || new_val == NULL) {
     return NULL;
@@ -171,9 +171,9 @@ cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *new_val) {
 
   if (vec->size == vec->capacity) {
     size_t new_capacity = (vec->capacity > 0)
-                              ? vec->capacity * CSTL_VEC_GROW_RATE
-                              : CSTL_VEC_START_CAPACITY;
-    if (cstl_vec_resize(vec, new_capacity) == NULL) {
+                              ? vec->capacity * cetl_VEC_GROW_RATE
+                              : cetl_VEC_START_CAPACITY;
+    if (cetl_vec_resize(vec, new_capacity) == NULL) {
       return NULL;
     }
   }
@@ -191,7 +191,7 @@ cstl_vector *cstl_vec_push_back(cstl_vector *vec, const void *new_val) {
   return vec;
 }
 
-cstl_vector *cstl_vec_pop_back(cstl_vector *vec) {
+cetl_vector *cetl_vec_pop_back(cetl_vector *vec) {
 
   if (vec == NULL) {
     return NULL;
@@ -202,7 +202,7 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *vec) {
   }
 
   if (vec->type->dtor) {
-    void *data = cstl_vec_back(vec);
+    void *data = cetl_vec_back(vec);
     vec->type->dtor(data);
   }
 
@@ -211,30 +211,30 @@ cstl_vector *cstl_vec_pop_back(cstl_vector *vec) {
   return vec;
 }
 
-bool cstl_vec_is_empty(const cstl_vector *vec) { return !vec->size; }
+bool cetl_vec_is_empty(const cetl_vector *vec) { return !vec->size; }
 
-cstl_vector *cstl_vec_shrink_to_fit(cstl_vector *vec) {
+cetl_vector *cetl_vec_shrink_to_fit(cetl_vector *vec) {
 
   if (vec == NULL || vec->size == vec->capacity) {
     return vec;
   }
 
-  return cstl_vec_resize(vec, vec->size);
+  return cetl_vec_resize(vec, vec->size);
 }
 
-cstl_vector *cstl_vec_clear(cstl_vector *vec) {
+cetl_vector *cetl_vec_clear(cetl_vector *vec) {
 
   if (vec == NULL) {
     return NULL;
   }
 
-  _cstl_vec_free_data(vec);
+  _cetl_vec_free_data(vec);
   vec->data = NULL;
   vec->size = 0;
   return vec;
 }
 
-cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos,
+cetl_vector *cetl_vec_insert(cetl_vector *vec, size_t pos,
                              const void *new_val) {
 
   if (vec == NULL || new_val == NULL || pos > vec->size) {
@@ -243,13 +243,13 @@ cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos,
 
   if (vec->size + 1 > vec->capacity) {
     size_t new_capacity = (vec->capacity > 0)
-                              ? vec->capacity * CSTL_VEC_GROW_RATE
-                              : CSTL_VEC_START_CAPACITY;
-    cstl_vec_resize(vec, new_capacity);
+                              ? vec->capacity * cetl_VEC_GROW_RATE
+                              : cetl_VEC_START_CAPACITY;
+    cetl_vec_resize(vec, new_capacity);
   }
 
   if (pos == vec->size) {
-    return cstl_vec_push_back(vec, new_val);
+    return cetl_vec_push_back(vec, new_val);
   }
 
   void *move_next = (char *)vec->data + (pos + 1) * vec->type->size;
@@ -270,14 +270,14 @@ cstl_vector *cstl_vec_insert(cstl_vector *vec, size_t pos,
   return vec;
 }
 
-cstl_vector *cstl_vec_erase(cstl_vector *vec, size_t index) {
+cetl_vector *cetl_vec_erase(cetl_vector *vec, size_t index) {
 
   if (vec == NULL || vec->size == 0 || index >= vec->size) {
     return NULL;
   }
 
   if (index == vec->size - 1) {
-    cstl_vec_pop_back(vec);
+    cetl_vec_pop_back(vec);
     return vec;
   }
 
@@ -296,7 +296,7 @@ cstl_vector *cstl_vec_erase(cstl_vector *vec, size_t index) {
   return vec;
 }
 
-cstl_vector *cstl_vec_insert_range(cstl_vector *vec, const void *range,
+cetl_vector *cetl_vec_insert_range(cetl_vector *vec, const void *range,
                                    size_t range_size, size_t pos) {
 
   if (vec == NULL || range == NULL || pos > vec->size) {
@@ -314,11 +314,11 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *vec, const void *range,
     size_t new_capacity = vec->capacity;
 
     while (new_capacity < new_size) {
-      new_capacity = (new_capacity > 0) ? new_capacity * CSTL_VEC_GROW_RATE
-                                        : CSTL_VEC_START_CAPACITY;
+      new_capacity = (new_capacity > 0) ? new_capacity * cetl_VEC_GROW_RATE
+                                        : cetl_VEC_START_CAPACITY;
     }
 
-    if (cstl_vec_resize(vec, new_capacity) == NULL) {
+    if (cetl_vec_resize(vec, new_capacity) == NULL) {
       return NULL;
     }
   }
@@ -347,7 +347,7 @@ cstl_vector *cstl_vec_insert_range(cstl_vector *vec, const void *range,
   return vec;
 }
 
-cstl_vector *cstl_vec_erase_range(cstl_vector *vec, size_t pos, size_t len) {
+cetl_vector *cetl_vec_erase_range(cetl_vector *vec, size_t pos, size_t len) {
 
   if (vec == NULL || pos > vec->size || pos + len > vec->size) {
     return NULL;
@@ -374,12 +374,12 @@ cstl_vector *cstl_vec_erase_range(cstl_vector *vec, size_t pos, size_t len) {
   return vec;
 }
 
-void cstl_vec_free(cstl_vector *vec) {
+void cetl_vec_free(cetl_vector *vec) {
 
   if (vec == NULL) {
     return;
   }
 
-  _cstl_vec_free_data(vec);
+  _cetl_vec_free_data(vec);
   free(vec);
 }
