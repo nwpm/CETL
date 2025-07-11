@@ -7,16 +7,16 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/string/
+BUILD_PATH  = ../../../build/vector
 
-STR_SRC     = string.c
-STR_OBJ     = $(BUILD_PATH)/libstring.o
-STR_TARGET  = $(BUILD_PATH)/libstring.a
+VEC_SRC     = vector.c
+VEC_OBJ     = $(BUILD_PATH)/libvector.o
+VEC_TARGET  = $(BUILD_PATH)/libvector.a
 
 # ===Targets===
-.PHONY: string install uninstall clean
+.PHONY: vector install uninstall clean
 
-string: $(STR_TARGET) 
+vector: $(VEC_TARGET) 
 
 install:
 
@@ -27,11 +27,11 @@ clean :
 
 # ===Build rules===
 
-$(STR_TARGET) : $(STR_OBJ)
+$(VEC_TARGET) : $(VEC_OBJ)
 	ar rcs $@ $<
-	rm $(BUILD_PATH)/$(STR_OBJ)
+	rm $(VEC_OBJ)
 
-$(STR_OBJ) : $(STR_SRC) $(BUILD_PATH)
+$(VEC_OBJ) : $(VEC_SRC) $(BUILD_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_PATH):

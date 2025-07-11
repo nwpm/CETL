@@ -1,4 +1,4 @@
-#include "../../include/cetl/cetl_dlist.h"
+#include "../../../include/cetl/cetl_dlist.h"
 #include "cetl_dlist_internal.h"
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +9,13 @@ static _cetl_dnode *_cetl_dlist_create_dnode(const void *data,
   _cetl_dnode *dnode = malloc(sizeof(_cetl_dnode));
 
   if (dnode == NULL) {
+    return NULL;
+  }
+
+  dnode->data = malloc(dlist->type->size);
+
+  if(dnode->data == NULL){
+    free(dnode);
     return NULL;
   }
 
@@ -333,9 +340,9 @@ void cetl_dlist_free_nodes(cetl_dlist *dlist) {
 
   while (current) {
     _cetl_dlist_free_node_data(dlist, current->data);
-    free(current);
     current = current->next;
   }
+  free(current);
 }
 
 void cetl_dlist_free(cetl_dlist *dlist) {

@@ -7,16 +7,16 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/llist/
+BUILD_PATH  = ../../../build/queue/
 
-LIST_SRC     = llist.c
-LIST_OBJ     = $(BUILD_PATH)/libllist.o
-LIST_TARGET  = $(BUILD_PATH)/libllist.a
+QUEUE_SRC     = queue.c
+QUEUE_OBJ     = $(BUILD_PATH)/libqueue.o
+QUEUE_TARGET  = $(BUILD_PATH)/libqueue.a
 
 # ===Targets===
-.PHONY: llist install uninstall
+.PHONY: queue install uninstall
 
-llist: $(LIST_TARGET) 
+queue: $(QUEUE_TARGET) 
 
 install:
 
@@ -24,13 +24,14 @@ uninstall:
 
 # ===Build rules===
 
-$(LIST_TARGET) : $(LIST_OBJ)
+$(QUEUE_TARGET) : $(QUEUE_OBJ)
 	ar rcs $@ $<
-	rm $(BUILD_PATH)/$(LIST_OBJ)
+	rm $(QUEUE_OBJ)
 
-$(LIST_OBJ) : $(LIST_SRC) $(BUILD_PATH)
+$(QUEUE_OBJ) : $(QUEUE_SRC) $(BUILD_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_PATH):
 	mkdir -p $@
+
 

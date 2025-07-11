@@ -1,4 +1,4 @@
-#include "../../include/cetl/cetl_string.h"
+#include "../../../include/cetl/cetl_string.h"
 #include "cetl_string_internal.h"
 #include <stddef.h>
 #include <string.h>

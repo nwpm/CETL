@@ -7,16 +7,16 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/queue/
+BUILD_PATH  = ../../../build/dlist/
 
-QUEUE_SRC     = queue.c
-QUEUE_OBJ     = $(BUILD_PATH)/libqueue.o
-QUEUE_TARGET  = $(BUILD_PATH)/libqueue.a
+DLIST_SRC     = dlist.c
+DLIST_OBJ     = $(BUILD_PATH)/libdlist.o
+DLIST_TARGET  = $(BUILD_PATH)/libdlist.a
 
 # ===Targets===
-.PHONY: queue install uninstall
+.PHONY: dlist install uninstall
 
-queue: $(QUEUE_TARGET) 
+dlist: $(DLIST_TARGET) 
 
 install:
 
@@ -24,14 +24,12 @@ uninstall:
 
 # ===Build rules===
 
-$(QUEUE_TARGET) : $(QUEUE_OBJ)
+$(DLIST_TARGET) : $(DLIST_OBJ)
 	ar rcs $@ $<
-	rm $(BUILD_PATH)/$(QUEUE_OBJ)
+	rm $(DLIST_OBJ)
 
-$(QUEUE_OBJ) : $(QUEUE_SRC) $(BUILD_PATH)
+$(DLIST_OBJ) : $(DLIST_SRC) $(BUILD_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_PATH):
 	mkdir -p $@
-
-

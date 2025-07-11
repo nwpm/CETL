@@ -7,16 +7,16 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/dlist/
+BUILD_PATH  = ../../../build/stack/
 
-DLIST_SRC     = dlist.c
-DLIST_OBJ     = $(BUILD_PATH)/libdlist.o
-DLIST_TARGET  = $(BUILD_PATH)/libdlist.a
+STACK_SRC     = stack.c
+STACK_OBJ     = $(BUILD_PATH)/libstack.o
+STACK_TARGET  = $(BUILD_PATH)/libstack.a
 
 # ===Targets===
-.PHONY: dlist install uninstall
+.PHONY: stack install uninstall
 
-dlist: $(DLIST_TARGET) 
+stack: $(STACK_TARGET) 
 
 install:
 
@@ -24,11 +24,11 @@ uninstall:
 
 # ===Build rules===
 
-$(DLIST_TARGET) : $(DLIST_OBJ)
+$(STACK_TARGET) : $(STACK_OBJ)
 	ar rcs $@ $<
-	rm $(BUILD_PATH)/$(DLIST_OBJ)
+	rm $(STACK_OBJ)
 
-$(DLIST_OBJ) : $(DLIST_SRC) $(BUILD_PATH)
+$(STACK_OBJ) : $(STACK_SRC) $(BUILD_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_PATH):

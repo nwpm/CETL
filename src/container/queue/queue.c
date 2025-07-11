@@ -1,10 +1,7 @@
-#include "../../include/cetl/cetl_llist.h"
-#include "../../include/cetl/cetl_queue.h"
+#include "../../../include/cetl/cetl_llist.h"
+#include "../../../include/cetl/cetl_queue.h"
 #include "cetl_queue_internal.h"
 #include <stdlib.h>
-
-
-typedef struct cetl_llist cetl_llist;
 
 cetl_queue *cetl_queue_create_empty(const cetl_type *type) {
 

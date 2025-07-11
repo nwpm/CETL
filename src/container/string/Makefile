@@ -7,28 +7,31 @@ RELEASE_FLAGS = -O2
 
 # === Paths ===
 
-BUILD_PATH  = ../../build/stack/
+BUILD_PATH  = ../../../build/string/
 
-STACK_SRC     = stack.c
-STACK_OBJ     = $(BUILD_PATH)/libstack.o
-STACK_TARGET  = $(BUILD_PATH)/libstack.a
+STR_SRC     = string.c
+STR_OBJ     = $(BUILD_PATH)/libstring.o
+STR_TARGET  = $(BUILD_PATH)/libstring.a
 
 # ===Targets===
-.PHONY: stack install uninstall
+.PHONY: string install uninstall clean
 
-stack: $(STACK_TARGET) 
+string: $(STR_TARGET) 
 
 install:
 
 uninstall:
 
+clean :
+	rm -rf $(BUILD_PATH)/*
+
 # ===Build rules===
 
-$(STACK_TARGET) : $(STACK_OBJ)
+$(STR_TARGET) : $(STR_OBJ)
 	ar rcs $@ $<
-	rm $(BUILD_PATH)/$(STACK_OBJ)
+	rm $(STR_OBJ)
 
-$(STACK_OBJ) : $(STACK_SRC) $(BUILD_PATH)
+$(STR_OBJ) : $(STR_SRC) $(BUILD_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_PATH):

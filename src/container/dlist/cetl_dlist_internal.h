@@ -2,7 +2,7 @@
 #define CETL_DLIST_INTERNAL_H
 
 #include <stddef.h>
-#include "../type/type.h"
+#include "../type/cetl_type.h"
 
 typedef struct _cetl_dnode {
 

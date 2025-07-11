@@ -1,4 +1,4 @@
-#include "../../include/cetl/cetl_llist.h"
+#include "../../../include/cetl/cetl_llist.h"
 #include "cetl_llist_internal.h"
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +9,13 @@ static _cetl_node *_cetl_llist_create_node(const void *data,
   _cetl_node *node = malloc(sizeof(_cetl_node));
 
   if (node == NULL) {
+    return NULL;
+  }
+
+  node->data = malloc(llist->type->size);
+
+  if(node->data == NULL){
+    free(node);
     return NULL;
   }
 
@@ -249,7 +256,8 @@ cetl_llist *cetl_llist_erase(cetl_llist *llist, size_t pos) {
   return llist;
 }
 
-cetl_llist *cetl_llist_merge_two(const cetl_llist *llist1, const cetl_llist *llist2) {
+cetl_llist *cetl_llist_merge_two(const cetl_llist *llist1,
+                                 const cetl_llist *llist2) {
 
   if (llist1 == NULL || llist2 == NULL) {
     return NULL;
@@ -289,7 +297,9 @@ cetl_llist *cetl_llist_clear(cetl_llist *llist) {
 
 size_t cetl_llist_size(const cetl_llist *llist) { return llist->size; }
 
-bool cetl_llist_is_empty(const cetl_llist *llist) { return llist && !llist->size; }
+bool cetl_llist_is_empty(const cetl_llist *llist) {
+  return llist && !llist->size;
+}
 
 void *cetl_llist_get(const cetl_llist *llist, size_t pos) {
 
@@ -335,9 +345,10 @@ void cetl_llist_free_nodes(cetl_llist *llist) {
 
   while (current) {
     _cetl_llist_free_node_data(llist, current->data);
-    free(current);
     current = current->next;
   }
+
+  free(current);
 }
 
 void cetl_llist_free(cetl_llist *l) {

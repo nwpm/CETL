@@ -4,10 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct cetl_type cetl_type;
+struct cetl_type;
 typedef struct cetl_stack cetl_stack;
 
-cetl_stack *cetl_stack_create_empty(const cetl_type *type);
+cetl_stack *cetl_stack_create_empty(const struct cetl_type *type);
 cetl_stack *cetl_stack_create_copy(const cetl_stack *src_stack);
 
 cetl_stack *cetl_stack_push(cetl_stack *stack, const void *data);

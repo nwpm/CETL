@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct cetl_type cetl_type;
+struct cetl_type;
 typedef struct cetl_queue cetl_queue;
 
-cetl_queue *cetl_queue_create_empty(const cetl_type *type);
+cetl_queue *cetl_queue_create_empty(const struct cetl_type *type);
 cetl_queue *cetl_queue_create_copy(const cetl_queue *queue);
 
 cetl_queue *cetl_queue_push(cetl_queue *queue, const void *data);
