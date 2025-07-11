@@ -9,27 +9,29 @@ BIN_DIR   = bin/
 UNITY_DIR   = test/Unity
 UNITY_BUILD = $(BUILD_DIR)/unity
 
+CONTAINER_DIR = src/container
+
 # === TARGETS ===
 
 .PHONY: all vector string llist dlist stack queue vtest strtest lltest stest dltest qtest unity clbuild
 
 vector:
-	$(MAKE) -C src/vector
+	$(MAKE) -C $(CONTAINER_DIR)/vector
 
 string:
-	$(MAKE) -C src/string
+	$(MAKE) -C $(CONTAINER_DIR)/string
 
 llist:
-	$(MAKE) -C src/llist
+	$(MAKE) -C $(CONTAINER_DIR)/llist
 
 dlist:
-	$(MAKE) -C src/dlist
+	$(MAKE) -C $(CONTAINER_DIR)/dlist
 
 stack:
-	$(MAKE) -C src/stack
+	$(MAKE) -C $(CONTAINER_DIR)/stack
 
 queue:
-	$(MAKE) -C src/queue
+	$(MAKE) -C $(CONTAINER_DIR)/queue
 
 unity: $(UNITY_BUILD)
 	cd $(UNITY_BUILD) && cmake ../../$(UNITY_DIR)
