@@ -30,14 +30,20 @@ typedef                       cetl_int_t cetl_bool_t;
 #define CETL_TRUE             true
 #define CETL_FALSE            false
 
+// Float point
+typedef float                 cetl_float_t;
+typedef double                cetl_double_t;
+
 // Char
 typedef char                  cetl_char_t;
 typedef unsigned char         cetl_uchar_t;
+typedef cetl_char_t*          cetl_str_t;
+typedef const cetl_str_t      cetl_cstr_t;
 
 // Pointers
 typedef void                  cetl_void_t;
 typedef cetl_void_t*          cetl_ptr_t;
-typedef cetl_ptr_t * const    cetl_cptr_t;
+typedef cetl_void_t const*    cetl_cptr_t;
 
 // Result of operation
 typedef int                   cetl_result_t;
