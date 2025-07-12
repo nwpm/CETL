@@ -1,7 +1,7 @@
 #include "../../include/cetl/cetl_vector.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
-#include "../../src/vector/cetl_vector_internal.h"
+#include "../../src/container/vector/cetl_vector_internal.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,8 +25,8 @@ cetl_type *create_int_type() {
   return int_type;
 }
 
-void vec_fill_with_int(cetl_vector *vec, size_t size) {
-  for (size_t i = 0; i < size; ++i) {
+cetl_void_t vec_fill_with_int(cetl_vector *vec, cetl_size_t size) {
+  for (cetl_size_t i = 0; i < size; ++i) {
     cetl_vec_push_back(vec, &i);
   }
 }
@@ -48,12 +48,12 @@ cetl_type *create_double_type() {
 }
 
 typedef struct TestHeapStr {
-  char *s;
-  int x;
-  float y;
+  cetl_str_t s;
+  cetl_int_t x;
+  cetl_float_t y;
 } TestHeapStr;
 
-void *test_heap_str_ctor(void *dest, const void *data) {
+cetl_ptr_t test_heap_str_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
   TestHeapStr *target = (TestHeapStr *)dest;
   TestHeapStr *source = (TestHeapStr *)data;
   target->x = source->x;
@@ -62,7 +62,7 @@ void *test_heap_str_ctor(void *dest, const void *data) {
   return target;
 }
 
-void test_heap_str_dtor(void *data) {
+cetl_void_t test_heap_str_dtor(cetl_ptr_t data) {
   TestHeapStr *target = (TestHeapStr *)data;
   free(target->s);
 }
@@ -83,7 +83,7 @@ cetl_type *create_test_heap_str_type() {
   return test_heap_str_type;
 }
 
-TestHeapStr *make_test_heap_str(int x, float y, char *s) {
+TestHeapStr *make_test_heap_str(cetl_int_t x, cetl_float_t y, cetl_str_t s) {
 
   TestHeapStr *test_object = malloc(sizeof(TestHeapStr));
 
@@ -98,9 +98,9 @@ TestHeapStr *make_test_heap_str(int x, float y, char *s) {
   return test_object;
 }
 
-char *create_string_of_char(size_t len, int ch) {
+cetl_str_t create_string_of_char(cetl_size_t len, cetl_int_t ch) {
 
-  char *str = malloc(len + 1);
+  cetl_str_t str = malloc(len + 1);
 
   if (str == NULL) {
     return NULL;
@@ -112,12 +112,12 @@ char *create_string_of_char(size_t len, int ch) {
   return str;
 }
 
-void vec_fill_with_test_heap_str(cetl_vector *v, size_t size, size_t s_len,
-                                 int ch) {
+cetl_void_t vec_fill_with_test_heap_str(cetl_vector *v, cetl_size_t size, cetl_size_t s_len,
+                                 cetl_int_t ch) {
 
-  for (size_t i = 0; i < size; ++i) {
+  for (cetl_size_t i = 0; i < size; ++i) {
 
-    char *str = create_string_of_char(s_len, ch);
+    cetl_str_t str = create_string_of_char(s_len, ch);
     TestHeapStr *test_heap_str = make_test_heap_str(i, i, str);
     cetl_vec_push_back(v, test_heap_str);
     free(test_heap_str->s);
@@ -127,12 +127,12 @@ void vec_fill_with_test_heap_str(cetl_vector *v, size_t size, size_t s_len,
 
 typedef struct OwnedString {
 
-  char *data;
-  size_t len;
+  cetl_str_t data;
+  cetl_size_t len;
 
 } OwnedString;
 
-void *simple_string_ctor(void *dest, const void *data) {
+cetl_ptr_t simple_string_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
   OwnedString *target = (OwnedString *)dest;
   OwnedString *source = (OwnedString *)data;
   target->data = strdup(source->data);
@@ -140,7 +140,7 @@ void *simple_string_ctor(void *dest, const void *data) {
   return target;
 }
 
-void simple_string_dtor(void *data) {
+cetl_void_t simple_string_dtor(cetl_ptr_t data) {
   OwnedString *target = (OwnedString *)data;
   free(target->data);
 }
@@ -161,7 +161,7 @@ cetl_type *create_owned_string_type() {
   return t;
 }
 
-OwnedString *make_owned_string(char *s, size_t len) {
+OwnedString *make_owned_string(cetl_str_t s, cetl_size_t len) {
 
   OwnedString *owned_string = malloc(sizeof(OwnedString));
 
@@ -175,11 +175,11 @@ OwnedString *make_owned_string(char *s, size_t len) {
   return owned_string;
 }
 
-void vec_fill_with_owned_string(cetl_vector *v, size_t num, size_t s_len,
-                                int ch) {
+cetl_void_t vec_fill_with_owned_string(cetl_vector *v, cetl_size_t num, cetl_size_t s_len,
+                                cetl_int_t ch) {
 
-  for (size_t i = 0; i < num; ++i) {
-    char *s = create_string_of_char(s_len, ch);
+  for (cetl_size_t i = 0; i < num; ++i) {
+    cetl_str_t s = create_string_of_char(s_len, ch);
     OwnedString *owned_string = make_owned_string(s, s_len);
     cetl_vec_push_back(v, owned_string);
     free(s);
@@ -187,12 +187,12 @@ void vec_fill_with_owned_string(cetl_vector *v, size_t num, size_t s_len,
   }
 }
 
-void setUp() {}
-void tearDown() {}
+cetl_void_t setUp() {}
+cetl_void_t tearDown() {}
 
 //-------------------------------------
 
-void test_create_empty_type_int() {
+cetl_void_t test_create_empty_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -202,7 +202,7 @@ void test_create_empty_type_int() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  TEST_ASSERT_EQUAL_size_t(v->capacity, cetl_VEC_START_CAPACITY);
+  TEST_ASSERT_EQUAL_size_t(v->capacity, CETL_VEC_START_CAPACITY);
   TEST_ASSERT_EQUAL_size_t(v->size, 0);
   TEST_ASSERT_NOT_NULL(v->data);
   TEST_ASSERT_EQUAL_PTR(v->type, t);
@@ -211,7 +211,7 @@ void test_create_empty_type_int() {
   free(t);
 }
 
-void test_create_empty_type_owned_string() {
+cetl_void_t test_create_empty_type_owned_string() {
 
   cetl_type *t = create_owned_string_type();
 
@@ -221,7 +221,7 @@ void test_create_empty_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  TEST_ASSERT_EQUAL_size_t(v->capacity, cetl_VEC_START_CAPACITY);
+  TEST_ASSERT_EQUAL_size_t(v->capacity, CETL_VEC_START_CAPACITY);
   TEST_ASSERT_EQUAL_size_t(v->size, 0);
   TEST_ASSERT_NOT_NULL(v->data);
   TEST_ASSERT_EQUAL_PTR(v->type, t);
@@ -230,7 +230,7 @@ void test_create_empty_type_owned_string() {
   free(t);
 }
 
-void test_create_empty_type_test_heap_str() {
+cetl_void_t test_create_empty_type_test_heap_str() {
 
   cetl_type *t = create_test_heap_str_type();
 
@@ -238,7 +238,7 @@ void test_create_empty_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  TEST_ASSERT_EQUAL_size_t(v->capacity, cetl_VEC_START_CAPACITY);
+  TEST_ASSERT_EQUAL_size_t(v->capacity, CETL_VEC_START_CAPACITY);
   TEST_ASSERT_EQUAL_size_t(v->size, 0);
   TEST_ASSERT_NOT_NULL(v->data);
   TEST_ASSERT_EQUAL_PTR(v->type, t);
@@ -249,7 +249,7 @@ void test_create_empty_type_test_heap_str() {
 
 //-----------------------------
 
-void test_create_copy_from_size_0_type_int() {
+cetl_void_t test_create_copy_from_size_0_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -273,7 +273,7 @@ void test_create_copy_from_size_0_type_int() {
   free(t);
 }
 
-void test_create_copy_from_size_0_type_owned_string() {
+cetl_void_t test_create_copy_from_size_0_type_owned_string() {
 
   cetl_type *t = create_owned_string_type();
 
@@ -297,7 +297,7 @@ void test_create_copy_from_size_0_type_owned_string() {
   free(t);
 }
 
-void test_create_copy_from_size_10_type_int() {
+cetl_void_t test_create_copy_from_size_10_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -318,9 +318,9 @@ void test_create_copy_from_size_10_type_int() {
   TEST_ASSERT_EQUAL_PTR(v->type, c_v->type);
   TEST_ASSERT_NOT_EQUAL(v->data, c_v->data);
 
-  for (size_t i = 0; i < 10; ++i) {
-    void *current_orig = cetl_vec_get(v, i);
-    void *current_copy = cetl_vec_get(c_v, i);
+  for (cetl_size_t i = 0; i < 10; ++i) {
+    cetl_ptr_t current_orig = cetl_vec_get(v, i);
+    cetl_ptr_t current_copy = cetl_vec_get(c_v, i);
     TEST_ASSERT_EQUAL_INT(*((int *)current_orig), *((int *)current_copy));
   }
 
@@ -329,7 +329,7 @@ void test_create_copy_from_size_10_type_int() {
   free(t);
 }
 
-void test_create_copy_from_size_1000_type_int() {
+cetl_void_t test_create_copy_from_size_1000_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -350,9 +350,9 @@ void test_create_copy_from_size_1000_type_int() {
   TEST_ASSERT_EQUAL_PTR(v->type, c_v->type);
   TEST_ASSERT_NOT_EQUAL(v->data, c_v->data);
 
-  for (size_t i = 0; i < 1000; ++i) {
-    void *current_orig = cetl_vec_get(v, i);
-    void *current_copy = cetl_vec_get(c_v, i);
+  for (cetl_size_t i = 0; i < 1000; ++i) {
+    cetl_ptr_t current_orig = cetl_vec_get(v, i);
+    cetl_ptr_t current_copy = cetl_vec_get(c_v, i);
     TEST_ASSERT_EQUAL_INT(*((int *)current_orig), *((int *)current_copy));
   }
 
@@ -361,7 +361,7 @@ void test_create_copy_from_size_1000_type_int() {
   free(t);
 }
 
-void test_create_copy_from_size_10_type_test_heap_str() {
+cetl_void_t test_create_copy_from_size_10_type_test_heap_str() {
 
   cetl_type *t = create_test_heap_str_type();
 
@@ -371,9 +371,9 @@ void test_create_copy_from_size_10_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  size_t num_test_heap_str_objects = 10;
-  size_t str_len = 15;
-  int char_for_string = 'S';
+  cetl_size_t num_test_heap_str_objects = 10;
+  cetl_size_t str_len = 15;
+  cetl_uchar_t char_for_string = 'S';
 
   vec_fill_with_test_heap_str(v, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -387,9 +387,9 @@ void test_create_copy_from_size_10_type_test_heap_str() {
   TEST_ASSERT_EQUAL_PTR(v->type, c_v->type);
   TEST_ASSERT_NOT_EQUAL(v->data, c_v->data);
 
-  for (size_t i = 0; i < 10; ++i) {
-    void *current_orig = cetl_vec_get(v, i);
-    void *current_copy = cetl_vec_get(c_v, i);
+  for (cetl_size_t i = 0; i < 10; ++i) {
+    cetl_ptr_t current_orig = cetl_vec_get(v, i);
+    cetl_ptr_t current_copy = cetl_vec_get(c_v, i);
 
     TEST_ASSERT_EQUAL_INT(((TestHeapStr *)current_orig)->x,
                           ((TestHeapStr *)current_copy)->x);
@@ -406,7 +406,7 @@ void test_create_copy_from_size_10_type_test_heap_str() {
   free(t);
 }
 
-void test_create_copy_from_size_1000_type_test_heap_str() {
+cetl_void_t test_create_copy_from_size_1000_type_test_heap_str() {
 
   cetl_type *t = create_test_heap_str_type();
 
@@ -416,9 +416,9 @@ void test_create_copy_from_size_1000_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  size_t num_test_heap_str_objects = 1000;
-  size_t str_len = 50;
-  int char_for_string = 'S';
+  cetl_size_t num_test_heap_str_objects = 1000;
+  cetl_size_t str_len = 50;
+  cetl_uchar_t char_for_string = 'S';
 
   vec_fill_with_test_heap_str(v, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -432,9 +432,9 @@ void test_create_copy_from_size_1000_type_test_heap_str() {
   TEST_ASSERT_EQUAL_PTR(v->type, c_v->type);
   TEST_ASSERT_NOT_EQUAL(v->data, c_v->data);
 
-  for (size_t i = 0; i < 1000; ++i) {
-    void *current_orig = cetl_vec_get(v, i);
-    void *current_copy = cetl_vec_get(c_v, i);
+  for (cetl_size_t i = 0; i < 1000; ++i) {
+    cetl_ptr_t current_orig = cetl_vec_get(v, i);
+    cetl_ptr_t current_copy = cetl_vec_get(c_v, i);
 
     TEST_ASSERT_EQUAL_INT(((TestHeapStr *)current_orig)->x,
                           ((TestHeapStr *)current_copy)->x);
@@ -451,7 +451,7 @@ void test_create_copy_from_size_1000_type_test_heap_str() {
   free(t);
 }
 
-void test_push_back_to_size_1_type_int() {
+cetl_void_t test_push_back_to_size_1_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -461,12 +461,12 @@ void test_push_back_to_size_1_type_int() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  int data = 10;
+  cetl_int_t data = 10;
 
   TEST_ASSERT_NOT_NULL(cetl_vec_push_back(v, &data));
 
   TEST_ASSERT_EQUAL_size_t(1, v->size);
-  TEST_ASSERT_EQUAL_size_t(cetl_VEC_START_CAPACITY, v->capacity);
+  TEST_ASSERT_EQUAL_size_t(CETL_VEC_START_CAPACITY, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
   TEST_ASSERT_EQUAL_INT(10, *((int *)cetl_vec_get(v, 0)));
@@ -475,7 +475,7 @@ void test_push_back_to_size_1_type_int() {
   free(t);
 }
 
-void test_push_back_to_size_10_type_int() {
+cetl_void_t test_push_back_to_size_10_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -488,10 +488,10 @@ void test_push_back_to_size_10_type_int() {
   vec_fill_with_int(v, 10);
 
   TEST_ASSERT_EQUAL_size_t(10, v->size);
-  TEST_ASSERT_EQUAL_size_t(cetl_VEC_START_CAPACITY * 2, v->capacity);
+  TEST_ASSERT_EQUAL_size_t(CETL_VEC_START_CAPACITY * 2, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
-  for (size_t i = 0; i < 10; ++i) {
+  for (cetl_size_t i = 0; i < 10; ++i) {
     TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_vec_get(v, i)));
   }
 
@@ -499,7 +499,7 @@ void test_push_back_to_size_10_type_int() {
   free(t);
 }
 
-void test_push_back_to_size_1000_type_int() {
+cetl_void_t test_push_back_to_size_1000_type_int() {
 
   cetl_type *t = create_int_type();
 
@@ -515,7 +515,7 @@ void test_push_back_to_size_1000_type_int() {
   TEST_ASSERT_EQUAL_size_t(1024, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
-  for (size_t i = 0; i < 1000; ++i) {
+  for (cetl_size_t i = 0; i < 1000; ++i) {
     TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_vec_get(v, i)));
   }
 
@@ -523,7 +523,7 @@ void test_push_back_to_size_1000_type_int() {
   free(t);
 }
 
-void test_push_back_to_size_1_type_owned_string() {
+cetl_void_t test_push_back_to_size_1_type_owned_string() {
 
   cetl_type *t = create_owned_string_type();
 
@@ -533,16 +533,16 @@ void test_push_back_to_size_1_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  char char_for_string = 'A';
-  size_t char_array_size = 20;
+  cetl_uchar_t char_for_string = 'A';
+  cetl_size_t char_array_size = 20;
 
   vec_fill_with_owned_string(v, 1, char_array_size, char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(1, v->size);
-  TEST_ASSERT_EQUAL_size_t(cetl_VEC_START_CAPACITY, v->capacity);
+  TEST_ASSERT_EQUAL_size_t(CETL_VEC_START_CAPACITY, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
-  char *s_for_check = create_string_of_char(char_array_size, char_for_string);
+  cetl_str_t s_for_check = create_string_of_char(char_array_size, char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(char_array_size,
                            ((OwnedString *)cetl_vec_get(v, 0))->len);
@@ -554,7 +554,7 @@ void test_push_back_to_size_1_type_owned_string() {
   free(s_for_check);
 }
 
-void test_push_back_to_size_10_type_owned_string() {
+cetl_void_t test_push_back_to_size_10_type_owned_string() {
 
   cetl_type *t = create_owned_string_type();
 
@@ -564,19 +564,19 @@ void test_push_back_to_size_10_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  char char_for_string = 'A';
-  size_t char_array_size = 50;
-  size_t num_elements = 10;
+  cetl_uchar_t char_for_string = 'A';
+  cetl_size_t char_array_size = 50;
+  cetl_size_t num_elements = 10;
 
   vec_fill_with_owned_string(v, num_elements, char_array_size, char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(num_elements, v->size);
-  TEST_ASSERT_EQUAL_size_t(cetl_VEC_START_CAPACITY * 2, v->capacity);
+  TEST_ASSERT_EQUAL_size_t(CETL_VEC_START_CAPACITY * 2, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
-  char *s_for_check = create_string_of_char(char_array_size, char_for_string);
+  cetl_str_t s_for_check = create_string_of_char(char_array_size, char_for_string);
 
-  for (size_t i = 0; i < num_elements; ++i) {
+  for (cetl_size_t i = 0; i < num_elements; ++i) {
     TEST_ASSERT_EQUAL_size_t(char_array_size,
                              ((OwnedString *)cetl_vec_get(v, 0))->len);
     TEST_ASSERT_EQUAL_STRING(s_for_check,
@@ -588,7 +588,7 @@ void test_push_back_to_size_10_type_owned_string() {
   free(s_for_check);
 }
 
-void test_push_back_to_size_1000_type_owned_string() {
+cetl_void_t test_push_back_to_size_1000_type_owned_string() {
 
   cetl_type *t = create_owned_string_type();
 
@@ -598,8 +598,8 @@ void test_push_back_to_size_1000_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(v);
 
-  char char_for_string = 'A';
-  size_t char_array_size = 80;
+  cetl_uchar_t char_for_string = 'A';
+  cetl_size_t char_array_size = 80;
 
   vec_fill_with_owned_string(v, 1000, char_array_size, char_for_string);
 
@@ -607,9 +607,9 @@ void test_push_back_to_size_1000_type_owned_string() {
   TEST_ASSERT_EQUAL_size_t(1024, v->capacity);
   TEST_ASSERT_EQUAL(t, v->type);
 
-  char *s_for_check = create_string_of_char(char_array_size, char_for_string);
+  cetl_str_t s_for_check = create_string_of_char(char_array_size, char_for_string);
 
-  for (size_t i = 0; i < 1000; ++i) {
+  for (cetl_size_t i = 0; i < 1000; ++i) {
     TEST_ASSERT_EQUAL_size_t(char_array_size,
                              ((OwnedString *)cetl_vec_get(v, 0))->len);
     TEST_ASSERT_EQUAL_STRING(s_for_check,
@@ -621,7 +621,7 @@ void test_push_back_to_size_1000_type_owned_string() {
   free(s_for_check);
 }
 
-void test_push_back_to_size_1_type_test_heap_str() {
+cetl_void_t test_push_back_to_size_1_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -631,18 +631,18 @@ void test_push_back_to_size_1_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_test_heap_str_objects = 1;
-  size_t str_len = 10;
-  int char_for_string = 'S';
+  cetl_size_t num_test_heap_str_objects = 1;
+  cetl_size_t str_len = 10;
+  cetl_uchar_t char_for_string = 'S';
 
   vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
                               char_for_string);
 
   TEST_ASSERT_EQUAL_size_t(1, vec->size);
-  TEST_ASSERT_EQUAL_size_t(cetl_VEC_START_CAPACITY, vec->capacity);
+  TEST_ASSERT_EQUAL_size_t(CETL_VEC_START_CAPACITY, vec->capacity);
   TEST_ASSERT_EQUAL(test_heap_str_type, vec->type);
 
-  char *expected_string = create_string_of_char(str_len, char_for_string);
+  cetl_str_t expected_string = create_string_of_char(str_len, char_for_string);
   TestHeapStr *expected_test_heap_str =
       make_test_heap_str(0, 0, expected_string);
 
@@ -661,7 +661,7 @@ void test_push_back_to_size_1_type_test_heap_str() {
   free(expected_test_heap_str);
 }
 
-void test_push_back_to_size_10_type_test_heap_str() {
+cetl_void_t test_push_back_to_size_10_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -671,9 +671,9 @@ void test_push_back_to_size_10_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_test_heap_str_objects = 10;
-  size_t str_len = 40;
-  int char_for_string = 'Q';
+  cetl_size_t num_test_heap_str_objects = 10;
+  cetl_size_t str_len = 40;
+  cetl_uchar_t char_for_string = 'Q';
 
   vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -682,9 +682,9 @@ void test_push_back_to_size_10_type_test_heap_str() {
   TEST_ASSERT_EQUAL_size_t(16, vec->capacity);
   TEST_ASSERT_EQUAL(test_heap_str_type, vec->type);
 
-  for (size_t i = 0; i < num_test_heap_str_objects; ++i) {
+  for (cetl_size_t i = 0; i < num_test_heap_str_objects; ++i) {
 
-    char *expected_string = create_string_of_char(str_len, char_for_string);
+    cetl_str_t expected_string = create_string_of_char(str_len, char_for_string);
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -706,7 +706,7 @@ void test_push_back_to_size_10_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_push_back_to_size_1000_type_test_heap_str() {
+cetl_void_t test_push_back_to_size_1000_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -716,9 +716,9 @@ void test_push_back_to_size_1000_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_test_heap_str_objects = 1000;
-  size_t str_len = 40;
-  int char_for_string = 'F';
+  cetl_size_t num_test_heap_str_objects = 1000;
+  cetl_size_t str_len = 40;
+  cetl_uchar_t char_for_string = 'F';
 
   vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -727,9 +727,9 @@ void test_push_back_to_size_1000_type_test_heap_str() {
   TEST_ASSERT_EQUAL_size_t(1024, vec->capacity);
   TEST_ASSERT_EQUAL(test_heap_str_type, vec->type);
 
-  for (size_t i = 0; i < num_test_heap_str_objects; ++i) {
+  for (cetl_size_t i = 0; i < num_test_heap_str_objects; ++i) {
 
-    char *expected_string = create_string_of_char(str_len, char_for_string);
+    cetl_str_t expected_string = create_string_of_char(str_len, char_for_string);
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -751,7 +751,7 @@ void test_push_back_to_size_1000_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_pop_back_size_0_type_int() {
+cetl_void_t test_pop_back_size_0_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -768,7 +768,7 @@ void test_pop_back_size_0_type_int() {
   free(int_type);
 }
 
-void test_pop_back_size_1_type_int() {
+cetl_void_t test_pop_back_size_1_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -787,7 +787,7 @@ void test_pop_back_size_1_type_int() {
   free(int_type);
 }
 
-void test_pop_back_size_10_type_int() {
+cetl_void_t test_pop_back_size_10_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -802,7 +802,7 @@ void test_pop_back_size_10_type_int() {
 
   TEST_ASSERT_EQUAL_size_t(9, vec->size);
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_vec_get(vec, i)));
   }
 
@@ -810,7 +810,7 @@ void test_pop_back_size_10_type_int() {
   free(int_type);
 }
 
-void test_pop_back_size_0_type_owned_string() {
+cetl_void_t test_pop_back_size_0_type_owned_string() {
 
   cetl_type *owned_string_type = create_owned_string_type();
 
@@ -827,7 +827,7 @@ void test_pop_back_size_0_type_owned_string() {
   free(owned_string_type);
 }
 
-void test_pop_back_size_10_type_owned_string() {
+cetl_void_t test_pop_back_size_10_type_owned_string() {
 
   cetl_type *owned_string_type = create_owned_string_type();
 
@@ -837,9 +837,9 @@ void test_pop_back_size_10_type_owned_string() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_owned_string_objects = 10;
-  size_t str_len = 20;
-  int char_for_string = 'F';
+  cetl_size_t num_owned_string_objects = 10;
+  cetl_size_t str_len = 20;
+  cetl_uchar_t char_for_string = 'F';
 
   vec_fill_with_owned_string(vec, num_owned_string_objects, str_len,
                              char_for_string);
@@ -847,9 +847,9 @@ void test_pop_back_size_10_type_owned_string() {
   TEST_ASSERT_EQUAL_PTR(vec, cetl_vec_pop_back(vec));
   TEST_ASSERT_EQUAL_size_t(9, vec->size);
 
-  char *expected_owned_string = create_string_of_char(str_len, char_for_string);
+  cetl_str_t expected_owned_string = create_string_of_char(str_len, char_for_string);
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_STRING(expected_owned_string,
                              ((OwnedString *)cetl_vec_get(vec, i))->data);
   }
@@ -859,7 +859,7 @@ void test_pop_back_size_10_type_owned_string() {
   free(expected_owned_string);
 }
 
-void test_pop_back_size_0_type_test_heap_str() {
+cetl_void_t test_pop_back_size_0_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -876,7 +876,7 @@ void test_pop_back_size_0_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_pop_back_size_1_type_test_heap_str() {
+cetl_void_t test_pop_back_size_1_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -886,9 +886,9 @@ void test_pop_back_size_1_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_test_heap_str_objects = 1;
-  size_t str_len = 10;
-  int char_for_string = 'F';
+  cetl_size_t num_test_heap_str_objects = 1;
+  cetl_size_t str_len = 10;
+  cetl_uchar_t char_for_string = 'F';
 
   vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -901,7 +901,7 @@ void test_pop_back_size_1_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_pop_back_size_10_type_test_heap_str() {
+cetl_void_t test_pop_back_size_10_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -911,9 +911,9 @@ void test_pop_back_size_10_type_test_heap_str() {
 
   TEST_ASSERT_NOT_NULL(vec);
 
-  size_t num_test_heap_str_objects = 10;
-  size_t str_len = 50;
-  int char_for_string = 'F';
+  cetl_size_t num_test_heap_str_objects = 10;
+  cetl_size_t str_len = 50;
+  cetl_uchar_t char_for_string = 'F';
 
   vec_fill_with_test_heap_str(vec, num_test_heap_str_objects, str_len,
                               char_for_string);
@@ -922,7 +922,7 @@ void test_pop_back_size_10_type_test_heap_str() {
 
   TEST_ASSERT_EQUAL_size_t(9, vec->size);
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_INT(i, i);
   }
 
@@ -930,7 +930,7 @@ void test_pop_back_size_10_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_resize_to_capacity_8_from_capacity_8_size_0_type_int() {
+cetl_void_t test_recetl_size_to_capacity_8_from_capacity_8_size_0_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -951,7 +951,7 @@ void test_resize_to_capacity_8_from_capacity_8_size_0_type_int() {
   free(int_type);
 }
 
-void test_resize_to_capacity_0_from_capacity_8_size_0_type_int() {
+cetl_void_t test_recetl_size_to_capacity_0_from_capacity_8_size_0_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -972,7 +972,7 @@ void test_resize_to_capacity_0_from_capacity_8_size_0_type_int() {
   free(int_type);
 }
 
-void test_resize_to_capacity_16_from_capacity_8_size_0_type_int() {
+cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_0_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -993,7 +993,7 @@ void test_resize_to_capacity_16_from_capacity_8_size_0_type_int() {
   free(int_type);
 }
 
-void test_resize_to_capacity_16_from_capacity_8_size_5_type_int() {
+cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -1011,7 +1011,7 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_int() {
   TEST_ASSERT_EQUAL_size_t(16, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(int_type, vec->type);
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_vec_get(vec, i)));
   }
 
@@ -1019,7 +1019,7 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_int() {
   free(int_type);
 }
 
-void test_resize_to_capacity_3_from_capacity_8_size_5_type_int() {
+cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_int() {
 
   cetl_type *int_type = create_int_type();
 
@@ -1037,7 +1037,7 @@ void test_resize_to_capacity_3_from_capacity_8_size_5_type_int() {
   TEST_ASSERT_EQUAL_size_t(3, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(int_type, vec->type);
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_vec_get(vec, i)));
   }
 
@@ -1045,7 +1045,7 @@ void test_resize_to_capacity_3_from_capacity_8_size_5_type_int() {
   free(int_type);
 }
 
-void test_resize_to_capacity_16_from_capacity_8_size_5_type_owned_string() {
+cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_owned_string() {
 
   cetl_type *owned_string_type = create_owned_string_type();
 
@@ -1063,9 +1063,9 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_owned_string() {
   TEST_ASSERT_EQUAL_size_t(16, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(owned_string_type, vec->type);
 
-  char *expected_owned_string = create_string_of_char(10, 'A');
+  cetl_str_t expected_owned_string = create_string_of_char(10, 'A');
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_STRING(expected_owned_string,
                              ((OwnedString *)cetl_vec_get(vec, i))->data);
   }
@@ -1075,7 +1075,7 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_owned_string() {
   free(expected_owned_string);
 }
 
-void test_resize_to_capacity_3_from_capacity_8_size_5_type_owned_string() {
+cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_owned_string() {
 
   cetl_type *owned_string_type = create_owned_string_type();
 
@@ -1093,9 +1093,9 @@ void test_resize_to_capacity_3_from_capacity_8_size_5_type_owned_string() {
   TEST_ASSERT_EQUAL_size_t(3, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(owned_string_type, vec->type);
 
-  char *expected_owned_string = create_string_of_char(10, 'A');
+  cetl_str_t expected_owned_string = create_string_of_char(10, 'A');
 
-  for (size_t i = 0; i < vec->size; ++i) {
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
     TEST_ASSERT_EQUAL_STRING(expected_owned_string,
                              ((OwnedString *)cetl_vec_get(vec, i))->data);
   }
@@ -1105,7 +1105,7 @@ void test_resize_to_capacity_3_from_capacity_8_size_5_type_owned_string() {
   free(expected_owned_string);
 }
 
-void test_resize_to_capacity_16_from_capacity_8_size_5_type_test_heap_str() {
+cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -1123,8 +1123,8 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_test_heap_str() {
   TEST_ASSERT_EQUAL_size_t(16, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(test_heap_str_type, vec->type);
 
-  for (size_t i = 0; i < vec->size; ++i) {
-    char *expected_string = create_string_of_char(40, 'F');
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
+    cetl_str_t expected_string = create_string_of_char(40, 'F');
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -1146,7 +1146,7 @@ void test_resize_to_capacity_16_from_capacity_8_size_5_type_test_heap_str() {
   free(test_heap_str_type);
 }
 
-void test_resize_to_capacity_3_from_capacity_8_size_5_type_test_heap_str() {
+cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_test_heap_str() {
 
   cetl_type *test_heap_str_type = create_test_heap_str_type();
 
@@ -1164,8 +1164,8 @@ void test_resize_to_capacity_3_from_capacity_8_size_5_type_test_heap_str() {
   TEST_ASSERT_EQUAL_size_t(3, vec->capacity);
   TEST_ASSERT_EQUAL_PTR(test_heap_str_type, vec->type);
 
-  for (size_t i = 0; i < vec->size; ++i) {
-    char *expected_string = create_string_of_char(40, 'F');
+  for (cetl_size_t i = 0; i < vec->size; ++i) {
+    cetl_str_t expected_string = create_string_of_char(40, 'F');
 
     TestHeapStr *expected_test_heap_str =
         make_test_heap_str(i, i, expected_string);
@@ -1236,17 +1236,17 @@ int main() {
 
   printf("\n");
 
-  RUN_TEST(test_resize_to_capacity_0_from_capacity_8_size_0_type_int);
-  RUN_TEST(test_resize_to_capacity_8_from_capacity_8_size_0_type_int);
-  RUN_TEST(test_resize_to_capacity_16_from_capacity_8_size_0_type_int);
-  RUN_TEST(test_resize_to_capacity_3_from_capacity_8_size_5_type_int);
-  RUN_TEST(test_resize_to_capacity_16_from_capacity_8_size_5_type_int);
+  RUN_TEST(test_recetl_size_to_capacity_0_from_capacity_8_size_0_type_int);
+  RUN_TEST(test_recetl_size_to_capacity_8_from_capacity_8_size_0_type_int);
+  RUN_TEST(test_recetl_size_to_capacity_16_from_capacity_8_size_0_type_int);
+  RUN_TEST(test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_int);
+  RUN_TEST(test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_int);
 
-  RUN_TEST(test_resize_to_capacity_3_from_capacity_8_size_5_type_owned_string);
-  RUN_TEST(test_resize_to_capacity_16_from_capacity_8_size_5_type_owned_string);
+  RUN_TEST(test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_owned_string);
+  RUN_TEST(test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_owned_string);
 
-  RUN_TEST(test_resize_to_capacity_3_from_capacity_8_size_5_type_test_heap_str);
-  RUN_TEST(test_resize_to_capacity_16_from_capacity_8_size_5_type_test_heap_str);
+  RUN_TEST(test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_test_heap_str);
+  RUN_TEST(test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_test_heap_str);
 
   return UNITY_END();
 }
