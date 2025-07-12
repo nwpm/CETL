@@ -48,7 +48,7 @@ cetl_stack *cetl_stack_create_copy(const cetl_stack *src_stack) {
   return new_stack;
 }
 
-cetl_stack *cetl_stack_push(cetl_stack *stack, const void *data) {
+cetl_stack *cetl_stack_push(cetl_stack *stack, const cetl_ptr_t data) {
 
   if (cetl_llist_push_back(stack->data, data) == NULL) {
     return NULL;
@@ -70,20 +70,20 @@ cetl_stack *cetl_stack_pop(cetl_stack *stack) {
   return stack;
 }
 
-bool cetl_stack_is_empty(const cetl_stack *stack) {
+cetl_bool_t cetl_stack_is_empty(const cetl_stack *stack) {
   return cetl_llist_is_empty(stack->data);
 }
 
-void *cetl_stack_top(const cetl_stack *stack) {
+cetl_ptr_t cetl_stack_top(const cetl_stack *stack) {
   return cetl_llist_get(stack->data, stack->size - 1);
 }
 
-void cetl_stack_clear(cetl_stack *stack) {
+cetl_void_t cetl_stack_clear(cetl_stack *stack) {
   cetl_llist_clear(stack->data);
   stack->size = 0;
 }
 
-void cetl_stack_free(cetl_stack *s) {
+cetl_void_t cetl_stack_free(cetl_stack *s) {
 
   if (s == NULL) {
     return;

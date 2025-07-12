@@ -3,17 +3,18 @@
 
 #include <stddef.h>
 #include "../type/cetl_type.h"
+#include "../../prefix/cetl_ptypes.h"
 
 typedef struct _cetl_node {
 
-  void *data;
+  cetl_ptr_t data;
   struct _cetl_node *next;
 
 } _cetl_node;
 
 struct cetl_llist {
 
-  size_t size;
+  cetl_size_t size;
   _cetl_node *head;
   _cetl_node *tail;
   const cetl_type* type;

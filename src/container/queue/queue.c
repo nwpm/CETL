@@ -53,15 +53,15 @@ cetl_queue *cetl_queue_create_copy(const cetl_queue *src_queue) {
   return new_queue;
 }
 
-void *cetl_queue_front(const cetl_queue *queue) {
+cetl_ptr_t cetl_queue_front(const cetl_queue *queue) {
   return cetl_llist_get(queue->data, 0);
 }
 
-void *cetl_queue_back(const cetl_queue *queue) {
+cetl_ptr_t cetl_queue_back(const cetl_queue *queue) {
   return cetl_llist_get(queue->data, queue->size - 1);
 }
 
-cetl_queue *cetl_queue_push(cetl_queue *queue, const void *data) {
+cetl_queue *cetl_queue_push(cetl_queue *queue, const cetl_ptr_t data) {
 
   if(cetl_llist_push_back(queue->data, data) == NULL){
     return NULL;
@@ -83,11 +83,11 @@ cetl_queue *cetl_queue_pop(cetl_queue *queue) {
   return queue;
 }
 
-size_t cetl_queue_size(const cetl_queue *queue) { return queue->size; }
+cetl_size_t cetl_queue_size(const cetl_queue *queue) { return queue->size; }
 
-bool cetl_queue_is_empty(const cetl_queue *queue) { return queue && !queue->size; }
+cetl_bool_t cetl_queue_is_empty(const cetl_queue *queue) { return queue && !queue->size; }
 
-void cetl_queue_swap(cetl_queue **queue1, cetl_queue **queue2){
+cetl_void_t cetl_queue_swap(cetl_queue **queue1, cetl_queue **queue2){
 
   if(queue1 == NULL || queue2 == NULL){
     return;
@@ -99,7 +99,7 @@ void cetl_queue_swap(cetl_queue **queue1, cetl_queue **queue2){
 
 }
 
-void cetl_queue_free(cetl_queue *queue) {
+cetl_void_t cetl_queue_free(cetl_queue *queue) {
 
   if(queue == NULL){
     return;

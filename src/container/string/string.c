@@ -6,7 +6,7 @@
 static cetl_string *_cetl_str_ensure_capacity(cetl_string *string) {
 
   if (string->length + 1 >= string->capacity) {
-    size_t new_capacity = string->capacity * CETL_STR_GROW_RATE;
+    cetl_size_t new_capacity = string->capacity * CETL_STR_GROW_RATE;
     if (cetl_str_resize(string, new_capacity - 1) == NULL) {
       return NULL;
     }
@@ -15,11 +15,11 @@ static cetl_string *_cetl_str_ensure_capacity(cetl_string *string) {
 }
 
 static cetl_string *_cetl_str_reserve_until(cetl_string *string,
-                                            size_t new_len) {
+                                            cetl_size_t new_len) {
 
   if (new_len >= string->capacity) {
 
-    size_t new_capacity = string->capacity;
+    cetl_size_t new_capacity = string->capacity;
 
     while (new_capacity - 1 < new_len) {
 
@@ -33,7 +33,7 @@ static cetl_string *_cetl_str_reserve_until(cetl_string *string,
   return string;
 }
 
-cetl_string *cetl_str_create_uninit(size_t len) {
+cetl_string *cetl_str_create_uninit(cetl_size_t len) {
 
   cetl_string *string = malloc(sizeof(cetl_string));
 
@@ -41,7 +41,7 @@ cetl_string *cetl_str_create_uninit(size_t len) {
     return NULL;
   }
 
-  char *cstr = malloc(len + 1);
+  cetl_str_t cstr = malloc(len + 1);
 
   if (cstr == NULL) {
     free(string);
@@ -59,7 +59,7 @@ cetl_string *cetl_str_create_uninit(size_t len) {
 
 cetl_string *cetl_str_create_empty() { return cetl_str_create_uninit(0); }
 
-cetl_string *cetl_str_create_filled(size_t len, int ch) {
+cetl_string *cetl_str_create_filled(cetl_size_t len, cetl_uchar_t ch) {
 
   cetl_string *string = cetl_str_create_uninit(len);
 
@@ -72,13 +72,13 @@ cetl_string *cetl_str_create_filled(size_t len, int ch) {
   return string;
 }
 
-cetl_string *cetl_str_create_from_cstr(const char *cstr) {
+cetl_string *cetl_str_create_from_cstr(cetl_cstr_t cstr) {
 
   if (cstr == NULL) {
     return NULL;
   }
 
-  size_t len_cstr = strlen(cstr);
+  cetl_size_t len_cstr = strlen(cstr);
 
   cetl_string *string = cetl_str_create_uninit(len_cstr);
 
@@ -108,11 +108,11 @@ cetl_string *cetl_str_create_copy(const cetl_string *src_string) {
   return new_string;
 }
 
-size_t cetl_str_length(const cetl_string *string) { return string->length; }
+cetl_size_t cetl_str_length(const cetl_string *string) { return string->length; }
 
-size_t cetl_str_capacity(const cetl_string *string) { return string->capacity; }
+cetl_size_t cetl_str_capacity(const cetl_string *string) { return string->capacity; }
 
-char *cetl_str_data(const cetl_string *string) {
+cetl_str_t cetl_str_data(const cetl_string *string) {
 
   if (string == NULL) {
     return NULL;
@@ -121,15 +121,15 @@ char *cetl_str_data(const cetl_string *string) {
   return string->data;
 }
 
-bool cetl_str_is_empty(const cetl_string *string) { return !string->length; }
+cetl_bool_t cetl_str_is_empty(const cetl_string *string) { return !string->length; }
 
-cetl_string *cetl_str_resize(cetl_string *string, size_t new_len) {
+cetl_string *cetl_str_resize(cetl_string *string, cetl_size_t new_len) {
 
   if (string == NULL || (new_len + 1) == string->capacity) {
     return string;
   }
 
-  char *new_ptr = malloc(new_len + 1);
+  cetl_str_t new_ptr = malloc(new_len + 1);
 
   if (new_ptr == NULL) {
     return NULL;
@@ -147,19 +147,19 @@ cetl_string *cetl_str_resize(cetl_string *string, size_t new_len) {
   return string;
 }
 
-cetl_string *cetl_str_append_cstr(cetl_string *string, const char *cstr) {
+cetl_string *cetl_str_append_cstr(cetl_string *string, cetl_cstr_t cstr) {
 
   if (string == NULL || cstr == NULL) {
     return NULL;
   }
 
-  size_t cstr_len = strlen(cstr);
+  cetl_size_t cstr_len = strlen(cstr);
 
   if (cstr_len == 0) {
     return string;
   }
 
-  size_t new_len = string->length + cstr_len;
+  cetl_size_t new_len = string->length + cstr_len;
 
   if (_cetl_str_reserve_until(string, new_len) == NULL) {
     return NULL;
@@ -173,7 +173,7 @@ cetl_string *cetl_str_append_cstr(cetl_string *string, const char *cstr) {
   return string;
 }
 
-cetl_string *cetl_str_append_char(cetl_string *string, int ch) {
+cetl_string *cetl_str_append_char(cetl_string *string, cetl_uchar_t ch) {
 
   if (string == NULL || _cetl_str_ensure_capacity(string) == NULL) {
     return NULL;
@@ -187,7 +187,7 @@ cetl_string *cetl_str_append_char(cetl_string *string, int ch) {
   return string;
 }
 
-cetl_string *cetl_str_insert_char(cetl_string *string, size_t pos, int ch) {
+cetl_string *cetl_str_insert_char(cetl_string *string, cetl_size_t pos, cetl_uchar_t ch) {
 
   if (string == NULL || pos > string->length ||
       _cetl_str_ensure_capacity(string)) {
@@ -199,11 +199,11 @@ cetl_string *cetl_str_insert_char(cetl_string *string, size_t pos, int ch) {
     return string;
   }
 
-  char *dest = string->data + pos + 1;
-  char *src = string->data + pos;
+  cetl_str_t dest = string->data + pos + 1;
+  cetl_str_t src = string->data + pos;
   memmove(dest, src, string->length - pos);
 
-  char *dest_insert = string->data + pos;
+  cetl_str_t dest_insert = string->data + pos;
   memset(dest_insert, ch, sizeof(char));
 
   string->length++;
@@ -212,30 +212,30 @@ cetl_string *cetl_str_insert_char(cetl_string *string, size_t pos, int ch) {
   return string;
 }
 
-cetl_string *cetl_str_insert_cstr(cetl_string *string, size_t pos,
-                                  const char *cstr) {
+cetl_string *cetl_str_insert_cstr(cetl_string *string, cetl_size_t pos,
+                                  cetl_cstr_t cstr) {
 
   if (string == NULL || cstr == NULL || pos > string->length) {
     return NULL;
   }
 
-  size_t cstr_len = strlen(cstr);
+  cetl_size_t cstr_len = strlen(cstr);
 
   if (cstr_len == 0) {
     return string;
   }
 
-  size_t new_len = string->length + cstr_len;
+  cetl_size_t new_len = string->length + cstr_len;
 
   if (_cetl_str_reserve_until(string, new_len) == NULL) {
     return NULL;
   }
 
-  char *dest = string->data + pos + cstr_len;
-  char *src = string->data + pos;
+  cetl_str_t dest = string->data + pos + cstr_len;
+  cetl_str_t src = string->data + pos;
   memmove(dest, src, string->length - pos);
 
-  char *dest_r = string->data + pos;
+  cetl_str_t dest_r = string->data + pos;
   memcpy(dest_r, cstr, cstr_len);
 
   string->length = new_len;
@@ -244,7 +244,7 @@ cetl_string *cetl_str_insert_cstr(cetl_string *string, size_t pos,
   return string;
 }
 
-cetl_string *cetl_str_erase_char(cetl_string *string, size_t pos) {
+cetl_string *cetl_str_erase_char(cetl_string *string, cetl_size_t pos) {
 
   if (string == NULL || string->length == 0 || pos >= string->length) {
     return NULL;
@@ -254,9 +254,9 @@ cetl_string *cetl_str_erase_char(cetl_string *string, size_t pos) {
     return cetl_str_pop_back(string);
   }
 
-  char *dest = string->data + pos;
-  char *src = string->data + pos + 1;
-  size_t move_size = string->length - pos - 1;
+  cetl_str_t dest = string->data + pos;
+  cetl_str_t src = string->data + pos + 1;
+  cetl_size_t move_size = string->length - pos - 1;
   memmove(dest, src, move_size);
 
   string->length--;
@@ -265,7 +265,7 @@ cetl_string *cetl_str_erase_char(cetl_string *string, size_t pos) {
   return string;
 }
 
-cetl_string *cetl_str_erase_span(cetl_string *string, size_t pos, size_t len) {
+cetl_string *cetl_str_erase_span(cetl_string *string, cetl_size_t pos, cetl_size_t len) {
 
   if (string == NULL || pos >= string->length || pos + len > string->length) {
     return NULL;
@@ -281,9 +281,9 @@ cetl_string *cetl_str_erase_span(cetl_string *string, size_t pos, size_t len) {
     return string;
   }
 
-  char *dest = string->data + pos;
-  char *src = string->data + pos + len;
-  size_t move_size = string->length - pos - len;
+  cetl_str_t dest = string->data + pos;
+  cetl_str_t src = string->data + pos + len;
+  cetl_size_t move_size = string->length - pos - len;
   memmove(dest, src, move_size);
 
   string->length -= len;
@@ -325,8 +325,8 @@ cetl_string *cetl_str_pop_back(cetl_string *string) {
   return string;
 }
 
-cetl_string *cetl_str_replace(cetl_string *string, size_t pos, size_t len,
-                              const char *substr) {
+cetl_string *cetl_str_replace(cetl_string *string, cetl_size_t pos, cetl_size_t len,
+                              cetl_cstr_t substr) {
 
   if (string == NULL || substr == NULL || (len + pos > string->length)) {
     return NULL;
@@ -341,7 +341,7 @@ cetl_string *cetl_str_replace(cetl_string *string, size_t pos, size_t len,
   return string;
 }
 
-const char *cetl_str_find(const cetl_string *string, const char *substr) {
+cetl_str_t cetl_str_find(const cetl_string *string, cetl_cstr_t substr) {
 
   if (string == NULL || substr == NULL) {
     return NULL;
@@ -350,11 +350,11 @@ const char *cetl_str_find(const cetl_string *string, const char *substr) {
   return strstr(string->data, substr);
 }
 
-int cetl_str_compare(const cetl_string *string, const char *substr) {
+cetl_result_t cetl_str_compare(const cetl_string *string, cetl_cstr_t substr) {
   return strcmp(string->data, substr);
 }
 
-void cetl_str_swap(cetl_string **string1, cetl_string **string2) {
+cetl_void_t cetl_str_swap(cetl_string **string1, cetl_string **string2) {
 
   if (string1 == NULL || string2 == NULL) {
     return;
@@ -365,7 +365,7 @@ void cetl_str_swap(cetl_string **string1, cetl_string **string2) {
   *string2 = tmp;
 }
 
-void cetl_str_free(cetl_string *string) {
+cetl_void_t cetl_str_free(cetl_string *string) {
   free(string->data);
   free(string);
 }

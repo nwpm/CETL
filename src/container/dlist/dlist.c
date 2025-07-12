@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static _cetl_dnode *_cetl_dlist_create_dnode(const void *data,
+static _cetl_dnode *_cetl_dlist_create_dnode(const cetl_ptr_t data,
                                              cetl_dlist *dlist) {
 
   _cetl_dnode *dnode = malloc(sizeof(_cetl_dnode));
@@ -31,7 +31,7 @@ static _cetl_dnode *_cetl_dlist_create_dnode(const void *data,
   return dnode;
 }
 
-static void _cetl_dlist_free_node_data(cetl_dlist *dlist, void *data) {
+static cetl_void_t _cetl_dlist_free_node_data(cetl_dlist *dlist, cetl_ptr_t data) {
   if (dlist->type->dtor) {
     dlist->type->dtor(data);
   } else {
@@ -81,7 +81,7 @@ cetl_dlist *cetl_dlist_create_copy(const cetl_dlist *src_dlist) {
   return new_dlist;
 }
 
-cetl_dlist *cetl_dlist_push_back(cetl_dlist *dlist, const void *data) {
+cetl_dlist *cetl_dlist_push_back(cetl_dlist *dlist, const cetl_ptr_t data) {
 
   if (dlist == NULL || data == NULL) {
     return NULL;
@@ -110,7 +110,7 @@ cetl_dlist *cetl_dlist_push_back(cetl_dlist *dlist, const void *data) {
   return dlist;
 }
 
-cetl_dlist *cetl_dlist_push_front(cetl_dlist *dlist, const void *data) {
+cetl_dlist *cetl_dlist_push_front(cetl_dlist *dlist, const cetl_ptr_t data) {
 
   if (dlist == NULL || data == NULL) {
     return NULL;
@@ -183,7 +183,7 @@ cetl_dlist *cetl_dlist_pop_front(cetl_dlist *dlist) {
   return dlist;
 }
 
-cetl_dlist *cetl_dlist_insert(cetl_dlist *dlist, const void *data, size_t pos) {
+cetl_dlist *cetl_dlist_insert(cetl_dlist *dlist, const cetl_ptr_t data, cetl_size_t pos) {
 
   if (dlist == NULL || data == NULL || pos > dlist->size) {
     return NULL;
@@ -203,7 +203,7 @@ cetl_dlist *cetl_dlist_insert(cetl_dlist *dlist, const void *data, size_t pos) {
 
   _cetl_dnode *prev = dlist->head;
 
-  for (size_t i = 0; i < pos - 1; ++i) {
+  for (cetl_size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
   }
 
@@ -220,7 +220,7 @@ cetl_dlist *cetl_dlist_insert(cetl_dlist *dlist, const void *data, size_t pos) {
   return dlist;
 }
 
-cetl_dlist *cetl_dlist_erase(cetl_dlist *dlist, size_t pos) {
+cetl_dlist *cetl_dlist_erase(cetl_dlist *dlist, cetl_size_t pos) {
 
   if (dlist == NULL || pos >= dlist->size) {
     return NULL;
@@ -234,7 +234,7 @@ cetl_dlist *cetl_dlist_erase(cetl_dlist *dlist, size_t pos) {
 
   _cetl_dnode *prev = dlist->head;
 
-  for (size_t i = 0; i < pos - 1; ++i) {
+  for (cetl_size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
   }
 
@@ -292,7 +292,7 @@ cetl_dlist *cetl_dlist_clear(cetl_dlist *dlist) {
   return dlist;
 }
 
-cetl_dlist *cetl_dlist_set(cetl_dlist *dlist, size_t pos, const void *data) {
+cetl_dlist *cetl_dlist_set(cetl_dlist *dlist, cetl_size_t pos, const cetl_ptr_t data) {
 
   if (dlist == NULL || data == NULL || pos >= dlist->size) {
     return NULL;
@@ -300,7 +300,7 @@ cetl_dlist *cetl_dlist_set(cetl_dlist *dlist, size_t pos, const void *data) {
 
   _cetl_dnode *target = dlist->head;
 
-  for (size_t i = 0; i < pos; ++i) {
+  for (cetl_size_t i = 0; i < pos; ++i) {
     target = target->next;
   }
 
@@ -315,9 +315,9 @@ cetl_dlist *cetl_dlist_set(cetl_dlist *dlist, size_t pos, const void *data) {
   return dlist;
 }
 
-size_t cetl_dlist_size(const cetl_dlist *dlist) { return dlist->size; }
+cetl_size_t cetl_dlist_size(const cetl_dlist *dlist) { return dlist->size; }
 
-void *cetl_dlist_get(const cetl_dlist *dlist, size_t pos) {
+cetl_ptr_t cetl_dlist_get(const cetl_dlist *dlist, cetl_size_t pos) {
 
   if (dlist == NULL || pos >= dlist->size) {
     return NULL;
@@ -325,16 +325,16 @@ void *cetl_dlist_get(const cetl_dlist *dlist, size_t pos) {
 
   _cetl_dnode *target = dlist->head;
 
-  for (size_t i = 0; i < pos; ++i) {
+  for (cetl_size_t i = 0; i < pos; ++i) {
     target = target->next;
   }
 
   return target->data;
 }
 
-bool cetl_dlist_is_empty(const cetl_dlist *dlist) { return dlist && !dlist->size; }
+cetl_bool_t cetl_dlist_is_empty(const cetl_dlist *dlist) { return dlist && !dlist->size; }
 
-void cetl_dlist_free_nodes(cetl_dlist *dlist) {
+cetl_void_t cetl_dlist_free_nodes(cetl_dlist *dlist) {
 
   _cetl_dnode *current = dlist->head;
 
@@ -345,7 +345,7 @@ void cetl_dlist_free_nodes(cetl_dlist *dlist) {
   free(current);
 }
 
-void cetl_dlist_free(cetl_dlist *dlist) {
+cetl_void_t cetl_dlist_free(cetl_dlist *dlist) {
   cetl_dlist_free_nodes(dlist);
   free(dlist);
 }

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static _cetl_node *_cetl_llist_create_node(const void *data,
+static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
                                            const cetl_llist *llist) {
 
   _cetl_node *node = malloc(sizeof(_cetl_node));
@@ -30,7 +30,7 @@ static _cetl_node *_cetl_llist_create_node(const void *data,
   return node;
 }
 
-static void _cetl_llist_free_node_data(const cetl_llist *llist, void *data) {
+static void _cetl_llist_free_node_data(const cetl_llist *llist, cetl_ptr_t data) {
   if (llist->type && llist->type->dtor) {
     llist->type->dtor(data);
   } else {
@@ -86,7 +86,7 @@ cetl_llist *cetl_llist_create_copy(const cetl_llist *src_llist) {
   return new_llist;
 }
 
-cetl_llist *cetl_llist_push_back(cetl_llist *llist, const void *data) {
+cetl_llist *cetl_llist_push_back(cetl_llist *llist, const cetl_ptr_t data) {
 
   if (llist == NULL || data == NULL) {
     return NULL;
@@ -144,7 +144,7 @@ cetl_llist *cetl_llist_pop_back(cetl_llist *llist) {
   return llist;
 }
 
-cetl_llist *cetl_llist_push_front(cetl_llist *llist, const void *data) {
+cetl_llist *cetl_llist_push_front(cetl_llist *llist, const cetl_ptr_t data) {
 
   if (llist == NULL || data == NULL) {
     return NULL;
@@ -192,7 +192,7 @@ cetl_llist *cetl_llist_pop_front(cetl_llist *llist) {
   return llist;
 }
 
-cetl_llist *cetl_llist_insert(cetl_llist *llist, const void *data, size_t pos) {
+cetl_llist *cetl_llist_insert(cetl_llist *llist, const cetl_ptr_t data, cetl_size_t pos) {
 
   if (llist == NULL || data == NULL || pos > llist->size) {
     return NULL;
@@ -212,7 +212,7 @@ cetl_llist *cetl_llist_insert(cetl_llist *llist, const void *data, size_t pos) {
 
   _cetl_node *prev = llist->head;
 
-  for (size_t i = 0; i < pos - 1; ++i) {
+  for (cetl_size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
   }
 
@@ -226,7 +226,7 @@ cetl_llist *cetl_llist_insert(cetl_llist *llist, const void *data, size_t pos) {
   return llist;
 }
 
-cetl_llist *cetl_llist_erase(cetl_llist *llist, size_t pos) {
+cetl_llist *cetl_llist_erase(cetl_llist *llist, cetl_size_t pos) {
 
   if (llist == NULL || pos >= llist->size) {
     return NULL;
@@ -240,7 +240,7 @@ cetl_llist *cetl_llist_erase(cetl_llist *llist, size_t pos) {
 
   _cetl_node *prev = llist->head;
 
-  for (size_t i = 0; i < pos - 1; ++i) {
+  for (cetl_size_t i = 0; i < pos - 1; ++i) {
     prev = prev->next;
   }
 
@@ -295,13 +295,13 @@ cetl_llist *cetl_llist_clear(cetl_llist *llist) {
   return llist;
 }
 
-size_t cetl_llist_size(const cetl_llist *llist) { return llist->size; }
+cetl_size_t cetl_llist_size(const cetl_llist *llist) { return llist->size; }
 
-bool cetl_llist_is_empty(const cetl_llist *llist) {
+cetl_bool_t cetl_llist_is_empty(const cetl_llist *llist) {
   return llist && !llist->size;
 }
 
-void *cetl_llist_get(const cetl_llist *llist, size_t pos) {
+cetl_ptr_t cetl_llist_get(const cetl_llist *llist, cetl_size_t pos) {
 
   if (llist == NULL || pos >= llist->size) {
     return NULL;
@@ -309,14 +309,14 @@ void *cetl_llist_get(const cetl_llist *llist, size_t pos) {
 
   _cetl_node *target = llist->head;
 
-  for (size_t i = 0; i < pos; ++i) {
+  for (cetl_size_t i = 0; i < pos; ++i) {
     target = target->next;
   }
 
   return target->data;
 }
 
-cetl_llist *cetl_llist_set(cetl_llist *llist, size_t pos, const void *data) {
+cetl_llist *cetl_llist_set(cetl_llist *llist, cetl_size_t pos, const cetl_ptr_t data) {
 
   if (llist == NULL || data == NULL || pos >= llist->size) {
     return NULL;
@@ -324,7 +324,7 @@ cetl_llist *cetl_llist_set(cetl_llist *llist, size_t pos, const void *data) {
 
   _cetl_node *target = llist->head;
 
-  for (size_t i = 0; i < pos; ++i) {
+  for (cetl_size_t i = 0; i < pos; ++i) {
     target = target->next;
   }
 
