@@ -1,13 +1,9 @@
 #ifndef CETL_QUEUE_H
 #define CETL_QUEUE_H
 
-#include "../../src/prefix/cetl_ptypes.h"
-#include <stddef.h>
+#include "../../src/utils/types/cetl_types.h"
 
-struct cetl_type;
-typedef struct cetl_queue cetl_queue;
-
-cetl_queue *cetl_queue_create_empty(const struct cetl_type *type);
+cetl_queue *cetl_queue_create_empty(const struct cetl_element *type);
 cetl_queue *cetl_queue_create_copy(const cetl_queue *queue);
 
 cetl_queue *cetl_queue_push(cetl_queue *queue, const cetl_ptr_t data);

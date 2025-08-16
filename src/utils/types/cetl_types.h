@@ -12,10 +12,10 @@ typedef uint64_t              cetl_uint64_t;
 typedef unsigned int          cetl_uint_t;
 typedef unsigned short        cetl_ushort_t;
 
-typedef int8_t                cetl_sint8_t;
-typedef int16_t               cetl_sint16_t;
-typedef int32_t               cetl_sint32_t;
-typedef int64_t               cetl_sint64_t;
+typedef int8_t                cetl_int8_t;
+typedef int16_t               cetl_int16_t;
+typedef int32_t               cetl_int32_t;
+typedef int64_t               cetl_int64_t;
 typedef short                 cetl_short_t;
 typedef int                   cetl_int_t;
 
@@ -26,9 +26,9 @@ typedef intptr_t              cetl_intptr_t;
 typedef uintptr_t             cetl_uintptr_t;
 
 // Bool types
-typedef                       cetl_int_t cetl_bool_t;
-#define CETL_TRUE             true
-#define CETL_FALSE            false
+typedef cetl_int_t            cetl_bool_t;
+#define CETL_TRUE             1
+#define CETL_FALSE            0
 
 // Float point
 typedef float                 cetl_float_t;
@@ -47,5 +47,15 @@ typedef cetl_void_t const*    cetl_cptr_t;
 
 // Result of operation
 typedef int                   cetl_result_t;
+
+// Containers types
+typedef struct cetl_element   cetl_element;
+typedef struct cetl_llist     cetl_llist;
+typedef struct cetl_stack     cetl_stack;
+typedef struct cetl_vector    cetl_vector;
+typedef struct cetl_string    cetl_string;
+typedef struct cetl_queue     cetl_queue;
+typedef struct cetl_dlist     cetl_dlist;
+
 
 #endif // CETL_PTYPES_H

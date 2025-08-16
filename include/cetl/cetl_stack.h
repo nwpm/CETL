@@ -1,13 +1,9 @@
 #ifndef CETL_STACK_H
 #define CETL_STACK_H
 
-#include "../../src/prefix/cetl_ptypes.h"
-#include <stddef.h>
+#include "../../src/utils/types/cetl_types.h"
 
-struct cetl_type;
-typedef struct cetl_stack cetl_stack;
-
-cetl_stack *cetl_stack_create_empty(const struct cetl_type *type);
+cetl_stack *cetl_stack_create_empty(const cetl_element *type);
 cetl_stack *cetl_stack_create_copy(const cetl_stack *src_stack);
 
 cetl_stack *cetl_stack_push(cetl_stack *stack, const cetl_ptr_t data);

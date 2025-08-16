@@ -1,7 +1,24 @@
 #include "../../../include/cetl/cetl_dlist.h"
-#include "cetl_dlist_internal.h"
+#include "../../utils/element/cetl_element.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+typedef struct _cetl_dnode {
+
+  cetl_ptr_t data;
+  struct _cetl_dnode *next;
+  struct _cetl_dnode *prev;
+
+} _cetl_dnode;
+
+struct cetl_dlist {
+
+  cetl_size_t size;
+  _cetl_dnode *head;
+  _cetl_dnode *tail;
+  const cetl_element *type;
+};
 
 static _cetl_dnode *_cetl_dlist_create_dnode(const cetl_ptr_t data,
                                              cetl_dlist *dlist) {
@@ -39,7 +56,7 @@ static cetl_void_t _cetl_dlist_free_node_data(cetl_dlist *dlist, cetl_ptr_t data
   }
 }
 
-cetl_dlist *cetl_dlist_create_empty(const cetl_type *type) {
+cetl_dlist *cetl_dlist_create_empty(const cetl_element *type) {
 
   cetl_dlist *dlist = malloc(sizeof(cetl_dlist));
 

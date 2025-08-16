@@ -1,13 +1,9 @@
 #ifndef CETL_LLIST_H
 #define CETL_LLIST_H
 
-#include "../../src/prefix/cetl_prefix.h"
-#include <stddef.h>
+#include "../../src/utils/types/cetl_types.h"
 
-typedef struct cetl_type cetl_type;
-typedef struct cetl_llist cetl_llist;
-
-cetl_llist *cetl_llist_create_empty(const cetl_type *type);
+cetl_llist *cetl_llist_create_empty(const cetl_element *type);
 cetl_llist *cetl_llist_create_copy(const cetl_llist *src_llist);
 
 cetl_llist *cetl_llist_push_back(cetl_llist *llist, const cetl_ptr_t data);

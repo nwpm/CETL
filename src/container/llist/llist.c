@@ -1,7 +1,24 @@
 #include "../../../include/cetl/cetl_llist.h"
-#include "cetl_llist_internal.h"
+#include "../../utils/element/cetl_element.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+typedef struct _cetl_node {
+
+  cetl_ptr_t data;
+  struct _cetl_node *next;
+
+} _cetl_node;
+
+typedef struct cetl_llist {
+
+  cetl_size_t size;
+  _cetl_node *head;
+  _cetl_node *tail;
+  const cetl_element* type;
+
+} cetl_llist;
 
 static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
                                            const cetl_llist *llist) {
@@ -38,7 +55,7 @@ static void _cetl_llist_free_node_data(const cetl_llist *llist, cetl_ptr_t data)
   }
 }
 
-cetl_llist *cetl_llist_create_empty(const cetl_type *type) {
+cetl_llist *cetl_llist_create_empty(const cetl_element *type) {
 
   if (type == NULL) {
     return NULL;

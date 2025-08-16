@@ -1,9 +1,16 @@
 #include "../../../include/cetl/cetl_llist.h"
 #include "../../../include/cetl/cetl_stack.h"
-#include "cetl_stack_internal.h"
+
 #include <stdlib.h>
 
-cetl_stack *cetl_stack_create_empty(const cetl_type *type) {
+struct cetl_stack {
+
+  cetl_size_t size;
+  struct cetl_llist *data;
+  const cetl_element *type;
+};
+
+cetl_stack *cetl_stack_create_empty(const cetl_element *type) {
 
   if (type == NULL) {
     return NULL;

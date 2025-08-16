@@ -2,9 +2,6 @@
 CC     = gcc
 CFLAGS = -g -O0 -fsanitize=address -Wall -Wextra -Wpedantic -std=c99
 
-DEBUG_FLAGS   = -g -O0 -fsanitize=address
-RELEASE_FLAGS = -O2
-
 # === Paths ===
 
 BUILD_PATH  = ../../../build/dlist/

@@ -1,7 +1,17 @@
 #include "../../../include/cetl/cetl_string.h"
-#include "cetl_string_internal.h"
-#include <stddef.h>
+
 #include <string.h>
+#include <stdlib.h>
+
+#define CETL_STR_GROW_RATE 2
+
+struct cetl_string {
+
+  cetl_str_t data;
+  cetl_size_t length;
+  cetl_size_t capacity;
+
+};
 
 static cetl_string *_cetl_str_ensure_capacity(cetl_string *string) {
 

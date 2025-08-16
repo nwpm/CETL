@@ -1,9 +1,16 @@
 #include "../../../include/cetl/cetl_llist.h"
 #include "../../../include/cetl/cetl_queue.h"
-#include "cetl_queue_internal.h"
+
 #include <stdlib.h>
 
-cetl_queue *cetl_queue_create_empty(const cetl_type *type) {
+struct cetl_queue {
+
+  cetl_size_t size;
+  struct cetl_llist *data;
+  const struct cetl_element *type;
+};
+
+cetl_queue *cetl_queue_create_empty(const cetl_element *type) {
 
   if (type == NULL) {
     return NULL;

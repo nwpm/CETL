@@ -1,10 +1,7 @@
 #ifndef CETL_STRING_H
 #define CETL_STRING_H
 
-#include "../../src/prefix/cetl_ptypes.h"
-#include <stdlib.h>
-
-typedef struct cetl_string cetl_string;
+#include "../../src/utils/types/cetl_types.h"
 
 cetl_string *cetl_str_create_empty();
 cetl_string *cetl_str_create_uninit(cetl_size_t len);

@@ -1,13 +1,9 @@
 #ifndef CETL_VECTOR_H
 #define CETL_VECTOR_H
 
-#include "../../src/prefix/cetl_prefix.h"
-#include <stddef.h>
+#include "../../src/utils/types/cetl_types.h"
 
-typedef struct cetl_type cetl_type;
-typedef struct cetl_vector cetl_vector;
-
-cetl_vector *cetl_vec_create_empty(const cetl_type *type);
+cetl_vector *cetl_vec_create_empty(const cetl_element *type);
 cetl_vector *cetl_vec_create_copy(const cetl_vector *src_vec);
 
 cetl_vector *cetl_vec_resize(cetl_vector *vec, cetl_size_t new_capacity);

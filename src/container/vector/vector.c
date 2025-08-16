@@ -1,8 +1,18 @@
 #include "../../../include/cetl/cetl_vector.h"
-#include "cetl_vector_internal.h"
+#include "../../utils/element/cetl_element.h"
 
 #include <stdlib.h>
 #include <string.h>
+
+#define CETL_VEC_START_CAPACITY 8
+#define CETL_VEC_GROW_RATE 2
+
+struct cetl_vector {
+  cetl_size_t size;
+  cetl_size_t capacity;
+  cetl_byte_t* data;
+  const cetl_element *type;
+};
 
 static cetl_void_t _cetl_vec_free_data(cetl_vector *vec) {
 
@@ -16,7 +26,7 @@ static cetl_void_t _cetl_vec_free_data(cetl_vector *vec) {
   free(vec->data);
 }
 
-cetl_vector *cetl_vec_create_empty(const cetl_type *type) {
+cetl_vector *cetl_vec_create_empty(const cetl_element *type) {
 
   if (type == NULL) {
     return NULL;
