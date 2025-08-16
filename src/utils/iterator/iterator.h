@@ -1,15 +1,22 @@
 #ifndef CETL_COMMON_ITERATOR_H
 #define CETL_COMMON_ITERATOR_H
 
-#include "../../prefix/cetl_types.h"
+#include "../types/cetl_types.h"
 
-typedef struct cetl_common_iter {
+typedef enum _cetl_iter_category{
+  CETL_FORWARD_ITERATOR,
+  CETL_REVERSE_ITERATOR,
+  CETL_MUTABLE_ITERATOR,
+} _cetl_iter_category;
 
+typedef struct cetl_iterator {
+
+  _cetl_iter_category category;
+  const cetl_element *elem_type;
   cetl_ptr_t data;
   cetl_size_t size;
   cetl_size_t index;
-  cetl_size_t elem_size;
 
-} cetl_common_iter;
+} cetl_iterator;
 
 #endif
