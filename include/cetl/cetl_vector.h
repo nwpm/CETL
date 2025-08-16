@@ -2,10 +2,13 @@
 #define CETL_VECTOR_H
 
 #include "../../src/utils/types/cetl_types.h"
+#include "../../src/utils/iterator/iterator.h"
 
+// Create
 cetl_vector *cetl_vec_create_empty(const cetl_element *type);
 cetl_vector *cetl_vec_create_copy(const cetl_vector *src_vec);
 
+// Operations
 cetl_vector *cetl_vec_resize(cetl_vector *vec, cetl_size_t new_capacity);
 cetl_vector *cetl_vec_push_back(cetl_vector *vec, cetl_cptr_t new_val);
 cetl_vector *cetl_vec_pop_back(cetl_vector *vec);
@@ -19,6 +22,7 @@ cetl_vector *cetl_vec_insert_range(cetl_vector *vec, cetl_cptr_t range,
 cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
                                   cetl_size_t len);
 
+// Element access
 cetl_ptr_t cetl_vec_front(const cetl_vector *vec);
 cetl_ptr_t cetl_vec_back(const cetl_vector *vec);
 cetl_ptr_t cetl_vec_get(const cetl_vector *vec, cetl_size_t pos);
@@ -27,10 +31,15 @@ cetl_ptr_t cetl_vec_data(const cetl_vector *vec);
 cetl_result_t cetl_vec_set(cetl_vector *vec, cetl_size_t pos,
                            cetl_cptr_t new_val);
 
+// Capacity
 cetl_size_t cetl_vec_size(const cetl_vector *vec);
 cetl_size_t cetl_vec_capacity(const cetl_vector *vec);
-
 cetl_bool_t cetl_vec_is_empty(const cetl_vector *vec);
+
+// Iterators
+
+cetl_iterator *cetl_vec_begin();
+cetl_iterator *cetl_vec_end();
 
 cetl_void_t cetl_vec_free(cetl_vector *vec);
 
