@@ -4,8 +4,10 @@
 #include "../../src/utils/types/cetl_types.h"
 #include "../../src/utils/iterator/iterator.h"
 
+#define CETL_ITER_GET_AS(it, type) ((type*)((it)->get(it)))
+
 // Create
-cetl_vector *cetl_vec_create_empty(const cetl_element *type);
+cetl_vector *cetl_vec_create_empty(const struct cetl_element *type);
 cetl_vector *cetl_vec_create_copy(const cetl_vector *src_vec);
 
 // Operations
@@ -38,8 +40,11 @@ cetl_bool_t cetl_vec_is_empty(const cetl_vector *vec);
 
 // Iterators
 
+//TODO: use stack iterators?
+
 cetl_iterator *cetl_vec_iter_begin(const cetl_vector* vec);
 cetl_iterator *cetl_vec_iter_end(const cetl_vector* vec);
+cetl_void_t cetl_vec_iter_free(cetl_iterator *it);
 
 cetl_void_t cetl_vec_free(cetl_vector *vec);
 

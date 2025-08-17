@@ -11,7 +11,7 @@ struct cetl_vector {
   cetl_size_t size;
   cetl_size_t capacity;
   cetl_byte_t *data;
-  const cetl_element *type;
+  const struct cetl_element *type;
 };
 
 static cetl_void_t _cetl_vec_free_data(cetl_vector *vec) {
@@ -389,7 +389,7 @@ cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
 
 typedef struct _cetl_vec_iter_state {
 
-  cetl_vector *container;
+  const cetl_vector *container;
   cetl_size_t index;
 
 } _cetl_vec_iter_state;
@@ -397,9 +397,9 @@ typedef struct _cetl_vec_iter_state {
 cetl_ptr_t _cetl_vec_iter_get(const cetl_iterator *it) {
 
   _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
-  cetl_vector *vec = state->container;
+  const cetl_vector *vec = state->container;
 
-  return (cetl_byte_t *)vec->data + state->index + vec->type->size;
+  return vec->data + state->index * vec->type->size;
 }
 
 cetl_void_t _cetl_vec_iter_next(const cetl_iterator *it) {
@@ -428,6 +428,7 @@ cetl_iterator *cetl_vec_iter_begin(const cetl_vector *vec) {
     return NULL;
 
   state->index = 0;
+  state->container = vec;
 
   cetl_iterator *it = malloc(sizeof(cetl_iterator));
 
@@ -451,6 +452,7 @@ cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
     return NULL;
 
   state->index = vec->size - 1;
+  state->container = vec;
 
   cetl_iterator *it = malloc(sizeof(cetl_iterator));
 
@@ -463,7 +465,15 @@ cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
   it->equal = _cetl_vec_iter_equal;
 
   return it;
+}
 
+cetl_void_t cetl_vec_iter_free(cetl_iterator *it) {
+
+  if (it == NULL)
+    return;
+
+  free(it->state);
+  free(it);
 }
 
 cetl_void_t cetl_vec_free(cetl_vector *vec) {
