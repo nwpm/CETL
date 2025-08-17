@@ -3,7 +3,7 @@
 
 #include "../../src/utils/types/cetl_types.h"
 
-cetl_llist *cetl_llist_create_empty(const cetl_element *type);
+cetl_llist *cetl_llist_create_empty(const struct cetl_element *type);
 cetl_llist *cetl_llist_create_copy(const cetl_llist *src_llist);
 
 cetl_llist *cetl_llist_push_back(cetl_llist *llist, const cetl_ptr_t data);

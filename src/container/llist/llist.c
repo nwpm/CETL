@@ -11,14 +11,14 @@ typedef struct _cetl_node {
 
 } _cetl_node;
 
-typedef struct cetl_llist {
+struct cetl_llist {
 
   cetl_size_t size;
   _cetl_node *head;
   _cetl_node *tail;
   const cetl_element* type;
 
-} cetl_llist;
+};
 
 static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
                                            const cetl_llist *llist) {
