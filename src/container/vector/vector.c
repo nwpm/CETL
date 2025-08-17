@@ -10,7 +10,7 @@
 struct cetl_vector {
   cetl_size_t size;
   cetl_size_t capacity;
-  cetl_byte_t* data;
+  cetl_byte_t *data;
   const cetl_element *type;
 };
 
@@ -38,7 +38,7 @@ cetl_vector *cetl_vec_create_empty(const cetl_element *type) {
     return NULL;
   }
 
-  cetl_byte_t* alloc_data = malloc(CETL_VEC_START_CAPACITY * type->size);
+  cetl_byte_t *alloc_data = malloc(CETL_VEC_START_CAPACITY * type->size);
 
   if (alloc_data == NULL) {
     free(vec);
@@ -67,7 +67,7 @@ cetl_vector *cetl_vec_create_copy(const cetl_vector *src_vec) {
 
   cetl_vec_resize(new_vec, src_vec->capacity);
 
-  cetl_byte_t* src_elem = NULL;
+  cetl_byte_t *src_elem = NULL;
 
   for (cetl_size_t i = 0; i < src_vec->size; ++i) {
     src_elem = src_vec->data + i * src_vec->type->size;
@@ -128,7 +128,7 @@ cetl_result_t cetl_vec_set(cetl_vector *vec, cetl_size_t pos,
     return -2;
   }
 
-  cetl_byte_t* dest = vec->data + pos * vec->type->size;
+  cetl_byte_t *dest = vec->data + pos * vec->type->size;
 
   if (vec->type->ctor) {
     vec->type->dtor(dest);
@@ -150,13 +150,13 @@ cetl_vector *cetl_vec_resize(cetl_vector *vec, cetl_size_t new_capacity) {
     return vec;
   }
 
-  cetl_byte_t* new_ptr =
+  cetl_byte_t *new_ptr =
       (new_capacity == 0) ? NULL : malloc(new_capacity * vec->type->size);
 
   if (vec->size > new_capacity) {
     if (vec->type->dtor) {
       for (cetl_size_t i = new_capacity; i < vec->size; ++i) {
-        cetl_byte_t* current = vec->data + i * vec->type->size;
+        cetl_byte_t *current = vec->data + i * vec->type->size;
         vec->type->dtor(current);
       }
     }
@@ -189,7 +189,7 @@ cetl_vector *cetl_vec_push_back(cetl_vector *vec, cetl_cptr_t new_val) {
     }
   }
 
-  cetl_byte_t* dest = vec->data + vec->size * vec->type->size;
+  cetl_byte_t *dest = vec->data + vec->size * vec->type->size;
 
   if (vec->type->ctor) {
     vec->type->ctor(dest, new_val);
@@ -263,12 +263,12 @@ cetl_vector *cetl_vec_insert(cetl_vector *vec, cetl_size_t pos,
     return cetl_vec_push_back(vec, new_val);
   }
 
-  cetl_byte_t* move_next = vec->data + (pos + 1) * vec->type->size;
-  cetl_byte_t* move_from = vec->data + pos * vec->type->size;
+  cetl_byte_t *move_next = vec->data + (pos + 1) * vec->type->size;
+  cetl_byte_t *move_from = vec->data + pos * vec->type->size;
   cetl_size_t move_size = (vec->size - pos) * vec->type->size;
   memmove(move_next, move_from, move_size);
 
-  cetl_byte_t* insert_to = vec->data + pos * vec->type->size;
+  cetl_byte_t *insert_to = vec->data + pos * vec->type->size;
 
   if (vec->type->ctor) {
     vec->type->ctor(insert_to, new_val);
@@ -292,8 +292,8 @@ cetl_vector *cetl_vec_erase(cetl_vector *vec, cetl_size_t index) {
     return vec;
   }
 
-  cetl_byte_t* dest = vec->data + index * vec->type->size;
-  cetl_byte_t* src = vec->data + (index + 1) * vec->size;
+  cetl_byte_t *dest = vec->data + index * vec->type->size;
+  cetl_byte_t *src = vec->data + (index + 1) * vec->size;
   cetl_size_t move_size = (vec->size - index - 1) * vec->size;
 
   if (vec->type->dtor) {
@@ -334,8 +334,8 @@ cetl_vector *cetl_vec_insert_range(cetl_vector *vec, cetl_cptr_t range,
     }
   }
 
-  cetl_byte_t* dest = vec->data + (pos + range_size) * vec->type->size;
-  cetl_byte_t* src = vec->data + pos * vec->type->size;
+  cetl_byte_t *dest = vec->data + (pos + range_size) * vec->type->size;
+  cetl_byte_t *src = vec->data + pos * vec->type->size;
   cetl_size_t move_size = (vec->size - pos) * vec->type->size;
   memmove(dest, src, move_size);
 
@@ -343,13 +343,14 @@ cetl_vector *cetl_vec_insert_range(cetl_vector *vec, cetl_cptr_t range,
 
     cetl_size_t j = 0;
     for (cetl_size_t i = pos; i < pos + range_size; ++i) {
-      cetl_byte_t* current = vec->data + i * vec->type->size;
-      const cetl_byte_t* range_data = (cetl_byte_t*)range + (j++) * vec->type->size;
+      cetl_byte_t *current = vec->data + i * vec->type->size;
+      const cetl_byte_t *range_data =
+          (cetl_byte_t *)range + (j++) * vec->type->size;
       vec->type->ctor(current, range_data);
     }
 
   } else {
-    cetl_byte_t* dest_r = vec->data + pos * vec->type->size;
+    cetl_byte_t *dest_r = vec->data + pos * vec->type->size;
     memcpy(dest_r, range, range_size * vec->type->size);
   }
 
@@ -371,19 +372,98 @@ cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
 
   if (vec->type->dtor) {
     for (cetl_size_t i = pos; i < (pos + len); ++i) {
-      cetl_byte_t* current = vec->data + i * vec->type->size;
+      cetl_byte_t *current = vec->data + i * vec->type->size;
       vec->type->dtor(current);
     }
   }
 
-  cetl_byte_t* dest = vec->data + pos * vec->type->size;
-  cetl_byte_t* src = vec->data + (pos + len) * vec->type->size;
+  cetl_byte_t *dest = vec->data + pos * vec->type->size;
+  cetl_byte_t *src = vec->data + (pos + len) * vec->type->size;
   cetl_size_t move_size = (pos + len == vec->size) ? 0 : len;
   memmove(dest, src, move_size);
 
   vec->size -= len;
 
   return vec;
+}
+
+typedef struct _cetl_vec_iter_state {
+
+  cetl_vector *container;
+  cetl_size_t index;
+
+} _cetl_vec_iter_state;
+
+cetl_ptr_t _cetl_vec_iter_get(const cetl_iterator *it) {
+
+  _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
+  cetl_vector *vec = state->container;
+
+  return (cetl_byte_t *)vec->data + state->index + vec->type->size;
+}
+
+cetl_void_t _cetl_vec_iter_next(const cetl_iterator *it) {
+  ((_cetl_vec_iter_state *)it->state)->index++;
+}
+
+cetl_bool_t _cetl_vec_iter_equal(const cetl_iterator *a,
+                                 const cetl_iterator *b) {
+
+  _cetl_vec_iter_state *state_a = (_cetl_vec_iter_state *)a->state;
+  _cetl_vec_iter_state *state_b = (_cetl_vec_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->index == state_b->index)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_iterator *cetl_vec_iter_begin(const cetl_vector *vec) {
+
+  _cetl_vec_iter_state *state = malloc(sizeof(_cetl_vec_iter_state));
+
+  if (!state)
+    return NULL;
+
+  state->index = 0;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_vec_iter_get;
+  it->next = _cetl_vec_iter_next;
+  it->equal = _cetl_vec_iter_equal;
+
+  return it;
+}
+
+cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
+
+  _cetl_vec_iter_state *state = malloc(sizeof(_cetl_vec_iter_state));
+
+  if (!state || (vec->size == 0))
+    return NULL;
+
+  state->index = vec->size - 1;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->state = state;
+  it->get = _cetl_vec_iter_get;
+  it->next = _cetl_vec_iter_next;
+  it->equal = _cetl_vec_iter_equal;
+
+  return it;
+
 }
 
 cetl_void_t cetl_vec_free(cetl_vector *vec) {

@@ -38,8 +38,8 @@ cetl_bool_t cetl_vec_is_empty(const cetl_vector *vec);
 
 // Iterators
 
-cetl_iterator *cetl_vec_begin();
-cetl_iterator *cetl_vec_end();
+cetl_iterator *cetl_vec_iter_begin(const cetl_vector* vec);
+cetl_iterator *cetl_vec_iter_end(const cetl_vector* vec);
 
 cetl_void_t cetl_vec_free(cetl_vector *vec);
 
