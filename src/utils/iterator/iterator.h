@@ -3,7 +3,7 @@
 
 #include "../types/cetl_types.h"
 
-typedef enum _cetl_iter_category{
+typedef enum _cetl_iter_category {
   CETL_FORWARD_ITERATOR,
   CETL_REVERSE_ITERATOR,
   CETL_MUTABLE_ITERATOR,
@@ -11,11 +11,13 @@ typedef enum _cetl_iter_category{
 
 typedef struct cetl_iterator {
 
-  _cetl_iter_category category;
-  const cetl_element *elem_type;
-  cetl_ptr_t data;
-  cetl_size_t size;
-  cetl_size_t index;
+  _cetl_iter_category category; 
+  cetl_cptr_t state;
+
+  cetl_ptr_t (*get)(const struct cetl_iterator *);
+  cetl_void_t (*next)(const struct cetl_iterator *);
+  cetl_bool_t (*equal)(const struct cetl_iterator *,
+                       const struct cetl_iterator *);
 
 } cetl_iterator;
 
