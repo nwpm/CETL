@@ -12,7 +12,7 @@ typedef enum _cetl_iter_category {
 typedef struct cetl_iterator {
 
   _cetl_iter_category category; 
-  cetl_cptr_t state;
+  cetl_ptr_t state;
 
   cetl_ptr_t (*get)(const struct cetl_iterator *);
   cetl_void_t (*next)(const struct cetl_iterator *);
