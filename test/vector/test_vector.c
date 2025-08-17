@@ -1,17 +1,25 @@
 #include "../../include/cetl/cetl_vector.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
-#include "../../src/container/vector/cetl_vector_internal.h"
+#include "../../src/utils/element/cetl_element.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define _POSIX_C_SOURCE 200809L
+#define CETL_VEC_START_CAPACITY 8
+#define CETL_VEC_GROW_RATE 2
 
-cetl_type *create_int_type() {
+struct cetl_vector {
+  cetl_size_t size;
+  cetl_size_t capacity;
+  cetl_byte_t *data;
+  const struct cetl_element *type;
+};
 
-  cetl_type *int_type = malloc(sizeof(cetl_type));
+cetl_element *create_int_type() {
+
+  cetl_element *int_type = malloc(sizeof(cetl_element));
 
   if (int_type == NULL) {
     return NULL;
@@ -31,9 +39,9 @@ cetl_void_t vec_fill_with_int(cetl_vector *vec, cetl_size_t size) {
   }
 }
 
-cetl_type *create_double_type() {
+cetl_element *create_double_type() {
 
-  cetl_type *double_type = malloc(sizeof(cetl_type));
+  cetl_element *double_type = malloc(sizeof(cetl_element));
 
   if (double_type == NULL) {
     return NULL;
@@ -67,9 +75,9 @@ cetl_void_t test_heap_str_dtor(cetl_ptr_t data) {
   free(target->s);
 }
 
-cetl_type *create_test_heap_str_type() {
+cetl_element *create_test_heap_str_type() {
 
-  cetl_type *test_heap_str_type = malloc(sizeof(cetl_type));
+  cetl_element *test_heap_str_type = malloc(sizeof(cetl_element));
 
   if (test_heap_str_type == NULL) {
     return NULL;
@@ -145,9 +153,9 @@ cetl_void_t simple_string_dtor(cetl_ptr_t data) {
   free(target->data);
 }
 
-cetl_type *create_owned_string_type() {
+cetl_element *create_owned_string_type() {
 
-  cetl_type *t = malloc(sizeof(cetl_type));
+  cetl_element *t = malloc(sizeof(cetl_element));
 
   if (t == NULL) {
     return NULL;
@@ -194,7 +202,7 @@ cetl_void_t tearDown() {}
 
 cetl_void_t test_create_empty_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -213,7 +221,7 @@ cetl_void_t test_create_empty_type_int() {
 
 cetl_void_t test_create_empty_type_owned_string() {
 
-  cetl_type *t = create_owned_string_type();
+  cetl_element *t = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -232,7 +240,7 @@ cetl_void_t test_create_empty_type_owned_string() {
 
 cetl_void_t test_create_empty_type_test_heap_str() {
 
-  cetl_type *t = create_test_heap_str_type();
+  cetl_element *t = create_test_heap_str_type();
 
   cetl_vector *v = cetl_vec_create_empty(t);
 
@@ -251,7 +259,7 @@ cetl_void_t test_create_empty_type_test_heap_str() {
 
 cetl_void_t test_create_copy_from_size_0_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -275,7 +283,7 @@ cetl_void_t test_create_copy_from_size_0_type_int() {
 
 cetl_void_t test_create_copy_from_size_0_type_owned_string() {
 
-  cetl_type *t = create_owned_string_type();
+  cetl_element *t = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -299,7 +307,7 @@ cetl_void_t test_create_copy_from_size_0_type_owned_string() {
 
 cetl_void_t test_create_copy_from_size_10_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -331,7 +339,7 @@ cetl_void_t test_create_copy_from_size_10_type_int() {
 
 cetl_void_t test_create_copy_from_size_1000_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -363,7 +371,7 @@ cetl_void_t test_create_copy_from_size_1000_type_int() {
 
 cetl_void_t test_create_copy_from_size_10_type_test_heap_str() {
 
-  cetl_type *t = create_test_heap_str_type();
+  cetl_element *t = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -408,7 +416,7 @@ cetl_void_t test_create_copy_from_size_10_type_test_heap_str() {
 
 cetl_void_t test_create_copy_from_size_1000_type_test_heap_str() {
 
-  cetl_type *t = create_test_heap_str_type();
+  cetl_element *t = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -453,7 +461,7 @@ cetl_void_t test_create_copy_from_size_1000_type_test_heap_str() {
 
 cetl_void_t test_push_back_to_size_1_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -477,7 +485,7 @@ cetl_void_t test_push_back_to_size_1_type_int() {
 
 cetl_void_t test_push_back_to_size_10_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -501,7 +509,7 @@ cetl_void_t test_push_back_to_size_10_type_int() {
 
 cetl_void_t test_push_back_to_size_1000_type_int() {
 
-  cetl_type *t = create_int_type();
+  cetl_element *t = create_int_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -525,7 +533,7 @@ cetl_void_t test_push_back_to_size_1000_type_int() {
 
 cetl_void_t test_push_back_to_size_1_type_owned_string() {
 
-  cetl_type *t = create_owned_string_type();
+  cetl_element *t = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -556,7 +564,7 @@ cetl_void_t test_push_back_to_size_1_type_owned_string() {
 
 cetl_void_t test_push_back_to_size_10_type_owned_string() {
 
-  cetl_type *t = create_owned_string_type();
+  cetl_element *t = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -590,7 +598,7 @@ cetl_void_t test_push_back_to_size_10_type_owned_string() {
 
 cetl_void_t test_push_back_to_size_1000_type_owned_string() {
 
-  cetl_type *t = create_owned_string_type();
+  cetl_element *t = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(t);
 
@@ -623,7 +631,7 @@ cetl_void_t test_push_back_to_size_1000_type_owned_string() {
 
 cetl_void_t test_push_back_to_size_1_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -663,7 +671,7 @@ cetl_void_t test_push_back_to_size_1_type_test_heap_str() {
 
 cetl_void_t test_push_back_to_size_10_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -708,7 +716,7 @@ cetl_void_t test_push_back_to_size_10_type_test_heap_str() {
 
 cetl_void_t test_push_back_to_size_1000_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -753,7 +761,7 @@ cetl_void_t test_push_back_to_size_1000_type_test_heap_str() {
 
 cetl_void_t test_pop_back_size_0_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -770,7 +778,7 @@ cetl_void_t test_pop_back_size_0_type_int() {
 
 cetl_void_t test_pop_back_size_1_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -789,7 +797,7 @@ cetl_void_t test_pop_back_size_1_type_int() {
 
 cetl_void_t test_pop_back_size_10_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -812,7 +820,7 @@ cetl_void_t test_pop_back_size_10_type_int() {
 
 cetl_void_t test_pop_back_size_0_type_owned_string() {
 
-  cetl_type *owned_string_type = create_owned_string_type();
+  cetl_element *owned_string_type = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(owned_string_type);
 
@@ -829,7 +837,7 @@ cetl_void_t test_pop_back_size_0_type_owned_string() {
 
 cetl_void_t test_pop_back_size_10_type_owned_string() {
 
-  cetl_type *owned_string_type = create_owned_string_type();
+  cetl_element *owned_string_type = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(owned_string_type);
 
@@ -861,7 +869,7 @@ cetl_void_t test_pop_back_size_10_type_owned_string() {
 
 cetl_void_t test_pop_back_size_0_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -878,7 +886,7 @@ cetl_void_t test_pop_back_size_0_type_test_heap_str() {
 
 cetl_void_t test_pop_back_size_1_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -903,7 +911,7 @@ cetl_void_t test_pop_back_size_1_type_test_heap_str() {
 
 cetl_void_t test_pop_back_size_10_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -932,7 +940,7 @@ cetl_void_t test_pop_back_size_10_type_test_heap_str() {
 
 cetl_void_t test_recetl_size_to_capacity_8_from_capacity_8_size_0_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -953,7 +961,7 @@ cetl_void_t test_recetl_size_to_capacity_8_from_capacity_8_size_0_type_int() {
 
 cetl_void_t test_recetl_size_to_capacity_0_from_capacity_8_size_0_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -974,7 +982,7 @@ cetl_void_t test_recetl_size_to_capacity_0_from_capacity_8_size_0_type_int() {
 
 cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_0_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -995,7 +1003,7 @@ cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_0_type_int() {
 
 cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -1021,7 +1029,7 @@ cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_int() {
 
 cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_int() {
 
-  cetl_type *int_type = create_int_type();
+  cetl_element *int_type = create_int_type();
 
   TEST_ASSERT_NOT_NULL(int_type);
 
@@ -1047,7 +1055,7 @@ cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_int() {
 
 cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_owned_string() {
 
-  cetl_type *owned_string_type = create_owned_string_type();
+  cetl_element *owned_string_type = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(owned_string_type);
 
@@ -1077,7 +1085,7 @@ cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_owned_st
 
 cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_owned_string() {
 
-  cetl_type *owned_string_type = create_owned_string_type();
+  cetl_element *owned_string_type = create_owned_string_type();
 
   TEST_ASSERT_NOT_NULL(owned_string_type);
 
@@ -1107,7 +1115,7 @@ cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_owned_str
 
 cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -1148,7 +1156,7 @@ cetl_void_t test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_test_hea
 
 cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_test_heap_str() {
 
-  cetl_type *test_heap_str_type = create_test_heap_str_type();
+  cetl_element *test_heap_str_type = create_test_heap_str_type();
 
   TEST_ASSERT_NOT_NULL(test_heap_str_type);
 
@@ -1185,6 +1193,31 @@ cetl_void_t test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_test_heap
 
   cetl_vec_free(vec);
   free(test_heap_str_type);
+}
+
+void test_iter_type_int(){
+
+  cetl_element *int_type = create_int_type();
+
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_vector *vec = cetl_vec_create_empty(int_type);
+
+  vec_fill_with_int(vec, 3);
+
+  cetl_iterator* it = cetl_vec_iter_begin(vec);
+  cetl_iterator* it_end = cetl_vec_iter_end(vec);
+
+  size_t i = 0;
+
+  for(; !it->equal(it, it_end); it->next(it), i++){
+    TEST_ASSERT_EQUAL_INT(i, *((int*)it->get(it)));
+  }
+
+  cetl_vec_free(vec);
+  free(int_type);
+  cetl_vec_iter_free(it);
+  cetl_vec_iter_free(it_end);
 }
 
 int main() {
@@ -1247,6 +1280,10 @@ int main() {
 
   RUN_TEST(test_recetl_size_to_capacity_3_from_capacity_8_size_5_type_test_heap_str);
   RUN_TEST(test_recetl_size_to_capacity_16_from_capacity_8_size_5_type_test_heap_str);
+
+  printf("\n");
+
+  RUN_TEST(test_iter_type_int);
 
   return UNITY_END();
 }
