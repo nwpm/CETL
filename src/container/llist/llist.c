@@ -16,8 +16,7 @@ struct cetl_llist {
   cetl_size_t size;
   _cetl_node *head;
   _cetl_node *tail;
-  const cetl_element* type;
-
+  const cetl_element *type;
 };
 
 static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
@@ -31,7 +30,7 @@ static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
 
   node->data = malloc(llist->type->size);
 
-  if(node->data == NULL){
+  if (node->data == NULL) {
     free(node);
     return NULL;
   }
@@ -47,7 +46,8 @@ static _cetl_node *_cetl_llist_create_node(const cetl_ptr_t data,
   return node;
 }
 
-static void _cetl_llist_free_node_data(const cetl_llist *llist, cetl_ptr_t data) {
+static void _cetl_llist_free_node_data(const cetl_llist *llist,
+                                       cetl_ptr_t data) {
   if (llist->type && llist->type->dtor) {
     llist->type->dtor(data);
   } else {
@@ -209,7 +209,8 @@ cetl_llist *cetl_llist_pop_front(cetl_llist *llist) {
   return llist;
 }
 
-cetl_llist *cetl_llist_insert(cetl_llist *llist, const cetl_ptr_t data, cetl_size_t pos) {
+cetl_llist *cetl_llist_insert(cetl_llist *llist, const cetl_ptr_t data,
+                              cetl_size_t pos) {
 
   if (llist == NULL || data == NULL || pos > llist->size) {
     return NULL;
@@ -333,7 +334,8 @@ cetl_ptr_t cetl_llist_get(const cetl_llist *llist, cetl_size_t pos) {
   return target->data;
 }
 
-cetl_llist *cetl_llist_set(cetl_llist *llist, cetl_size_t pos, const cetl_ptr_t data) {
+cetl_llist *cetl_llist_set(cetl_llist *llist, cetl_size_t pos,
+                           const cetl_ptr_t data) {
 
   if (llist == NULL || data == NULL || pos >= llist->size) {
     return NULL;
@@ -354,6 +356,87 @@ cetl_llist *cetl_llist_set(cetl_llist *llist, cetl_size_t pos, const cetl_ptr_t 
   }
 
   return llist;
+}
+
+typedef struct _cetl_llist_iter_state {
+
+  const cetl_llist *container;
+  _cetl_node *current_node;
+
+} _cetl_llist_iter_state;
+
+static cetl_ptr_t _cetl_llist_iter_get(const cetl_iterator *it) {
+
+  const _cetl_llist_iter_state *state = (_cetl_llist_iter_state *)it->state;
+  return state->current_node;
+}
+
+static cetl_void_t _cetl_llist_iter_next(const cetl_iterator *it) {
+
+  _cetl_llist_iter_state *state = (_cetl_llist_iter_state *)it->state;
+  state->current_node = state->current_node->next;
+}
+
+static cetl_bool_t _cetl_llist_iter_equal(const cetl_iterator *a,
+                                          const cetl_iterator *b) {
+
+  const _cetl_llist_iter_state *state_a = (_cetl_llist_iter_state *)a->state;
+  const _cetl_llist_iter_state *state_b = (_cetl_llist_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->current_node == state_b->current_node)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_iterator *cetl_llist_iter_begin(const cetl_llist *llist) {
+
+  _cetl_llist_iter_state *state = malloc(sizeof(_cetl_llist_iter_state));
+
+  if (!state || (llist->size == 0))
+    return NULL;
+
+  state->container = llist;
+  state->current_node = llist->head;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_llist_iter_get;
+  it->next = _cetl_llist_iter_next;
+  it->equal = _cetl_llist_iter_equal;
+
+  return it;
+}
+
+cetl_iterator *cetl_llist_iter_end(const cetl_llist *llist) {
+
+  _cetl_llist_iter_state *state = malloc(sizeof(_cetl_llist_iter_state));
+
+  if (!state || (llist->size == 0))
+    return NULL;
+
+  state->container = llist;
+  state->current_node = llist->tail;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_llist_iter_get;
+  it->next = _cetl_llist_iter_next;
+  it->equal = _cetl_llist_iter_equal;
+
+  return it;
 }
 
 void cetl_llist_free_nodes(cetl_llist *llist) {
