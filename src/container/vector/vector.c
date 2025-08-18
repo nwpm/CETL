@@ -394,23 +394,23 @@ typedef struct _cetl_vec_iter_state {
 
 } _cetl_vec_iter_state;
 
-cetl_ptr_t _cetl_vec_iter_get(const cetl_iterator *it) {
+static cetl_ptr_t _cetl_vec_iter_get(const cetl_iterator *it) {
 
-  _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
+  const _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
   const cetl_vector *vec = state->container;
 
   return vec->data + state->index * vec->type->size;
 }
 
-cetl_void_t _cetl_vec_iter_next(const cetl_iterator *it) {
+static cetl_void_t _cetl_vec_iter_next(const cetl_iterator *it) {
   ((_cetl_vec_iter_state *)it->state)->index++;
 }
 
-cetl_bool_t _cetl_vec_iter_equal(const cetl_iterator *a,
+static cetl_bool_t _cetl_vec_iter_equal(const cetl_iterator *a,
                                  const cetl_iterator *b) {
 
-  _cetl_vec_iter_state *state_a = (_cetl_vec_iter_state *)a->state;
-  _cetl_vec_iter_state *state_b = (_cetl_vec_iter_state *)b->state;
+  const _cetl_vec_iter_state *state_a = (_cetl_vec_iter_state *)a->state;
+  const _cetl_vec_iter_state *state_b = (_cetl_vec_iter_state *)b->state;
 
   if ((state_a->container == state_b->container) &&
       (state_a->index == state_b->index)) {
