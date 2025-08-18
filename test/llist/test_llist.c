@@ -1,49 +1,189 @@
-#include "../../src/llist/cetl_llist_internal.h"
 #include "../../include/cetl/cetl_llist.h"
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
+#include "../../src/utils/element/cetl_element.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+typedef struct _cetl_node {
+
+  cetl_ptr_t data;
+  struct _cetl_node *next;
+
+} _cetl_node;
+
+struct cetl_llist {
+
+  cetl_size_t size;
+  struct _cetl_node *head;
+  struct _cetl_node *tail;
+  const struct cetl_element *type;
+};
 
 void setUp() {}
 void tearDown() {}
 
-void test_cetl_llist_create_node() {
+cetl_element *create_int_type() {
 
-  int num = 15;
+  cetl_element *int_type = malloc(sizeof(cetl_element));
 
-  _cetl_node *n = _cetl_llist_create_node(&num, sizeof(int));
+  if (int_type == NULL) {
+    return NULL;
+  }
 
-  TEST_ASSERT_NOT_NULL(n);
+  int_type->size = sizeof(int);
+  int_type->ctor = NULL;
+  int_type->dtor = NULL;
+  int_type->cmp = NULL;
 
-  TEST_ASSERT_NULL(n->next);
-  TEST_ASSERT_EQUAL_INT(15, *((int *)n->data));
-
-  free(n->data);
-  free(n);
+  return int_type;
 }
 
-void test_cetl_llist_create_node_null() {
+typedef struct OwnedString {
 
-  _cetl_node *n = _cetl_llist_create_node(NULL, sizeof(int));
-  TEST_ASSERT_NULL(n);
+  cetl_str_t data;
+  cetl_size_t len;
+
+} OwnedString;
+
+cetl_ptr_t simple_string_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
+  OwnedString *target = (OwnedString *)dest;
+  OwnedString *source = (OwnedString *)data;
+  target->data = strdup(source->data);
+  target->len = source->len;
+  return target;
 }
 
-void test_cetl_llist_create_empty() {
-
-  cetl_llist *l = cetl_llist_create_empty();
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  TEST_ASSERT_NULL(l->head);
-  TEST_ASSERT_NULL(l->tail);
-  TEST_ASSERT_EQUAL_size_t(0, l->size);
-  TEST_ASSERT_EQUAL_size_t(0, l->elem_size);
-
-  free(l);
+cetl_void_t simple_string_dtor(cetl_ptr_t data) {
+  OwnedString *target = (OwnedString *)data;
+  free(target->data);
 }
 
+cetl_element *create_owned_string_type() {
+
+  cetl_element *t = malloc(sizeof(cetl_element));
+
+  if (t == NULL) {
+    return NULL;
+  }
+
+  t->size = sizeof(OwnedString);
+  t->ctor = simple_string_ctor;
+  t->dtor = simple_string_dtor;
+  t->cmp = NULL;
+
+  return t;
+}
+
+OwnedString *make_owned_string(cetl_str_t s, cetl_size_t len) {
+
+  OwnedString *owned_string = malloc(sizeof(OwnedString));
+
+  if (owned_string == NULL) {
+    return NULL;
+  }
+
+  owned_string->data = s;
+  owned_string->len = len;
+
+  return owned_string;
+}
+
+typedef struct TestHeapStr {
+  cetl_str_t s;
+  cetl_int_t x;
+  cetl_float_t y;
+} TestHeapStr;
+
+cetl_ptr_t test_heap_str_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
+  TestHeapStr *target = (TestHeapStr *)dest;
+  TestHeapStr *source = (TestHeapStr *)data;
+  target->x = source->x;
+  target->y = source->y;
+  target->s = strdup(source->s);
+  return target;
+}
+
+cetl_void_t test_heap_str_dtor(cetl_ptr_t data) {
+  TestHeapStr *target = (TestHeapStr *)data;
+  free(target->s);
+}
+
+cetl_element *create_test_heap_str_type() {
+
+  cetl_element *test_heap_str_type = malloc(sizeof(cetl_element));
+
+  if (test_heap_str_type == NULL) {
+    return NULL;
+  }
+
+  test_heap_str_type->size = sizeof(TestHeapStr);
+  test_heap_str_type->ctor = test_heap_str_ctor;
+  test_heap_str_type->dtor = test_heap_str_dtor;
+  test_heap_str_type->cmp = NULL;
+
+  return test_heap_str_type;
+}
+
+// Create empty
+//-------------------------------------
+
+void test_create_empty_type_int() {
+
+  cetl_element *int_type = create_int_type();
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_llist *list = cetl_llist_create_empty(int_type);
+  TEST_ASSERT_NOT_NULL(list);
+
+  TEST_ASSERT_NULL(list->head);
+  TEST_ASSERT_NULL(list->tail);
+  TEST_ASSERT_EQUAL_size_t(0, list->size);
+  TEST_ASSERT_EQUAL_PTR(int_type, list->type);
+
+  cetl_llist_free(list);
+  free(int_type);
+}
+
+void test_create_empty_type_owned_string() {
+
+  cetl_element *str_type = create_owned_string_type();
+  TEST_ASSERT_NOT_NULL(str_type);
+
+  cetl_llist *list = cetl_llist_create_empty(str_type);
+  TEST_ASSERT_NOT_NULL(list);
+
+  TEST_ASSERT_NULL(list->head);
+  TEST_ASSERT_NULL(list->tail);
+  TEST_ASSERT_EQUAL_size_t(list->size, 0);
+  TEST_ASSERT_EQUAL_PTR(list->type, str_type);
+
+  cetl_llist_free(list);
+  free(str_type);
+}
+
+void test_create_empty_type_test_heap_str() {
+
+  cetl_element *struct_type = create_test_heap_str_type();
+  TEST_ASSERT_NOT_NULL(struct_type);
+
+  cetl_llist *list = cetl_llist_create_empty(struct_type);
+  TEST_ASSERT_NOT_NULL(list);
+
+  TEST_ASSERT_NULL(list->head);
+  TEST_ASSERT_NULL(list->tail);
+  TEST_ASSERT_EQUAL_size_t(list->size, 0);
+  TEST_ASSERT_EQUAL_PTR(list->type, struct_type);
+
+  cetl_llist_free(list);
+  free(struct_type);
+}
+
+//-------------------------------------
+
+/*
 void test_cetl_llist_create() {
 
   int elem = 10;
@@ -511,7 +651,7 @@ void test_cetl_llist_erase_pos_begin() {
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
@@ -548,7 +688,7 @@ void test_cetl_llist_erase_pos_end() {
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
@@ -567,7 +707,7 @@ void test_cetl_llist_erase_pos_middle() {
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
@@ -575,7 +715,7 @@ void test_cetl_llist_erase_pos_middle() {
 
   TEST_ASSERT_EQUAL_size_t(4, l->size);
   TEST_ASSERT_EQUAL_size_t(sizeof(int), l->elem_size);
-  TEST_ASSERT_EQUAL_INT(3, *((int*)cetl_llist_get(l, 2)));
+  TEST_ASSERT_EQUAL_INT(3, *((int *)cetl_llist_get(l, 2)));
 
   cetl_llist_free(l);
 }
@@ -726,7 +866,6 @@ void test_cetl_llist_clear() {
 
 void test_cetl_llist_clear_double_clear() {
 
-
   cetl_llist *l = cetl_llist_create_empty();
 
   TEST_ASSERT_NOT_NULL(l);
@@ -745,7 +884,7 @@ void test_cetl_llist_clear_double_clear() {
   free(l);
 }
 
-void test_cetl_llist_set(){
+void test_cetl_llist_set() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
@@ -758,12 +897,12 @@ void test_cetl_llist_set(){
   int s_elem = 1;
 
   TEST_ASSERT_NOT_NULL(cetl_llist_set(l, 0, &s_elem));
-  TEST_ASSERT_EQUAL_INT(s_elem, *((int*)l->head->data));
+  TEST_ASSERT_EQUAL_INT(s_elem, *((int *)l->head->data));
 
   cetl_llist_free(l);
 }
 
-void test_cetl_llist_set_out_of_bounds(){
+void test_cetl_llist_set_out_of_bounds() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
@@ -779,64 +918,64 @@ void test_cetl_llist_set_out_of_bounds(){
   cetl_llist_free(l);
 }
 
-void test_cetl_llist_get_pos_begin(){
+void test_cetl_llist_get_pos_begin() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
   void *elem = cetl_llist_get(l, 0);
 
-  TEST_ASSERT_EQUAL_INT(0, *((int*)elem));
+  TEST_ASSERT_EQUAL_INT(0, *((int *)elem));
 
   cetl_llist_free(l);
 }
 
-void test_cetl_llist_get_pos_end(){
+void test_cetl_llist_get_pos_end() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
   void *elem = cetl_llist_get(l, l->size - 1);
 
-  TEST_ASSERT_EQUAL_INT(4, *((int*)elem));
+  TEST_ASSERT_EQUAL_INT(4, *((int *)elem));
 
   cetl_llist_free(l);
 }
 
-void test_cetl_llist_get_pos_middle(){
+void test_cetl_llist_get_pos_middle() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
   void *elem = cetl_llist_get(l, l->size / 2);
 
-  TEST_ASSERT_EQUAL_INT(2, *((int*)elem));
+  TEST_ASSERT_EQUAL_INT(2, *((int *)elem));
 
   cetl_llist_free(l);
 }
 
-void test_cetl_llist_get_pos_out_of_bounds(){
+void test_cetl_llist_get_pos_out_of_bounds() {
 
   cetl_llist *l = cetl_llist_create_empty();
 
   TEST_ASSERT_NOT_NULL(l);
 
-  for(int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i) {
     cetl_llist_push_back(l, &i, sizeof(int));
   }
 
@@ -847,19 +986,19 @@ void test_cetl_llist_get_pos_out_of_bounds(){
   cetl_llist_free(l);
 }
 
+*/
+
 int main() {
 
   UNITY_BEGIN();
 
   printf("\n");
 
-  RUN_TEST(test_cetl_llist_create_node);
-  RUN_TEST(test_cetl_llist_create_node_null);
+  RUN_TEST(test_create_empty_type_int);
+  RUN_TEST(test_create_empty_type_owned_string);
+  RUN_TEST(test_create_empty_type_test_heap_str);
 
-  printf("\n");
-
-  RUN_TEST(test_cetl_llist_create_empty);
-
+/*
   printf("\n");
 
   RUN_TEST(test_cetl_llist_create);
@@ -936,6 +1075,7 @@ int main() {
   RUN_TEST(test_cetl_llist_get_pos_end);
   RUN_TEST(test_cetl_llist_get_pos_middle);
   RUN_TEST(test_cetl_llist_get_pos_out_of_bounds);
+*/
 
   return UNITY_END();
 }
