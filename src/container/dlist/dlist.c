@@ -351,6 +351,87 @@ cetl_ptr_t cetl_dlist_get(const cetl_dlist *dlist, cetl_size_t pos) {
 
 cetl_bool_t cetl_dlist_is_empty(const cetl_dlist *dlist) { return dlist && !dlist->size; }
 
+typedef struct _cetl_dlist_iter_state {
+
+  const cetl_dlist *container;
+  _cetl_dnode *current_node;
+
+} _cetl_dlist_iter_state;
+
+static cetl_ptr_t _cetl_dlist_iter_get(const cetl_iterator *it) {
+
+  const _cetl_dlist_iter_state *state = (_cetl_dlist_iter_state *)it->state;
+  return state->current_node;
+}
+
+static cetl_void_t _cetl_dlist_iter_next(const cetl_iterator *it) {
+
+  _cetl_dlist_iter_state *state = (_cetl_dlist_iter_state *)it->state;
+  state->current_node = state->current_node->next;
+}
+
+static cetl_bool_t _cetl_dlist_iter_equal(const cetl_iterator *a,
+                                          const cetl_iterator *b) {
+
+  const _cetl_dlist_iter_state *state_a = (_cetl_dlist_iter_state *)a->state;
+  const _cetl_dlist_iter_state *state_b = (_cetl_dlist_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->current_node == state_b->current_node)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_iterator *cetl_dlist_iter_begin(const cetl_dlist *dlist) {
+
+  _cetl_dlist_iter_state *state = malloc(sizeof(_cetl_dlist_iter_state));
+
+  if (!state || (dlist->size == 0))
+    return NULL;
+
+  state->container = dlist;
+  state->current_node = dlist->head;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_dlist_iter_get;
+  it->next = _cetl_dlist_iter_next;
+  it->equal = _cetl_dlist_iter_equal;
+
+  return it;
+}
+
+cetl_iterator *cetl_dlist_iter_end(const cetl_dlist *dlist) {
+
+  _cetl_dlist_iter_state *state = malloc(sizeof(_cetl_dlist_iter_state));
+
+  if (!state || (dlist->size == 0))
+    return NULL;
+
+  state->container = dlist;
+  state->current_node = dlist->tail;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_dlist_iter_get;
+  it->next = _cetl_dlist_iter_next;
+  it->equal = _cetl_dlist_iter_equal;
+
+  return it;
+}
+
 cetl_void_t cetl_dlist_free_nodes(cetl_dlist *dlist) {
 
   _cetl_dnode *current = dlist->head;
