@@ -2,7 +2,8 @@
 #include "../../include/external/unity/unity.h"
 #include "../../include/external/unity/unity_internals.h"
 #include "../../src/utils/element/cetl_element.h"
-#include <stddef.h>
+#include "../../src/utils/iterator/iterator.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -198,6 +199,7 @@ cetl_void_t vec_fill_with_owned_string(cetl_vector *v, cetl_size_t num, cetl_siz
 cetl_void_t setUp() {}
 cetl_void_t tearDown() {}
 
+// Create empty
 //-------------------------------------
 
 cetl_void_t test_create_empty_type_int() {
@@ -241,9 +243,9 @@ cetl_void_t test_create_empty_type_owned_string() {
 cetl_void_t test_create_empty_type_test_heap_str() {
 
   cetl_element *t = create_test_heap_str_type();
+  TEST_ASSERT_NOT_NULL(t);
 
   cetl_vector *v = cetl_vec_create_empty(t);
-
   TEST_ASSERT_NOT_NULL(v);
 
   TEST_ASSERT_EQUAL_size_t(v->capacity, CETL_VEC_START_CAPACITY);
