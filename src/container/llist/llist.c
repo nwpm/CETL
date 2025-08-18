@@ -1,5 +1,6 @@
 #include "../../../include/cetl/cetl_llist.h"
 #include "../../utils/element/cetl_element.h"
+#include "../../utils/iterator/iterator.h"
 
 #include <stdlib.h>
 #include <string.h>

@@ -2,7 +2,6 @@
 #define CETL_LLIST_H
 
 #include "../../src/utils/types/cetl_types.h"
-#include "../../src/utils/iterator/iterator.h"
 
 // Create
 cetl_llist *cetl_llist_create_empty(const struct cetl_element *type);

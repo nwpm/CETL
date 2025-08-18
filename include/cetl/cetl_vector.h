@@ -2,7 +2,6 @@
 #define CETL_VECTOR_H
 
 #include "../../src/utils/types/cetl_types.h"
-#include "../../src/utils/iterator/iterator.h"
 
 #define CETL_ITER_GET_AS(it, type) ((type*)((it)->get(it)))
 
