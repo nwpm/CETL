@@ -1,5 +1,6 @@
 #include "../../../include/cetl/cetl_dlist.h"
 #include "../../utils/element/cetl_element.h"
+#include "../../utils/iterator/iterator.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -80,7 +81,7 @@ cetl_dlist *cetl_dlist_create_copy(const cetl_dlist *src_dlist) {
 
   cetl_dlist *new_dlist = cetl_dlist_create_empty(src_dlist->type);
 
-  if (new_dlist == NULL || cetl_dlist_is_empty(src_dlist)) {
+  if (new_dlist == NULL || (src_dlist->size == 0)) {
     return new_dlist;
   }
 
@@ -432,6 +433,7 @@ cetl_iterator *cetl_dlist_iter_end(const cetl_dlist *dlist) {
   return it;
 }
 
+// NOTE: check free
 cetl_void_t cetl_dlist_free_nodes(cetl_dlist *dlist) {
 
   _cetl_dnode *current = dlist->head;
