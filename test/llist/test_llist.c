@@ -41,6 +41,27 @@ cetl_element *create_int_type() {
   return int_type;
 }
 
+void llist_fill_with_int(cetl_llist *llist, cetl_size_t size) {
+  for (cetl_size_t i = 0; i < size; ++i) {
+    cetl_llist_push_back(llist, &i);
+  }
+}
+
+cetl_bool_t llist_int_check_is_data_correct(const cetl_llist *src_llist,
+                                            const cetl_llist *copy_llist,
+                                            cetl_size_t size) {
+
+  for (cetl_size_t i = 0; i < size; ++i) {
+    int current_orig = *((int *)cetl_llist_get(src_llist, i));
+    int current_copy = *((int *)cetl_llist_get(copy_llist, i));
+    if (current_orig != current_copy) {
+      return CETL_FALSE;
+    }
+  }
+
+  return CETL_TRUE;
+}
+
 typedef struct OwnedString {
 
   cetl_str_t data;
@@ -109,6 +130,7 @@ cetl_ptr_t test_heap_str_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
 cetl_void_t test_heap_str_dtor(cetl_ptr_t data) {
   TestHeapStr *target = (TestHeapStr *)data;
   free(target->s);
+  free(target);
 }
 
 cetl_element *create_test_heap_str_type() {
@@ -125,6 +147,66 @@ cetl_element *create_test_heap_str_type() {
   test_heap_str_type->cmp = NULL;
 
   return test_heap_str_type;
+}
+
+TestHeapStr *make_test_heap_str(cetl_int_t x, cetl_float_t y, cetl_str_t s) {
+
+  TestHeapStr *test_object = malloc(sizeof(TestHeapStr));
+
+  if (test_object == NULL) {
+    return NULL;
+  }
+
+  test_object->x = x;
+  test_object->y = y;
+  test_object->s = s;
+
+  return test_object;
+}
+
+cetl_str_t create_string_of_char(cetl_size_t len, cetl_int_t ch) {
+
+  cetl_str_t str = malloc(len + 1);
+
+  if (str == NULL) {
+    return NULL;
+  }
+
+  str[len] = '\0';
+  memset(str, ch, len);
+
+  return str;
+}
+
+cetl_void_t llist_fill_with_test_heap_str(cetl_llist *llist, cetl_size_t size,
+                                          cetl_size_t s_len, cetl_int_t ch) {
+
+  for (cetl_size_t i = 0; i < size; ++i) {
+
+    cetl_str_t str = create_string_of_char(s_len, ch);
+    TestHeapStr *test_heap_struct = make_test_heap_str(i, i, str);
+    cetl_llist_push_back(llist, test_heap_struct);
+    // NOTE: ???
+    free(test_heap_struct->s);
+    free(test_heap_struct);
+  }
+}
+
+cetl_bool_t
+llist_heap_struct_check_is_data_correct(const cetl_llist *src_llist,
+                                        const cetl_llist *copy_llist,
+                                        cetl_size_t size) {
+
+  for (cetl_size_t i = 0; i < size; ++i) {
+    TestHeapStr *current_orig = (TestHeapStr *)cetl_llist_get(src_llist, i);
+    TestHeapStr *current_copy = (TestHeapStr *)cetl_llist_get(copy_llist, i);
+
+    TEST_ASSERT_EQUAL_INT(current_orig->x, current_copy->x);
+    TEST_ASSERT_EQUAL_FLOAT(current_orig->y, current_copy->y);
+    TEST_ASSERT_EQUAL_STRING(current_orig->s, current_copy->s);
+  }
+
+  return CETL_TRUE;
 }
 
 // Create empty
@@ -181,7 +263,142 @@ void test_create_empty_type_test_heap_str() {
   free(struct_type);
 }
 
+// Create copy
 //-------------------------------------
+
+void test_create_copy_from_size_0_type_int() {
+
+  cetl_element *int_type = create_int_type();
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_llist *src_list = cetl_llist_create_empty(int_type);
+  TEST_ASSERT_NOT_NULL(src_list);
+
+  cetl_llist *copy_list = cetl_llist_create_copy(src_list);
+  TEST_ASSERT_NOT_NULL(copy_list);
+
+  TEST_ASSERT_NULL(copy_list->head);
+  TEST_ASSERT_NULL(copy_list->tail);
+  TEST_ASSERT_EQUAL_size_t(copy_list->size, 0);
+  TEST_ASSERT_EQUAL_PTR(copy_list->type, int_type);
+
+  cetl_llist_free(src_list);
+  cetl_llist_free(copy_list);
+  free(int_type);
+}
+
+void test_create_copy_from_size_10_type_int() {
+
+  cetl_element *int_type = create_int_type();
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_llist *src_llist = cetl_llist_create_empty(int_type);
+  TEST_ASSERT_NOT_NULL(src_llist);
+
+  llist_fill_with_int(src_llist, 10);
+
+  cetl_llist *copy_llist = cetl_llist_create_copy(src_llist);
+  TEST_ASSERT_NOT_NULL(copy_llist);
+
+  TEST_ASSERT_NOT_NULL(copy_llist->head);
+  TEST_ASSERT_NOT_NULL(copy_llist->tail);
+  TEST_ASSERT_EQUAL_size_t(copy_llist->size, 10);
+  TEST_ASSERT_EQUAL_PTR(copy_llist->type, int_type);
+
+  TEST_ASSERT_TRUE(llist_int_check_is_data_correct(src_llist, copy_llist, 10));
+
+  cetl_llist_free(src_llist);
+  cetl_llist_free(copy_llist);
+  free(int_type);
+}
+
+void test_create_copy_from_size_1000_type_int() {
+
+  cetl_element *int_type = create_int_type();
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_llist *src_llist = cetl_llist_create_empty(int_type);
+  TEST_ASSERT_NOT_NULL(src_llist);
+
+  llist_fill_with_int(src_llist, 1000);
+
+  cetl_llist *copy_llist = cetl_llist_create_copy(src_llist);
+  TEST_ASSERT_NOT_NULL(copy_llist);
+
+  TEST_ASSERT_NOT_NULL(copy_llist->head);
+  TEST_ASSERT_NOT_NULL(copy_llist->tail);
+  TEST_ASSERT_EQUAL_size_t(copy_llist->size, 1000);
+  TEST_ASSERT_EQUAL_PTR(copy_llist->type, int_type);
+
+  TEST_ASSERT_TRUE(
+      llist_int_check_is_data_correct(src_llist, copy_llist, 1000));
+
+  cetl_llist_free(src_llist);
+  cetl_llist_free(copy_llist);
+  free(int_type);
+}
+
+void test_create_copy_from_size_10_type_test_heap_str() {
+
+  cetl_element *struct_type = create_test_heap_str_type();
+  TEST_ASSERT_NOT_NULL(struct_type);
+
+  cetl_llist *src_llist = cetl_llist_create_empty(struct_type);
+  TEST_ASSERT_NOT_NULL(src_llist);
+
+  cetl_size_t num_test_heap_str_objects = 10;
+  cetl_size_t str_len = 15;
+  cetl_uchar_t char_for_string = 'S';
+
+  llist_fill_with_test_heap_str(src_llist, num_test_heap_str_objects, str_len,
+                                char_for_string);
+
+  cetl_llist *copy_llist = cetl_llist_create_copy(src_llist);
+  TEST_ASSERT_NOT_NULL(copy_llist);
+
+  TEST_ASSERT_NOT_NULL(copy_llist->head);
+  TEST_ASSERT_NOT_NULL(copy_llist->tail);
+  TEST_ASSERT_EQUAL_size_t(copy_llist->size, 10);
+  TEST_ASSERT_EQUAL_PTR(copy_llist->type, struct_type);
+
+  TEST_ASSERT_TRUE(
+      llist_heap_struct_check_is_data_correct(src_llist, copy_llist, 10));
+
+  cetl_llist_free(src_llist);
+  cetl_llist_free(copy_llist);
+  free(struct_type);
+}
+
+void test_create_copy_from_size_1000_type_test_heap_str() {
+
+  cetl_element *struct_type = create_test_heap_str_type();
+  TEST_ASSERT_NOT_NULL(struct_type);
+
+  cetl_llist *src_llist = cetl_llist_create_empty(struct_type);
+  TEST_ASSERT_NOT_NULL(src_llist);
+
+  cetl_size_t num_test_heap_str_objects = 1000;
+  cetl_size_t str_len = 15;
+  cetl_uchar_t char_for_string = 'S';
+
+  llist_fill_with_test_heap_str(src_llist, num_test_heap_str_objects, str_len,
+                                char_for_string);
+
+  cetl_llist *copy_llist = cetl_llist_create_copy(src_llist);
+  TEST_ASSERT_NOT_NULL(copy_llist);
+
+  TEST_ASSERT_NOT_NULL(copy_llist->head);
+  TEST_ASSERT_NOT_NULL(copy_llist->tail);
+  TEST_ASSERT_EQUAL_size_t(copy_llist->size, 1000);
+  TEST_ASSERT_EQUAL_PTR(copy_llist->type, struct_type);
+
+  TEST_ASSERT_TRUE(
+      llist_heap_struct_check_is_data_correct(src_llist, copy_llist, 1000));
+
+  cetl_llist_free(src_llist);
+  cetl_llist_free(copy_llist);
+  free(struct_type);
+}
 
 /*
 void test_cetl_llist_create() {
@@ -998,84 +1215,93 @@ int main() {
   RUN_TEST(test_create_empty_type_owned_string);
   RUN_TEST(test_create_empty_type_test_heap_str);
 
-/*
   printf("\n");
 
-  RUN_TEST(test_cetl_llist_create);
-  RUN_TEST(test_cetl_llist_create_data_struct);
-  RUN_TEST(test_cetl_llist_create_elem_size_zero);
-  RUN_TEST(test_cetl_llist_create_data_null);
+  RUN_TEST(test_create_copy_from_size_0_type_int);
+  RUN_TEST(test_create_copy_from_size_10_type_int);
+  RUN_TEST(test_create_copy_from_size_1000_type_int);
 
-  printf("\n");
+  RUN_TEST(test_create_copy_from_size_10_type_test_heap_str);
+  RUN_TEST(test_create_copy_from_size_1000_type_test_heap_str);
 
-  RUN_TEST(test_cetl_llist_create_copy);
-  RUN_TEST(test_cetl_llist_create_copy_from_empty);
-  RUN_TEST(test_cetl_llist_create_copy_from_null);
-  RUN_TEST(test_cetl_llist_create_copy_independent);
+  /*
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_create);
+    RUN_TEST(test_cetl_llist_create_data_struct);
+    RUN_TEST(test_cetl_llist_create_elem_size_zero);
+    RUN_TEST(test_cetl_llist_create_data_null);
 
-  RUN_TEST(test_cetl_llist_push_back_empty_llist);
-  RUN_TEST(test_cetl_llist_push_back_not_empty_llist);
-  RUN_TEST(test_cetl_llist_push_back_data_null);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_create_copy);
+    RUN_TEST(test_cetl_llist_create_copy_from_empty);
+    RUN_TEST(test_cetl_llist_create_copy_from_null);
+    RUN_TEST(test_cetl_llist_create_copy_independent);
 
-  RUN_TEST(test_cetl_llist_push_front_empty_llist);
-  RUN_TEST(test_cetl_llist_push_front_not_empty_llist);
-  RUN_TEST(test_cetl_llist_push_front_data_null);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_push_back_empty_llist);
+    RUN_TEST(test_cetl_llist_push_back_not_empty_llist);
+    RUN_TEST(test_cetl_llist_push_back_data_null);
 
-  RUN_TEST(test_cetl_llist_pop_back_not_empty_llist);
-  RUN_TEST(test_cetl_llist_pop_back_size_one);
-  RUN_TEST(test_cetl_llist_pop_back_size_zero);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_push_front_empty_llist);
+    RUN_TEST(test_cetl_llist_push_front_not_empty_llist);
+    RUN_TEST(test_cetl_llist_push_front_data_null);
 
-  RUN_TEST(test_cetl_llist_pop_front_not_empty_llist);
-  RUN_TEST(test_cetl_llist_pop_front_size_one);
-  RUN_TEST(test_cetl_llist_pop_front_size_zero);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_pop_back_not_empty_llist);
+    RUN_TEST(test_cetl_llist_pop_back_size_one);
+    RUN_TEST(test_cetl_llist_pop_back_size_zero);
 
-  RUN_TEST(test_cetl_llist_insert_pos_begin);
-  RUN_TEST(test_cetl_llist_insert_pos_middle);
-  RUN_TEST(test_cetl_llist_insert_pos_end);
-  RUN_TEST(test_cetl_llist_insert_size_zero);
-  RUN_TEST(test_cetl_llist_insert_pos_out_of_bound);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_pop_front_not_empty_llist);
+    RUN_TEST(test_cetl_llist_pop_front_size_one);
+    RUN_TEST(test_cetl_llist_pop_front_size_zero);
 
-  RUN_TEST(test_cetl_llist_erase_pos_begin);
-  RUN_TEST(test_cetl_llist_erase_pos_middle);
-  RUN_TEST(test_cetl_llist_erase_pos_end);
-  RUN_TEST(test_cetl_llist_erase_size_one);
-  RUN_TEST(test_cetl_llist_erase_pos_out_of_bound);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_insert_pos_begin);
+    RUN_TEST(test_cetl_llist_insert_pos_middle);
+    RUN_TEST(test_cetl_llist_insert_pos_end);
+    RUN_TEST(test_cetl_llist_insert_size_zero);
+    RUN_TEST(test_cetl_llist_insert_pos_out_of_bound);
 
-  RUN_TEST(test_cetl_llist_merge_two_both_not_empty);
-  RUN_TEST(test_cetl_llist_merge_two_one_empty);
-  RUN_TEST(test_cetl_llist_merge_two_both_empty);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_erase_pos_begin);
+    RUN_TEST(test_cetl_llist_erase_pos_middle);
+    RUN_TEST(test_cetl_llist_erase_pos_end);
+    RUN_TEST(test_cetl_llist_erase_size_one);
+    RUN_TEST(test_cetl_llist_erase_pos_out_of_bound);
 
-  RUN_TEST(test_cetl_llist_clear);
-  RUN_TEST(test_cetl_llist_clear_double_clear);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_merge_two_both_not_empty);
+    RUN_TEST(test_cetl_llist_merge_two_one_empty);
+    RUN_TEST(test_cetl_llist_merge_two_both_empty);
 
-  RUN_TEST(test_cetl_llist_set);
-  RUN_TEST(test_cetl_llist_set_out_of_bounds);
+    printf("\n");
 
-  printf("\n");
+    RUN_TEST(test_cetl_llist_clear);
+    RUN_TEST(test_cetl_llist_clear_double_clear);
 
-  RUN_TEST(test_cetl_llist_get_pos_begin);
-  RUN_TEST(test_cetl_llist_get_pos_end);
-  RUN_TEST(test_cetl_llist_get_pos_middle);
-  RUN_TEST(test_cetl_llist_get_pos_out_of_bounds);
-*/
+    printf("\n");
+
+    RUN_TEST(test_cetl_llist_set);
+    RUN_TEST(test_cetl_llist_set_out_of_bounds);
+
+    printf("\n");
+
+    RUN_TEST(test_cetl_llist_get_pos_begin);
+    RUN_TEST(test_cetl_llist_get_pos_end);
+    RUN_TEST(test_cetl_llist_get_pos_middle);
+    RUN_TEST(test_cetl_llist_get_pos_out_of_bounds);
+  */
 
   return UNITY_END();
 }
