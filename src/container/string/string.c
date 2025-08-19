@@ -1,4 +1,5 @@
 #include "../../../include/cetl/cetl_string.h"
+#include "../../utils/iterator/iterator.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -375,7 +376,97 @@ cetl_void_t cetl_str_swap(cetl_string **string1, cetl_string **string2) {
   *string2 = tmp;
 }
 
+typedef struct _cetl_str_iter_state {
+
+  const cetl_string *container;
+  cetl_size_t index;
+
+} _cetl_str_iter_state;
+
+static cetl_ptr_t _cetl_str_iter_get(const cetl_iterator *it) {
+
+  const _cetl_str_iter_state *state = (_cetl_str_iter_state *)it->state;
+  const cetl_string *str = state->container;
+
+  return str->data + state->index;
+}
+
+static cetl_void_t _cetl_str_iter_next(const cetl_iterator *it) {
+  ((_cetl_str_iter_state *)it->state)->index++;
+}
+
+static cetl_bool_t _cetl_str_iter_equal(const cetl_iterator *a,
+                                 const cetl_iterator *b) {
+
+  const _cetl_str_iter_state *state_a = (_cetl_str_iter_state *)a->state;
+  const _cetl_str_iter_state *state_b = (_cetl_str_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->index == state_b->index)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_iterator *cetl_str_iter_begin(const cetl_string *str) {
+
+  _cetl_str_iter_state *state = malloc(sizeof(_cetl_str_iter_state));
+
+  if (!state)
+    return NULL;
+
+  state->index = 0;
+  state->container = str;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_FORWARD_ITERATOR;
+  it->state = state;
+  it->get = _cetl_str_iter_get;
+  it->next = _cetl_str_iter_next;
+  it->equal = _cetl_str_iter_equal;
+
+  return it;
+}
+
+cetl_iterator *cetl_vec_iter_end(const cetl_string *str) {
+
+  _cetl_str_iter_state *state = malloc(sizeof(_cetl_str_iter_state));
+
+  if (!state || (str->length == 0))
+    return NULL;
+
+  state->index = str->length - 1;
+  state->container = str;
+
+  cetl_iterator *it = malloc(sizeof(cetl_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->state = state;
+  it->get = _cetl_str_iter_get;
+  it->next = _cetl_str_iter_next;
+  it->equal = _cetl_str_iter_equal;
+
+  return it;
+}
+
+cetl_void_t cetl_vec_iter_free(cetl_iterator *it) {
+
+  if (it == NULL)
+    return;
+
+  free(it->state);
+  free(it);
+}
+
 cetl_void_t cetl_str_free(cetl_string *string) {
+  if(!string) return;
   free(string->data);
   free(string);
 }
