@@ -27,8 +27,9 @@ cetl_size_t cetl_cdlist_size(const cetl_cdlist *cdl);
 cetl_bool_t cetl_cdlist_is_empty(const cetl_cdlist *cdl);
 
 // Iterator
-cetl_iterator *cetl_dlist_iter_begin(const cetl_dlist* dlist);
-cetl_iterator *cetl_dlist_iter_end(const cetl_dlist* dlist);
+cetl_iterator *cetl_cdlist_iter_begin(const cetl_cdlist* cdlist);
+cetl_iterator *cetl_cdlist_iter_end(const cetl_cdlist* cdlist);
+cetl_void_t cetl_cdlist_iter_free(cetl_iterator* it);
 
 // Free
 cetl_void_t cetl_cdlist_free(cetl_cdlist *cdl);
