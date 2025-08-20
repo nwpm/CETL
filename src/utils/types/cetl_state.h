@@ -10,4 +10,10 @@ typedef enum _cetl_state_e {
 
 } _cetl_state_e;
 
+typedef enum _cetl_iter_category {
+  CETL_FORWARD_ITERATOR,
+  CETL_REVERSE_ITERATOR,
+  CETL_CONST_ITERATOR,
+} _cetl_iter_category;
+
 #endif // CETL_STATE_H
