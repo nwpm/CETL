@@ -3,6 +3,7 @@
 #include "../../include/external/unity/unity_internals.h"
 #include "../../src/utils/element/cetl_element.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,6 +81,7 @@ cetl_ptr_t simple_string_ctor(cetl_ptr_t dest, cetl_cptr_t data) {
 cetl_void_t simple_string_dtor(cetl_ptr_t data) {
   OwnedString *target = (OwnedString *)data;
   free(target->data);
+  free(target);
 }
 
 cetl_element *create_owned_string_type() {
@@ -400,166 +402,75 @@ void test_create_copy_from_size_1000_type_test_heap_str() {
   free(struct_type);
 }
 
+// Operations
+//-------------------------------------
+
+void test_n_int_push_back(size_t num_elem) {
+
+  cetl_element *int_type = create_int_type();
+  TEST_ASSERT_NOT_NULL(int_type);
+
+  cetl_llist *llist = cetl_llist_create_empty(int_type);
+  TEST_ASSERT_NOT_NULL(llist);
+
+  for (size_t i = 0; i < num_elem; ++i) {
+    TEST_ASSERT_NOT_NULL(cetl_llist_push_back(llist, &i));
+  }
+
+  TEST_ASSERT_EQUAL_size_t(num_elem, llist->size);
+  TEST_ASSERT_EQUAL(int_type, llist->type);
+
+  for (size_t i = 0; i < num_elem; ++i) {
+    TEST_ASSERT_EQUAL_INT(i, *((int *)cetl_llist_get(llist, i)));
+  }
+
+  cetl_llist_free(llist);
+  free(int_type);
+}
+
+void test_push_back_to_size_1_type_int() { test_n_int_push_back(1); }
+
+void test_push_back_to_size_10_type_int() { test_n_int_push_back(10); }
+
+void test_push_back_to_size_1000_type_int() { test_n_int_push_back(1000); }
+
+void test_n_string_push_back(size_t num_elem, size_t str_len, int init_str_char) {
+
+  cetl_element *str_type = create_owned_string_type();
+  TEST_ASSERT_NOT_NULL(str_type);
+
+  cetl_llist *llist = cetl_llist_create_empty(str_type);
+  TEST_ASSERT_NOT_NULL(llist);
+
+  for (size_t i = 0; i < num_elem; ++i) {
+
+    cetl_str_t c_str = create_string_of_char(str_len, init_str_char);
+    OwnedString *owned_str = make_owned_string(c_str, str_len);
+    TEST_ASSERT_NOT_NULL(cetl_llist_push_back(llist, owned_str));
+    free(c_str);
+    free(owned_str);
+  }
+
+  TEST_ASSERT_EQUAL_size_t(num_elem, llist->size);
+  TEST_ASSERT_EQUAL(str_type, llist->type);
+
+  cetl_llist_free(llist);
+  free(str_type);
+}
+
+void test_push_back_to_size_1_type_owned_string(){
+  test_n_string_push_back(1, 10, 'A');
+}
+
+void test_push_back_to_size_10_type_owned_string(){
+  test_n_string_push_back(10, 100, 'A');
+}
+
+void test_push_back_to_size_1000_type_owned_string(){
+  test_n_string_push_back(1000, 10, 'A');
+}
+
 /*
-void test_cetl_llist_create() {
-
-  int elem = 10;
-
-  cetl_llist *l = cetl_llist_create(&elem, sizeof(int));
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  TEST_ASSERT_NOT_NULL(l->head);
-  TEST_ASSERT_NULL(l->tail->next);
-  TEST_ASSERT_EQUAL(l->head, l->tail);
-  TEST_ASSERT_EQUAL_size_t(1, l->size);
-  TEST_ASSERT_EQUAL_size_t(sizeof(int), l->elem_size);
-
-  cetl_llist_free(l);
-}
-
-void test_cetl_llist_create_data_struct() {
-
-  typedef struct TestStruct {
-
-    int x;
-    short y;
-    const char *str;
-
-  } TestStruct;
-
-  TestStruct *elem = malloc(sizeof(TestStruct));
-
-  elem->x = 1;
-  elem->y = 2;
-  elem->str = "str";
-
-  cetl_llist *l = cetl_llist_create(elem, sizeof(TestStruct));
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  TEST_ASSERT_EQUAL(l->head, l->tail);
-  TEST_ASSERT_EQUAL_size_t(1, l->size);
-  TEST_ASSERT_EQUAL_size_t(sizeof(TestStruct), l->elem_size);
-
-  cetl_llist_free(l);
-  free(elem);
-}
-
-void test_cetl_llist_create_elem_size_zero() {
-
-  int elem = 2;
-
-  cetl_llist *l = cetl_llist_create(&elem, 0);
-
-  TEST_ASSERT_NULL(l);
-}
-
-void test_cetl_llist_create_data_null() {
-
-  cetl_llist *l = cetl_llist_create(NULL, 10);
-
-  TEST_ASSERT_NULL(l);
-}
-
-void test_cetl_llist_create_copy() {
-
-  int elem = 1;
-
-  cetl_llist *l = cetl_llist_create(&elem, sizeof(int));
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  for (size_t i = 0; i < 4; ++i) {
-    cetl_llist_push_back(l, &elem, sizeof(int));
-  }
-
-  cetl_llist *c_l = cetl_llist_create_copy(l);
-
-  TEST_ASSERT_NOT_NULL(c_l);
-
-  TEST_ASSERT_EQUAL_size_t(l->size, c_l->size);
-  TEST_ASSERT_EQUAL_size_t(l->elem_size, c_l->elem_size);
-
-  _cetl_node *n1 = l->head;
-  _cetl_node *n2 = c_l->head;
-
-  for (size_t i = 0; i < l->size; ++i) {
-    TEST_ASSERT_EQUAL_INT(*((int *)n1->data), *((int *)n2->data));
-    TEST_ASSERT_NOT_EQUAL(n1->data, n2->data);
-
-    n1 = n1->next;
-    n2 = n2->next;
-  }
-
-  cetl_llist_free(l);
-  cetl_llist_free(c_l);
-}
-
-void test_cetl_llist_create_copy_from_empty() {
-
-  cetl_llist *l = cetl_llist_create_empty();
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  cetl_llist *c_l = cetl_llist_create_copy(l);
-
-  TEST_ASSERT_NOT_NULL(c_l);
-
-  TEST_ASSERT_NULL(c_l->head);
-  TEST_ASSERT_NULL(c_l->tail);
-  TEST_ASSERT_EQUAL_size_t(l->size, c_l->size);
-  TEST_ASSERT_EQUAL_size_t(l->elem_size, c_l->elem_size);
-
-  cetl_llist_free(l);
-  cetl_llist_free(c_l);
-}
-
-void test_cetl_llist_create_copy_from_null() {
-
-  cetl_llist *c_l = cetl_llist_create_copy(NULL);
-
-  TEST_ASSERT_NULL(c_l);
-}
-
-void test_cetl_llist_create_copy_independent() {
-
-  int elem = 1;
-
-  cetl_llist *l = cetl_llist_create(&elem, sizeof(int));
-
-  TEST_ASSERT_NOT_NULL(l);
-
-  for (size_t i = 0; i < 4; ++i) {
-    cetl_llist_push_back(l, &elem, sizeof(int));
-  }
-
-  cetl_llist *c_l = cetl_llist_create_copy(l);
-
-  TEST_ASSERT_NOT_NULL(c_l);
-
-  int n_elem = 10;
-  cetl_llist_set(c_l, 0, &n_elem);
-
-  TEST_ASSERT_EQUAL_size_t(l->size, c_l->size);
-  TEST_ASSERT_EQUAL_size_t(l->elem_size, c_l->elem_size);
-
-  TEST_ASSERT_NOT_EQUAL_INT(*((int *)l->head->data), *((int *)c_l->head->data));
-
-  _cetl_node *n1 = l->head->next;
-  _cetl_node *n2 = c_l->head->next;
-
-  for (size_t i = 0; i < l->size - 1; ++i) {
-    TEST_ASSERT_EQUAL_INT(*((int *)n1->data), *((int *)n2->data));
-    TEST_ASSERT_NOT_EQUAL(n1->data, n2->data);
-
-    n1 = n1->next;
-    n2 = n2->next;
-  }
-
-  cetl_llist_free(l);
-  cetl_llist_free(c_l);
-}
 
 void test_cetl_llist_push_back_not_empty_llist() {
 
@@ -1224,27 +1135,17 @@ int main() {
   RUN_TEST(test_create_copy_from_size_10_type_test_heap_str);
   RUN_TEST(test_create_copy_from_size_1000_type_test_heap_str);
 
+  printf("\n");
+
+  RUN_TEST(test_push_back_to_size_1_type_int);
+  RUN_TEST(test_push_back_to_size_10_type_int);
+  RUN_TEST(test_push_back_to_size_1000_type_int);
+
+  RUN_TEST(test_push_back_to_size_1_type_owned_string);
+  RUN_TEST(test_push_back_to_size_10_type_owned_string);
+  RUN_TEST(test_push_back_to_size_1000_type_owned_string);
+
   /*
-    printf("\n");
-
-    RUN_TEST(test_cetl_llist_create);
-    RUN_TEST(test_cetl_llist_create_data_struct);
-    RUN_TEST(test_cetl_llist_create_elem_size_zero);
-    RUN_TEST(test_cetl_llist_create_data_null);
-
-    printf("\n");
-
-    RUN_TEST(test_cetl_llist_create_copy);
-    RUN_TEST(test_cetl_llist_create_copy_from_empty);
-    RUN_TEST(test_cetl_llist_create_copy_from_null);
-    RUN_TEST(test_cetl_llist_create_copy_independent);
-
-    printf("\n");
-
-    RUN_TEST(test_cetl_llist_push_back_empty_llist);
-    RUN_TEST(test_cetl_llist_push_back_not_empty_llist);
-    RUN_TEST(test_cetl_llist_push_back_data_null);
-
     printf("\n");
 
     RUN_TEST(test_cetl_llist_push_front_empty_llist);
