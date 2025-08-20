@@ -1,5 +1,7 @@
 #include "../../../include/cetl/cetl_llist.h"
 #include "../../../include/cetl/cetl_queue.h"
+#include "../../utils/element/cetl_element.h"
+#include "../../utils/iterator/iterator.h"
 
 #include <stdlib.h>
 
@@ -104,6 +106,109 @@ cetl_void_t cetl_queue_swap(cetl_queue **queue1, cetl_queue **queue2){
   *queue1 = *queue2;
   *queue2 = tmp;
 
+}
+
+typedef struct _cetl_queue_iter_state {
+
+  const cetl_queue *container;
+  cetl_iterator *llist_it;
+
+} _cetl_queue_iter_state;
+
+static cetl_ptr_t _cetl_queue_iter_get(const cetl_iterator *it) {
+
+  const _cetl_queue_iter_state *state = (_cetl_queue_iter_state *)it->state;
+  return state->llist_it->get(state->llist_it);
+}
+
+static cetl_void_t _cetl_queue_iter_next(const cetl_iterator *it) {
+
+  _cetl_queue_iter_state *state = (_cetl_queue_iter_state *)it->state;
+  state->llist_it->next(state->llist_it);
+}
+
+static cetl_bool_t _cetl_queue_iter_equal(const cetl_iterator *a,
+                                          const cetl_iterator *b) {
+
+  const _cetl_queue_iter_state *state_a = (_cetl_queue_iter_state *)a->state;
+  const _cetl_queue_iter_state *state_b = (_cetl_queue_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->llist_it == state_b->llist_it)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_iterator *cetl_queue_iter_begin(const cetl_queue *queue) {
+
+  _cetl_queue_iter_state *state = malloc(sizeof(_cetl_queue_iter_state));
+
+  if (!state || (queue->size == 0))
+    return NULL;
+
+  cetl_iterator *llist_it = cetl_llist_iter_begin(queue->data);
+
+  if (!llist_it)
+    return NULL;
+
+  state->container = queue;
+  state->llist_it = llist_it;
+
+  cetl_iterator *queue_it = malloc(sizeof(cetl_iterator));
+
+  if (!queue_it)
+    return NULL;
+
+  queue_it->category = CETL_FORWARD_ITERATOR;
+  queue_it->state = state;
+  queue_it->get = _cetl_queue_iter_get;
+  queue_it->next = _cetl_queue_iter_next;
+  queue_it->equal = _cetl_queue_iter_equal;
+
+  return queue_it;
+}
+
+cetl_iterator *cetl_queue_iter_end(const cetl_queue *queue) {
+
+  _cetl_queue_iter_state *state = malloc(sizeof(_cetl_queue_iter_state));
+
+  if (!state || (queue->size == 0))
+    return NULL;
+
+  cetl_iterator *llist_it = cetl_llist_iter_end(queue->data);
+
+  if (!llist_it)
+    return NULL;
+
+  state->container = queue;
+  state->llist_it = llist_it;
+
+  cetl_iterator *queue_it = malloc(sizeof(cetl_iterator));
+
+  if (!queue_it)
+    return NULL;
+
+  queue_it->category = CETL_FORWARD_ITERATOR;
+  queue_it->state = state;
+  queue_it->get = _cetl_queue_iter_get;
+  queue_it->next = _cetl_queue_iter_next;
+  queue_it->equal = _cetl_queue_iter_equal;
+
+  return queue_it;
+}
+
+cetl_void_t cetl_queue_iter_free(cetl_iterator *it) {
+
+  if (!it)
+    return;
+
+  _cetl_queue_iter_state *state = (_cetl_queue_iter_state *)it->state;
+
+  cetl_llist_iter_free(state->llist_it);
+  free(state);
+  free(it);
 }
 
 cetl_void_t cetl_queue_free(cetl_queue *queue) {
