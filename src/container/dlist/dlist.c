@@ -22,7 +22,7 @@ struct cetl_dlist {
 };
 
 static _cetl_dnode *_cetl_dlist_create_dnode(const cetl_ptr_t data,
-                                             cetl_dlist *dlist) {
+                                             const cetl_element* type) {
 
   _cetl_dnode *dnode = malloc(sizeof(_cetl_dnode));
 
@@ -30,17 +30,17 @@ static _cetl_dnode *_cetl_dlist_create_dnode(const cetl_ptr_t data,
     return NULL;
   }
 
-  dnode->data = malloc(dlist->type->size);
+  dnode->data = malloc(type->size);
 
   if(dnode->data == NULL){
     free(dnode);
     return NULL;
   }
 
-  if (dlist->type->ctor) {
-    dlist->type->ctor(dnode->data, data);
+  if (type->ctor) {
+    type->ctor(dnode->data, data);
   } else {
-    memcpy(dnode->data, data, dlist->type->size);
+    memcpy(dnode->data, data, type->size);
   }
 
   dnode->next = NULL;
@@ -105,7 +105,7 @@ cetl_dlist *cetl_dlist_push_back(cetl_dlist *dlist, const cetl_ptr_t data) {
     return NULL;
   }
 
-  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist);
+  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist->type);
 
   if (dnode == NULL) {
     return NULL;
@@ -134,7 +134,7 @@ cetl_dlist *cetl_dlist_push_front(cetl_dlist *dlist, const cetl_ptr_t data) {
     return NULL;
   }
 
-  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist);
+  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist->type);
 
   if (dlist->size == 0) {
     dlist->head = dnode;
@@ -213,7 +213,7 @@ cetl_dlist *cetl_dlist_insert(cetl_dlist *dlist, const cetl_ptr_t data, cetl_siz
     return cetl_dlist_push_front(dlist, data);
   }
 
-  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist);
+  _cetl_dnode *dnode = _cetl_dlist_create_dnode(data, dlist->type);
 
   if (dnode == NULL) {
     return NULL;
@@ -276,9 +276,9 @@ cetl_dlist *cetl_dlist_merge_two(const cetl_dlist *dlist1,
     return NULL;
   }
 
-  if (cetl_dlist_is_empty(dlist1)) {
+  if (dlist1->size == 0) {
     return cetl_dlist_create_copy(dlist2);
-  } else if (cetl_dlist_is_empty(dlist2)) {
+  } else if (dlist2->size == 0) {
     return cetl_dlist_create_copy(dlist1);
   }
 
@@ -431,6 +431,15 @@ cetl_iterator *cetl_dlist_iter_end(const cetl_dlist *dlist) {
   it->equal = _cetl_dlist_iter_equal;
 
   return it;
+}
+
+cetl_void_t cetl_dlist_iter_free(cetl_iterator *it) {
+
+  if (!it)
+    return;
+
+  free(it->state);
+  free(it);
 }
 
 // NOTE: check free
