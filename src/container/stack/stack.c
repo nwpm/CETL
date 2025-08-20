@@ -95,20 +95,20 @@ cetl_void_t cetl_stack_clear(cetl_stack *stack) {
 typedef struct _cetl_stack_iter_state {
 
   const cetl_stack *container;
-  cetl_iterator *current_it;
+  cetl_iterator *llist_it;
 
 } _cetl_stack_iter_state;
 
 static cetl_ptr_t _cetl_stack_iter_get(const cetl_iterator *it) {
 
   const _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
-  return state->current_it->get(state->current_it);
+  return state->llist_it->get(state->llist_it);
 }
 
 static cetl_void_t _cetl_stack_iter_next(const cetl_iterator *it) {
 
   _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
-  state->current_it->next(state->current_it);
+  state->llist_it->next(state->llist_it);
 }
 
 static cetl_bool_t _cetl_stack_iter_equal(const cetl_iterator *a,
@@ -118,7 +118,7 @@ static cetl_bool_t _cetl_stack_iter_equal(const cetl_iterator *a,
   const _cetl_stack_iter_state *state_b = (_cetl_stack_iter_state *)b->state;
 
   if ((state_a->container == state_b->container) &&
-      (state_a->current_it == state_b->current_it)) {
+      (state_a->llist_it == state_b->llist_it)) {
     return CETL_TRUE;
   }
 
@@ -138,7 +138,7 @@ cetl_iterator *cetl_stack_iter_begin(const cetl_stack *stack) {
     return NULL;
 
   state->container = stack;
-  state->current_it = llist_it;
+  state->llist_it = llist_it;
 
   cetl_iterator *stack_it = malloc(sizeof(cetl_iterator));
 
@@ -167,7 +167,7 @@ cetl_iterator *cetl_stack_iter_end(const cetl_stack *stack) {
     return NULL;
 
   state->container = stack;
-  state->current_it = llist_it;
+  state->llist_it = llist_it;
 
   cetl_iterator *stack_it = malloc(sizeof(cetl_iterator));
 
@@ -190,7 +190,7 @@ cetl_void_t cetl_stack_iter_free(cetl_iterator *it) {
 
   _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
 
-  cetl_llist_iter_free(state->current_it);
+  cetl_llist_iter_free(state->llist_it);
   free(state);
   free(it);
 }
