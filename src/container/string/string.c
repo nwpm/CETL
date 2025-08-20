@@ -433,7 +433,7 @@ cetl_iterator *cetl_str_iter_begin(const cetl_string *str) {
   return it;
 }
 
-cetl_iterator *cetl_vec_iter_end(const cetl_string *str) {
+cetl_iterator *cetl_str_iter_end(const cetl_string *str) {
 
   _cetl_str_iter_state *state = malloc(sizeof(_cetl_str_iter_state));
 
@@ -456,7 +456,7 @@ cetl_iterator *cetl_vec_iter_end(const cetl_string *str) {
   return it;
 }
 
-cetl_void_t cetl_vec_iter_free(cetl_iterator *it) {
+cetl_void_t cetl_str_iter_free(cetl_iterator *it) {
 
   if (it == NULL)
     return;
