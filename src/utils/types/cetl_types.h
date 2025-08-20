@@ -48,14 +48,18 @@ typedef cetl_void_t const*    cetl_cptr_t;
 // Result of operation
 typedef int                   cetl_result_t;
 
-// Containers types
-typedef struct cetl_element   cetl_element;
+// Iterators
+typedef struct cetl_iterator         cetl_iterator;
+typedef struct cetl_const_iterator   cetl_const_iterator;
+
+// Containers forward declarations
+struct cetl_element;
 typedef struct cetl_llist     cetl_llist;
 typedef struct cetl_stack     cetl_stack;
 typedef struct cetl_vector    cetl_vector;
 typedef struct cetl_string    cetl_string;
 typedef struct cetl_queue     cetl_queue;
 typedef struct cetl_dlist     cetl_dlist;
-
+typedef struct cetl_cdlist    cetl_cdlist; 
 
 #endif // CETL_PTYPES_H
