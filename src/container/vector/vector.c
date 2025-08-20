@@ -408,7 +408,7 @@ static cetl_void_t _cetl_vec_iter_next(const cetl_iterator *it) {
 }
 
 static cetl_bool_t _cetl_vec_iter_equal(const cetl_iterator *a,
-                                 const cetl_iterator *b) {
+                                        const cetl_iterator *b) {
 
   const _cetl_vec_iter_state *state_a = (_cetl_vec_iter_state *)a->state;
   const _cetl_vec_iter_state *state_b = (_cetl_vec_iter_state *)b->state;
@@ -468,7 +468,71 @@ cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
   return it;
 }
 
+static cetl_cptr_t _cetl_vec_iter_cget(const cetl_iterator *it) {
+
+  const _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
+  const cetl_vector *vec = state->container;
+
+  return vec->data + state->index * vec->type->size;
+}
+
+cetl_const_iterator *cetl_vec_iter_cbegin(const cetl_vector *vec) {
+
+  _cetl_vec_iter_state *state = malloc(sizeof(_cetl_vec_iter_state));
+
+  if (!state)
+    return NULL;
+
+  state->index = 0;
+  state->container = vec;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_CONST_ITERATOR;
+  it->state = state;
+  it->get = _cetl_vec_iter_cget;
+  it->next = _cetl_vec_iter_next;
+  it->equal = _cetl_vec_iter_equal;
+
+  return it;
+}
+
+cetl_const_iterator *cetl_vec_iter_cend(const cetl_vector *vec) {
+
+  _cetl_vec_iter_state *state = malloc(sizeof(_cetl_vec_iter_state));
+
+  if (!state || (vec->size == 0))
+    return NULL;
+
+  state->index = vec->size - 1;
+  state->container = vec;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->state = state;
+  it->get = _cetl_vec_iter_cget;
+  it->next = _cetl_vec_iter_next;
+  it->equal = _cetl_vec_iter_equal;
+
+  return it;
+}
+
 cetl_void_t cetl_vec_iter_free(cetl_iterator *it) {
+
+  if (it == NULL)
+    return;
+
+  free(it->state);
+  free(it);
+}
+
+cetl_void_t cetl_vec_iter_cfree(cetl_const_iterator *it) {
 
   if (it == NULL)
     return;

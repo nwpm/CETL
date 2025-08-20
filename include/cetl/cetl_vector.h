@@ -32,19 +32,21 @@ cetl_ptr_t cetl_vec_data(const cetl_vector *vec);
 cetl_result_t cetl_vec_set(cetl_vector *vec, cetl_size_t pos,
                            cetl_cptr_t new_val);
 
-// Capacity
+// Size
 cetl_size_t cetl_vec_size(const cetl_vector *vec);
 cetl_size_t cetl_vec_capacity(const cetl_vector *vec);
 cetl_bool_t cetl_vec_is_empty(const cetl_vector *vec);
 
 // Iterators
-
-//TODO: use stack iterators?
-
 cetl_iterator *cetl_vec_iter_begin(const cetl_vector* vec);
 cetl_iterator *cetl_vec_iter_end(const cetl_vector* vec);
-cetl_void_t cetl_vec_iter_free(cetl_iterator *it);
 
+cetl_const_iterator *cetl_vec_iter_cbegin(const cetl_vector* vec);
+cetl_const_iterator *cetl_vec_iter_cend(const cetl_vector* vec);
+
+// Free
+cetl_void_t cetl_vec_iter_free(cetl_iterator *it);
+cetl_void_t cetl_vec_iter_cfree(cetl_const_iterator *it);
 cetl_void_t cetl_vec_free(cetl_vector *vec);
 
 #endif // CETL_VECTOR_H
