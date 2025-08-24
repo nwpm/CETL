@@ -468,12 +468,30 @@ cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
   return it;
 }
 
-static cetl_cptr_t _cetl_vec_iter_cget(const cetl_iterator *it) {
+static cetl_cptr_t _cetl_vec_iter_cget(const cetl_const_iterator *it) {
 
   const _cetl_vec_iter_state *state = (_cetl_vec_iter_state *)it->state;
   const cetl_vector *vec = state->container;
 
   return vec->data + state->index * vec->type->size;
+}
+
+static cetl_void_t _cetl_vec_iter_cnext(const cetl_const_iterator *it) {
+  ((_cetl_vec_iter_state *)it->state)->index++;
+}
+
+static cetl_bool_t _cetl_vec_iter_cequal(const cetl_const_iterator *a,
+                                        const cetl_const_iterator *b) {
+
+  const _cetl_vec_iter_state *state_a = (_cetl_vec_iter_state *)a->state;
+  const _cetl_vec_iter_state *state_b = (_cetl_vec_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->index == state_b->index)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
 }
 
 cetl_const_iterator *cetl_vec_iter_cbegin(const cetl_vector *vec) {
@@ -494,8 +512,8 @@ cetl_const_iterator *cetl_vec_iter_cbegin(const cetl_vector *vec) {
   it->category = CETL_CONST_ITERATOR;
   it->state = state;
   it->get = _cetl_vec_iter_cget;
-  it->next = _cetl_vec_iter_next;
-  it->equal = _cetl_vec_iter_equal;
+  it->next = _cetl_vec_iter_cnext;
+  it->equal = _cetl_vec_iter_cequal;
 
   return it;
 }
@@ -517,8 +535,8 @@ cetl_const_iterator *cetl_vec_iter_cend(const cetl_vector *vec) {
 
   it->state = state;
   it->get = _cetl_vec_iter_cget;
-  it->next = _cetl_vec_iter_next;
-  it->equal = _cetl_vec_iter_equal;
+  it->next = _cetl_vec_iter_cnext;
+  it->equal = _cetl_vec_iter_cequal;
 
   return it;
 }
