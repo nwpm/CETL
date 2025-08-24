@@ -456,7 +456,90 @@ cetl_iterator *cetl_str_iter_end(const cetl_string *str) {
   return it;
 }
 
+static cetl_cptr_t _cetl_str_iter_cget(const cetl_const_iterator *it) {
+
+  const _cetl_str_iter_state *state = (_cetl_str_iter_state *)it->state;
+  const cetl_string *str = state->container;
+
+  return str->data + state->index;
+}
+
+static cetl_void_t _cetl_str_iter_cnext(const cetl_const_iterator *it) {
+  ((_cetl_str_iter_state *)it->state)->index++;
+}
+
+static cetl_bool_t _cetl_str_iter_cequal(const cetl_const_iterator *a,
+                                 const cetl_const_iterator *b) {
+
+  const _cetl_str_iter_state *state_a = (_cetl_str_iter_state *)a->state;
+  const _cetl_str_iter_state *state_b = (_cetl_str_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->index == state_b->index)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_const_iterator *cetl_str_iter_cbegin(const cetl_string *str) {
+
+  _cetl_str_iter_state *state = malloc(sizeof(_cetl_str_iter_state));
+
+  if (!state)
+    return NULL;
+
+  state->index = 0;
+  state->container = str;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_CONST_ITERATOR;
+  it->state = state;
+  it->get = _cetl_str_iter_cget;
+  it->next = _cetl_str_iter_cnext;
+  it->equal = _cetl_str_iter_cequal;
+
+  return it;
+}
+
+cetl_const_iterator *cetl_str_iter_cend(const cetl_string *str) {
+
+  _cetl_str_iter_state *state = malloc(sizeof(_cetl_str_iter_state));
+
+  if (!state || (str->length == 0))
+    return NULL;
+
+  state->index = str->length - 1;
+  state->container = str;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_CONST_ITERATOR;
+  it->state = state;
+  it->get = _cetl_str_iter_cget;
+  it->next = _cetl_str_iter_cnext;
+  it->equal = _cetl_str_iter_cequal;
+
+  return it;
+}
+
 cetl_void_t cetl_str_iter_free(cetl_iterator *it) {
+
+  if (it == NULL)
+    return;
+
+  free(it->state);
+  free(it);
+}
+
+cetl_void_t cetl_str_iter_cfree(cetl_const_iterator *it) {
 
   if (it == NULL)
     return;

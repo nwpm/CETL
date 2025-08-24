@@ -19,9 +19,12 @@ cetl_bool_t cetl_stack_is_empty(const cetl_stack *stack);
 // Iterator
 cetl_iterator* cetl_stack_iter_begin(const cetl_stack* stack);
 cetl_iterator* cetl_stack_iter_end(const cetl_stack* stack);
-cetl_void_t cetl_stack_iter_free(cetl_iterator *it);
+
+cetl_const_iterator* cetl_stack_iter_cbegin(const cetl_stack* stack);
+cetl_const_iterator* cetl_stack_iter_cend(const cetl_stack* stack);
 
 // Free
 cetl_void_t cetl_stack_free(cetl_stack *stack);
+cetl_void_t cetl_stack_iter_free(cetl_iterator *it);
 
 #endif // CETL_STACK_H

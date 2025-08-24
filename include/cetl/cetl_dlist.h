@@ -29,10 +29,15 @@ cetl_bool_t cetl_dlist_is_empty(const cetl_dlist *dlist);
 // Iterator
 cetl_iterator *cetl_dlist_iter_begin(const cetl_dlist* dlist);
 cetl_iterator *cetl_dlist_iter_end(const cetl_dlist* dlist);
-cetl_void_t cetl_dlist_iter_free(cetl_iterator *it);
+
+cetl_const_iterator *cetl_dlist_iter_cbegin(const cetl_dlist* dlist);
+cetl_const_iterator *cetl_dlist_iter_cend(const cetl_dlist* dlist);
 
 // Free
 cetl_void_t cetl_dlist_free(cetl_dlist *dlist);
 cetl_void_t cetl_dlist_free_nodes(cetl_dlist *dlist);
+cetl_void_t cetl_dlist_iter_free(cetl_iterator *it);
+cetl_void_t cetl_dlist_iter_cfree(cetl_const_iterator *it);
+
 
 #endif // CETL_DLIST_H

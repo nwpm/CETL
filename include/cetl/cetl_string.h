@@ -35,11 +35,15 @@ cetl_string *cetl_str_resize(cetl_string *string, cetl_size_t new_len);
 cetl_bool_t cetl_str_is_empty(const cetl_string *string);
 
 // Iterator
-cetl_iterator *cetl_str_iter_begin(const cetl_string* dlist);
-cetl_iterator *cetl_str_iter_end(const cetl_string* dlist);
-cetl_void_t cetl_str_iter_free(cetl_iterator *it);
+cetl_iterator *cetl_str_iter_begin(const cetl_string* str);
+cetl_iterator *cetl_str_iter_end(const cetl_string* str);
+
+cetl_const_iterator *cetl_str_iter_cbegin(const cetl_string *str);
+cetl_const_iterator *cetl_str_iter_cend(const cetl_string *str);
 
 // Free
 cetl_void_t cetl_str_free(cetl_string *string);
+cetl_void_t cetl_str_iter_free(cetl_iterator *it);
+cetl_void_t cetl_str_iter_cfree(cetl_const_iterator *it);
 
 #endif // CETL_STRING_H
