@@ -460,6 +460,7 @@ cetl_iterator *cetl_vec_iter_end(const cetl_vector *vec) {
   if (!it)
     return NULL;
 
+  it->category = CETL_FORWARD_ITERATOR;
   it->state = state;
   it->get = _cetl_vec_iter_get;
   it->next = _cetl_vec_iter_next;
@@ -533,6 +534,7 @@ cetl_const_iterator *cetl_vec_iter_cend(const cetl_vector *vec) {
   if (!it)
     return NULL;
 
+  it->category = CETL_CONST_ITERATOR;
   it->state = state;
   it->get = _cetl_vec_iter_cget;
   it->next = _cetl_vec_iter_cnext;
