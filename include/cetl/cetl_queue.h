@@ -21,9 +21,13 @@ cetl_bool_t cetl_queue_is_empty(const cetl_queue *queue);
 // Iterators
 cetl_iterator *cetl_queue_iter_begin(const cetl_queue* queue);
 cetl_iterator *cetl_queue_iter_end(const cetl_queue* queue);
-cetl_void_t cetl_queue_iter_free(cetl_iterator *it);
+
+cetl_const_iterator *cetl_queue_iter_cbegin(const cetl_queue* queue);
+cetl_const_iterator *cetl_queue_iter_cend(const cetl_queue* queue);
 
 // Free
 cetl_void_t cetl_queue_free(cetl_queue *queue);
+cetl_void_t cetl_queue_iter_free(cetl_iterator *it);
+cetl_void_t cetl_queue_iter_cfree(cetl_const_iterator *it);
 
 #endif // CETL_QUEUE_H
