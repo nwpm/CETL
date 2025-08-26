@@ -450,7 +450,90 @@ cetl_iterator *cetl_cdlist_iter_end(const cetl_cdlist *cdlist) {
   return it;
 }
 
+static cetl_cptr_t _cetl_cdlist_iter_cget(const cetl_const_iterator *it) {
+
+  const _cetl_cdlist_iter_state *state = (_cetl_cdlist_iter_state *)it->state;
+  return state->current_node;
+}
+
+static cetl_void_t _cetl_cdlist_iter_cnext(const cetl_const_iterator *it) {
+
+  _cetl_cdlist_iter_state *state = (_cetl_cdlist_iter_state *)it->state;
+  state->current_node = state->current_node->next;
+}
+
+static cetl_bool_t _cetl_cdlist_iter_cequal(const cetl_const_iterator *a,
+                                          const cetl_const_iterator *b) {
+
+  const _cetl_cdlist_iter_state *state_a = (_cetl_cdlist_iter_state *)a->state;
+  const _cetl_cdlist_iter_state *state_b = (_cetl_cdlist_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->current_node == state_b->current_node)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_const_iterator *cetl_cdlist_iter_cbegin(const cetl_cdlist *cdlist) {
+
+  _cetl_cdlist_iter_state *state = malloc(sizeof(_cetl_cdlist_iter_state));
+
+  if (!state || (cdlist->size == 0))
+    return NULL;
+
+  state->container = cdlist;
+  state->current_node = cdlist->head;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_CONST_ITERATOR;
+  it->state = state;
+  it->get = _cetl_cdlist_iter_cget;
+  it->next = _cetl_cdlist_iter_cnext;
+  it->equal = _cetl_cdlist_iter_cequal;
+
+  return it;
+}
+
+cetl_const_iterator *cetl_cdlist_iter_cend(const cetl_cdlist *cdlist) {
+
+  _cetl_cdlist_iter_state *state = malloc(sizeof(_cetl_cdlist_iter_state));
+
+  if (!state || (cdlist->size == 0))
+    return NULL;
+
+  state->container = cdlist;
+  state->current_node = cdlist->tail;
+
+  cetl_const_iterator *it = malloc(sizeof(cetl_const_iterator));
+
+  if (!it)
+    return NULL;
+
+  it->category = CETL_CONST_ITERATOR;
+  it->state = state;
+  it->get = _cetl_cdlist_iter_cget;
+  it->next = _cetl_cdlist_iter_cnext;
+  it->equal = _cetl_cdlist_iter_cequal;
+
+  return it;
+}
+
 cetl_void_t cetl_cdlist_iter_free(cetl_iterator *it) {
+
+  if (!it)
+    return;
+
+  free(it->state);
+  free(it);
+}
+
+cetl_void_t cetl_cdlist_iter_cfree(cetl_const_iterator *it) {
 
   if (!it)
     return;
