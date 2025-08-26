@@ -26,5 +26,6 @@ cetl_const_iterator* cetl_stack_iter_cend(const cetl_stack* stack);
 // Free
 cetl_void_t cetl_stack_free(cetl_stack *stack);
 cetl_void_t cetl_stack_iter_free(cetl_iterator *it);
+cetl_void_t cetl_stack_iter_cfree(cetl_iterator *it);
 
 #endif // CETL_STACK_H

@@ -95,20 +95,22 @@ cetl_void_t cetl_stack_clear(cetl_stack *stack) {
 typedef struct _cetl_stack_iter_state {
 
   const cetl_stack *container;
-  cetl_iterator *llist_it;
+  cetl_ptr_t llist_it;
 
 } _cetl_stack_iter_state;
 
 static cetl_ptr_t _cetl_stack_iter_get(const cetl_iterator *it) {
 
   const _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
-  return state->llist_it->get(state->llist_it);
+  cetl_iterator* llist_it = (cetl_iterator*)state->llist_it;
+  return llist_it->get(llist_it);
 }
 
 static cetl_void_t _cetl_stack_iter_next(const cetl_iterator *it) {
 
   _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
-  state->llist_it->next(state->llist_it);
+  cetl_iterator* llist_it = (cetl_iterator*)state->llist_it;
+  llist_it->next(llist_it);
 }
 
 static cetl_bool_t _cetl_stack_iter_equal(const cetl_iterator *a,
@@ -179,6 +181,92 @@ cetl_iterator *cetl_stack_iter_end(const cetl_stack *stack) {
   stack_it->get = _cetl_stack_iter_get;
   stack_it->next = _cetl_stack_iter_next;
   stack_it->equal = _cetl_stack_iter_equal;
+
+  return stack_it;
+}
+
+static cetl_cptr_t _cetl_stack_iter_cget(const cetl_const_iterator *it) {
+
+  const _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
+  const cetl_const_iterator* llist_it = (cetl_const_iterator*)state->llist_it;
+  return llist_it->get(llist_it);
+}
+
+static cetl_void_t _cetl_stack_iter_cnext(const cetl_const_iterator *it) {
+
+  _cetl_stack_iter_state *state = (_cetl_stack_iter_state *)it->state;
+  cetl_const_iterator* llist_it = (cetl_const_iterator*)state->llist_it;
+  llist_it->next(llist_it);
+}
+
+static cetl_bool_t _cetl_stack_iter_cequal(const cetl_const_iterator *a,
+                                          const cetl_const_iterator *b) {
+
+  const _cetl_stack_iter_state *state_a = (_cetl_stack_iter_state *)a->state;
+  const _cetl_stack_iter_state *state_b = (_cetl_stack_iter_state *)b->state;
+
+  if ((state_a->container == state_b->container) &&
+      (state_a->llist_it == state_b->llist_it)) {
+    return CETL_TRUE;
+  }
+
+  return CETL_FALSE;
+}
+
+cetl_const_iterator *cetl_stack_iter_cbegin(const cetl_stack *stack) {
+
+  _cetl_stack_iter_state *state = malloc(sizeof(_cetl_stack_iter_state));
+
+  if (!state || (stack->size == 0))
+    return NULL;
+
+  cetl_const_iterator *llist_it = cetl_llist_iter_cbegin(stack->data);
+
+  if (!llist_it)
+    return NULL;
+
+  state->container = stack;
+  state->llist_it = llist_it;
+
+  cetl_const_iterator *stack_it = malloc(sizeof(cetl_const_iterator));
+
+  if (!stack_it)
+    return NULL;
+
+  stack_it->category = CETL_CONST_ITERATOR;
+  stack_it->state = state;
+  stack_it->get = _cetl_stack_iter_cget;
+  stack_it->next = _cetl_stack_iter_cnext;
+  stack_it->equal = _cetl_stack_iter_cequal;
+
+  return stack_it;
+}
+
+cetl_const_iterator *cetl_stack_iter_cend(const cetl_stack *stack) {
+
+  _cetl_stack_iter_state *state = malloc(sizeof(_cetl_stack_iter_state));
+
+  if (!state || (stack->size == 0))
+    return NULL;
+
+  cetl_const_iterator *llist_it = cetl_llist_iter_cend(stack->data);
+
+  if (!llist_it)
+    return NULL;
+
+  state->container = stack;
+  state->llist_it = llist_it;
+
+  cetl_const_iterator *stack_it = malloc(sizeof(cetl_iterator));
+
+  if (!stack_it)
+    return NULL;
+
+  stack_it->category = CETL_CONST_ITERATOR;
+  stack_it->state = state;
+  stack_it->get = _cetl_stack_iter_cget;
+  stack_it->next = _cetl_stack_iter_cnext;
+  stack_it->equal = _cetl_stack_iter_cequal;
 
   return stack_it;
 }
