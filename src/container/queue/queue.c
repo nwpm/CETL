@@ -244,12 +244,12 @@ cetl_const_iterator *cetl_queue_iter_cbegin(const cetl_queue *queue) {
   state->container = queue;
   state->llist_it = llist_it;
 
-  cetl_const_iterator *queue_it = malloc(sizeof(cetl_iterator));
+  cetl_const_iterator *queue_it = malloc(sizeof(cetl_const_iterator));
 
   if (!queue_it)
     return NULL;
 
-  queue_it->category = CETL_FORWARD_ITERATOR;
+  queue_it->category = CETL_CONST_ITERATOR;
   queue_it->state = state;
   queue_it->get = _cetl_queue_iter_cget;
   queue_it->next = _cetl_queue_iter_cnext;
@@ -273,12 +273,12 @@ cetl_const_iterator *cetl_queue_iter_cend(const cetl_queue *queue) {
   state->container = queue;
   state->llist_it = llist_it;
 
-  cetl_const_iterator *queue_it = malloc(sizeof(cetl_iterator));
+  cetl_const_iterator *queue_it = malloc(sizeof(cetl_const_iterator));
 
   if (!queue_it)
     return NULL;
 
-  queue_it->category = CETL_FORWARD_ITERATOR;
+  queue_it->category = CETL_CONST_ITERATOR;
   queue_it->state = state;
   queue_it->get = _cetl_queue_iter_cget;
   queue_it->next = _cetl_queue_iter_cnext;
