@@ -388,6 +388,10 @@ cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
   return vec;
 }
 
+const cetl_element* cetl_vec_get_type(const cetl_vector* vec){
+  return vec->type;
+}
+
 typedef struct _cetl_vec_iter_state {
 
   const cetl_vector *container;

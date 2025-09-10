@@ -23,6 +23,8 @@ cetl_vector *cetl_vec_insert_range(cetl_vector *vec, cetl_cptr_t range,
 cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
                                   cetl_size_t len);
 
+const struct cetl_element* cetl_vec_get_type(const cetl_vector* vec);
+
 // Element access
 cetl_ptr_t cetl_vec_front(const cetl_vector *vec);
 cetl_ptr_t cetl_vec_back(const cetl_vector *vec);
