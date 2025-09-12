@@ -143,11 +143,7 @@ cetl_result_t cetl_vec_set(cetl_vector *vec, cetl_size_t pos,
 
 cetl_vector *cetl_vec_resize(cetl_vector *vec, cetl_size_t new_capacity) {
 
-  if (vec == NULL) {
-    return NULL;
-  }
-
-  if (new_capacity == vec->capacity) {
+  if (vec == NULL || new_capacity == vec->capacity) {
     return vec;
   }
 
@@ -388,7 +384,7 @@ cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
   return vec;
 }
 
-const cetl_element* cetl_vec_get_type(const cetl_vector* vec){
+const struct cetl_element* cetl_vec_get_type(const cetl_vector* vec){
   return vec->type;
 }
 
