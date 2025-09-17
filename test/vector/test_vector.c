@@ -37,6 +37,10 @@ static TestStruct filler_struct_val = {1, 2};
 static TestHeapStruct *filler_heap_struct_val = NULL;
 
 static int insert_int_val = 10;
+static double insert_double_val = 15.;
+static char insert_char_val = 1;
+static TestStruct insert_struct_val = {6, 7};
+static TestHeapStruct *insert_heap_struct_val = NULL;
 
 // ********** Base types **********
 cetl_element *create_int_type() {
@@ -234,6 +238,73 @@ cetl_void_t insert_int_checker(const cetl_vector *vec, cetl_size_t insert_pos,
   }
 }
 
+cetl_void_t insert_struct_checker(const cetl_vector *vec,
+                                  cetl_size_t insert_pos,
+                                  cetl_size_t insert_size) {
+
+  cetl_size_t vec_size = cetl_vec_size(vec);
+
+  TEST_ASSERT_TRUE_MESSAGE(
+      vec_size >= insert_pos + insert_size,
+      "Vector size is smaller than insert position + insert size");
+
+  cetl_size_t end_size = vec_size - (insert_pos + insert_size);
+
+  for (cetl_size_t j = 0; j < insert_pos; ++j) {
+    TestStruct *val = (TestStruct *)cetl_vec_get(vec, j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_INT(filler_struct_val.x, val->x);
+    TEST_ASSERT_EQUAL_INT(filler_struct_val.y, val->y);
+  }
+
+  for (cetl_size_t j = 0; j < insert_size; ++j) {
+    TestStruct *val = (TestStruct *)cetl_vec_get(vec, insert_pos + j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_INT(insert_struct_val.x, val->x);
+    TEST_ASSERT_EQUAL_INT(insert_struct_val.y, val->y);
+  }
+
+  for (cetl_size_t j = 0; j < end_size; ++j) {
+    TestStruct *val =
+        (TestStruct *)cetl_vec_get(vec, insert_pos + insert_size + j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_INT(filler_struct_val.x, val->x);
+    TEST_ASSERT_EQUAL_INT(filler_struct_val.y, val->y);
+  }
+}
+
+cetl_void_t insert_heap_struct_checker(const cetl_vector *vec,
+                                       cetl_size_t insert_pos,
+                                       cetl_size_t insert_size) {
+
+  cetl_size_t vec_size = cetl_vec_size(vec);
+
+  TEST_ASSERT_TRUE_MESSAGE(
+      vec_size >= insert_pos + insert_size,
+      "Vector size is smaller than insert position + insert size");
+
+  cetl_size_t end_size = vec_size - (insert_pos + insert_size);
+
+  for (cetl_size_t j = 0; j < insert_pos; ++j) {
+    TestHeapStruct *val = (TestHeapStruct *)cetl_vec_get(vec, j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_STRING(filler_heap_struct_val->data, val->data);
+  }
+
+  for (cetl_size_t j = 0; j < insert_size; ++j) {
+    TestHeapStruct *val = (TestHeapStruct *)cetl_vec_get(vec, insert_pos + j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_STRING(insert_heap_struct_val->data, val->data);
+  }
+
+  for (cetl_size_t j = 0; j < end_size; ++j) {
+    TestHeapStruct *val =
+        (TestHeapStruct *)cetl_vec_get(vec, insert_pos + insert_size + j);
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_STRING(filler_heap_struct_val->data, val->data);
+  }
+}
+
 // ********************
 
 // ********** Remover **********
@@ -257,6 +328,9 @@ void setUp() {
 
   filler_heap_struct_val = malloc(sizeof(TestHeapStruct));
   filler_heap_struct_val->data = "string";
+
+  insert_heap_struct_val = malloc(sizeof(TestHeapStruct));
+  insert_heap_struct_val->data = "inserted";
 }
 
 void tearDown() {
@@ -268,6 +342,7 @@ void tearDown() {
   free(heap_struct_type);
 
   free(filler_heap_struct_val);
+  free(insert_heap_struct_val);
 }
 
 // ********** Create empty **********
@@ -946,6 +1021,8 @@ cetl_void_t check_insert(const cetl_element *type, cetl_size_t start_size,
   cetl_vec_free(vec);
 }
 
+// Int
+
 cetl_void_t test_insert_type_int_init_size_0_insert_num_0() {
   check_insert(int_type, 0, &filler_int_val, 0, NULL, 0, insert_int_checker);
 }
@@ -973,6 +1050,231 @@ cetl_void_t test_insert_type_int_init_size_5_insert_num_1_pos_middle() {
   check_insert(int_type, 5, &filler_int_val, 2, &insert_int_val, 1,
                insert_int_checker);
 }
+
+cetl_void_t test_insert_type_int_init_size_5_insert_num_5_pos_begin() {
+  check_insert(int_type, 5, &filler_int_val, 0, &insert_int_val, 5,
+               insert_int_checker);
+}
+
+cetl_void_t test_insert_type_int_init_size_5_insert_num_5_pos_end() {
+  check_insert(int_type, 5, &filler_int_val, 5, &insert_int_val, 5,
+               insert_int_checker);
+}
+
+cetl_void_t test_insert_type_int_init_size_5_insert_num_5_pos_middle() {
+  check_insert(int_type, 5, &filler_int_val, 2, &insert_int_val, 5,
+               insert_int_checker);
+}
+
+// Struct
+
+cetl_void_t test_insert_type_struct_init_size_0_insert_num_0() {
+  check_insert(struct_type, 0, &filler_struct_val, 0, NULL, 0,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_0_insert_num_1() {
+  check_insert(struct_type, 0, &filler_struct_val, 0, &insert_struct_val, 1,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_1_insert_num_0() {
+  check_insert(struct_type, 1, &filler_struct_val, 0, NULL, 0,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_1_pos_begin() {
+  check_insert(struct_type, 5, &filler_struct_val, 0, &insert_struct_val, 1,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_1_pos_end() {
+  check_insert(struct_type, 5, &filler_struct_val, 5, &insert_struct_val, 1,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_1_pos_middle() {
+  check_insert(struct_type, 5, &filler_struct_val, 2, &insert_struct_val, 1,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_5_pos_begin() {
+  check_insert(struct_type, 5, &filler_struct_val, 0, &insert_struct_val, 5,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_5_pos_end() {
+  check_insert(struct_type, 5, &filler_struct_val, 5, &insert_struct_val, 5,
+               insert_struct_checker);
+}
+
+cetl_void_t test_insert_type_struct_init_size_5_insert_num_5_pos_middle() {
+  check_insert(struct_type, 5, &filler_struct_val, 2, &insert_struct_val, 5,
+               insert_struct_checker);
+}
+
+// Heap Struct
+
+cetl_void_t test_insert_type_heap_struct_init_size_0_insert_num_0() {
+  check_insert(heap_struct_type, 0, filler_heap_struct_val, 0, NULL, 0,
+               insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_0_insert_num_1() {
+  check_insert(heap_struct_type, 0, filler_heap_struct_val, 0,
+               insert_heap_struct_val, 1, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_1_insert_num_0() {
+  check_insert(heap_struct_type, 1, filler_heap_struct_val, 0, NULL, 0,
+               insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_1_pos_begin() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 0,
+               insert_heap_struct_val, 1, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_1_pos_end() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 5,
+               insert_heap_struct_val, 1, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_1_pos_middle() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 2,
+               insert_heap_struct_val, 1, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_5_pos_begin() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 0,
+               insert_heap_struct_val, 5, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_5_pos_end() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 5,
+               insert_heap_struct_val, 5, insert_heap_struct_checker);
+}
+
+cetl_void_t test_insert_type_heap_struct_init_size_5_insert_num_5_pos_middle() {
+  check_insert(heap_struct_type, 5, filler_heap_struct_val, 2,
+               insert_heap_struct_val, 5, insert_heap_struct_checker);
+}
+
+// ********************
+
+// ********** Erase **********
+
+cetl_void_t check_erase(const cetl_element *type, cetl_size_t start_size,
+                        cetl_ptr_t fill_value, cetl_size_t erase_pos,
+                        cetl_size_t erase_size, vec_checker checker) {
+
+  cetl_vector *vec = cetl_vec_create_empty(type);
+  TEST_ASSERT_NOT_NULL(vec);
+
+  fill_vec_with(vec, start_size, fill_value);
+
+  for (cetl_size_t i = 0; i < erase_size; ++i) {
+    cetl_vec_erase(vec, erase_pos);
+  }
+
+  cetl_size_t end_size = (start_size < erase_size) ? 0 : start_size - erase_size;
+  TEST_ASSERT_EQUAL_size_t(end_size, cetl_vec_size(vec));
+
+  checker(vec, end_size);
+
+  cetl_vec_free(vec);
+}
+
+// Int
+
+cetl_void_t test_erase_type_int_init_size_0_erase_num_0() {
+  check_erase(int_type, 0, &filler_int_val, 0, 0, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_0_erase_num_1() {
+  check_erase(int_type, 0, &filler_int_val, 0, 1, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_1_erase_num_0() {
+  check_erase(int_type, 1, &filler_int_val, 0, 0, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_5_erase_num_1_pos_begin() {
+  check_erase(int_type, 5, &filler_int_val, 0, 1, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_5_erase_num_1_pos_end() {
+  check_erase(int_type, 5, &filler_int_val, 4, 1, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_5_erase_num_1_pos_middle() {
+  check_erase(int_type, 5, &filler_int_val, 2, 1, int_vector_checker);
+}
+
+cetl_void_t test_erase_type_int_init_size_5_erase_num_5_pos_begin() {
+  check_erase(int_type, 5, &filler_int_val, 0, 5, int_vector_checker);
+}
+
+// Struct
+
+cetl_void_t test_erase_type_struct_init_size_0_erase_num_0() {
+  check_erase(struct_type, 0, &filler_struct_val, 0, 0, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_0_erase_num_1() {
+  check_erase(struct_type, 0, &filler_struct_val, 0, 1, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_1_erase_num_0() {
+  check_erase(struct_type, 1, &filler_struct_val, 0, 0, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_5_erase_num_1_pos_begin() {
+  check_erase(struct_type, 5, &filler_struct_val, 0, 1, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_5_erase_num_1_pos_end() {
+  check_erase(struct_type, 5, &filler_struct_val, 4, 1, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_5_erase_num_1_pos_middle() {
+  check_erase(struct_type, 5, &filler_struct_val, 2, 1, struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_struct_init_size_5_erase_num_5_pos_begin() {
+  check_erase(struct_type, 5, &filler_struct_val, 0, 5, struct_vector_checker);
+}
+
+// Heap struct
+
+cetl_void_t test_erase_type_heap_struct_init_size_0_erase_num_0() {
+  check_erase(heap_struct_type, 0, filler_heap_struct_val, 0, 0, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_0_erase_num_1() {
+  check_erase(heap_struct_type, 0, filler_heap_struct_val, 0, 1, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_1_erase_num_0() {
+  check_erase(heap_struct_type, 1, filler_heap_struct_val, 0, 0, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_5_erase_num_1_pos_begin() {
+  check_erase(heap_struct_type, 5, filler_heap_struct_val, 0, 1, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_5_erase_num_1_pos_end() {
+  check_erase(heap_struct_type, 5, filler_heap_struct_val, 4, 1, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_5_erase_num_1_pos_middle() {
+  check_erase(heap_struct_type, 5, filler_heap_struct_val, 2, 1, heap_struct_vector_checker);
+}
+
+cetl_void_t test_erase_type_heap_struct_init_size_5_erase_num_5_pos_begin() {
+  check_erase(heap_struct_type, 5, filler_heap_struct_val, 0, 5, heap_struct_vector_checker);
+}
+
 
 // ********************
 
@@ -1129,12 +1431,67 @@ int main() {
 
   puts("\nInsert\n");
 
+  puts("\nInt\n");
   RUN_TEST(test_insert_type_int_init_size_0_insert_num_0);
   RUN_TEST(test_insert_type_int_init_size_0_insert_num_1);
   RUN_TEST(test_insert_type_int_init_size_1_insert_num_0);
   RUN_TEST(test_insert_type_int_init_size_5_insert_num_1_pos_begin);
   RUN_TEST(test_insert_type_int_init_size_5_insert_num_1_pos_middle);
   RUN_TEST(test_insert_type_int_init_size_5_insert_num_1_pos_end);
+  RUN_TEST(test_insert_type_int_init_size_5_insert_num_5_pos_begin);
+  RUN_TEST(test_insert_type_int_init_size_5_insert_num_5_pos_middle);
+  RUN_TEST(test_insert_type_int_init_size_5_insert_num_5_pos_end);
+
+  puts("\nStruct\n");
+  RUN_TEST(test_insert_type_struct_init_size_0_insert_num_0);
+  RUN_TEST(test_insert_type_struct_init_size_0_insert_num_1);
+  RUN_TEST(test_insert_type_struct_init_size_1_insert_num_0);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_1_pos_begin);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_1_pos_middle);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_1_pos_end);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_5_pos_begin);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_5_pos_middle);
+  RUN_TEST(test_insert_type_struct_init_size_5_insert_num_5_pos_end);
+
+  puts("\nHeap struct\n");
+  RUN_TEST(test_insert_type_heap_struct_init_size_0_insert_num_0);
+  RUN_TEST(test_insert_type_heap_struct_init_size_0_insert_num_1);
+  RUN_TEST(test_insert_type_heap_struct_init_size_1_insert_num_0);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_1_pos_begin);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_1_pos_middle);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_1_pos_end);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_5_pos_begin);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_5_pos_middle);
+  RUN_TEST(test_insert_type_heap_struct_init_size_5_insert_num_5_pos_end);
+
+  puts("\nErase\n");
+
+  puts("\nInt\n");
+  RUN_TEST(test_erase_type_int_init_size_0_erase_num_0);
+  RUN_TEST(test_erase_type_int_init_size_0_erase_num_1);
+  RUN_TEST(test_erase_type_int_init_size_1_erase_num_0);
+  RUN_TEST(test_erase_type_int_init_size_5_erase_num_1_pos_begin);
+  RUN_TEST(test_erase_type_int_init_size_5_erase_num_1_pos_middle);
+  RUN_TEST(test_erase_type_int_init_size_5_erase_num_1_pos_end);
+  RUN_TEST(test_erase_type_int_init_size_5_erase_num_5_pos_begin);
+
+  puts("\nStruct\n");
+  RUN_TEST(test_erase_type_struct_init_size_0_erase_num_0);
+  RUN_TEST(test_erase_type_struct_init_size_0_erase_num_1);
+  RUN_TEST(test_erase_type_struct_init_size_1_erase_num_0);
+  RUN_TEST(test_erase_type_struct_init_size_5_erase_num_1_pos_begin);
+  RUN_TEST(test_erase_type_struct_init_size_5_erase_num_1_pos_middle);
+  RUN_TEST(test_erase_type_struct_init_size_5_erase_num_1_pos_end);
+  RUN_TEST(test_erase_type_struct_init_size_5_erase_num_5_pos_begin);
+
+  puts("\nHeap struct\n");
+  RUN_TEST(test_erase_type_heap_struct_init_size_0_erase_num_0);
+  RUN_TEST(test_erase_type_heap_struct_init_size_0_erase_num_1);
+  RUN_TEST(test_erase_type_heap_struct_init_size_1_erase_num_0);
+  RUN_TEST(test_erase_type_heap_struct_init_size_5_erase_num_1_pos_begin);
+  RUN_TEST(test_erase_type_heap_struct_init_size_5_erase_num_1_pos_middle);
+  RUN_TEST(test_erase_type_heap_struct_init_size_5_erase_num_1_pos_end);
+  RUN_TEST(test_erase_type_heap_struct_init_size_5_erase_num_5_pos_begin);
 
   return UNITY_END();
 }
