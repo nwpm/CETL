@@ -290,8 +290,8 @@ cetl_vector *cetl_vec_erase(cetl_vector *vec, cetl_size_t index) {
   }
 
   cetl_byte_t *dest = vec->data + index * vec->type->size;
-  cetl_byte_t *src = vec->data + (index + 1) * vec->size;
-  cetl_size_t move_size = (vec->size - index - 1) * vec->size;
+  cetl_byte_t *src = vec->data + (index + 1) * vec->type->size;
+  cetl_size_t move_size = (vec->size - index - 1) * vec->type->size;
 
   if (vec->type->dtor) {
     vec->type->dtor(dest);
