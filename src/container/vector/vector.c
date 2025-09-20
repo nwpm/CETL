@@ -377,7 +377,7 @@ cetl_vector *cetl_vec_erase_range(cetl_vector *vec, cetl_size_t pos,
   cetl_byte_t *dest = vec->data + pos * vec->type->size;
   cetl_byte_t *src = vec->data + (pos + len) * vec->type->size;
   cetl_size_t move_size = (pos + len == vec->size) ? 0 : len;
-  memmove(dest, src, move_size);
+  memmove(dest, src, move_size * vec->type->size);
 
   vec->size -= len;
 
