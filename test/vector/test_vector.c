@@ -1642,13 +1642,12 @@ cetl_void_t check_front(const cetl_element *type, cetl_size_t start_size,
   fill_vec_with(vec, start_size, fill_value);
 
   cetl_ptr_t elem = cetl_vec_front(vec);
-  
-  if(expected_elem == NULL){
+
+  if (expected_elem == NULL) {
     TEST_ASSERT_NULL(elem);
     cetl_vec_free(vec);
     return;
   }
-
 
   TEST_ASSERT_EQUAL_MEMORY(expected_elem, elem, elem_size);
 
@@ -1657,42 +1656,35 @@ cetl_void_t check_front(const cetl_element *type, cetl_size_t start_size,
 
 // Int
 
-cetl_void_t test_front_type_int_vec_size_0(){
+cetl_void_t test_front_type_int_vec_size_0() {
   check_front(int_type, 0, &filler_int_val, NULL, 0);
 }
 
-cetl_void_t test_front_type_int_vec_size_5(){
-  check_front(int_type, 0, &filler_int_val, NULL, 0);
+cetl_void_t test_front_type_int_vec_size_5() {
+  check_front(int_type, 5, &filler_int_val, &filler_int_val,
+              sizeof(filler_int_val));
 }
 
 // Double
 
-cetl_void_t test_front_type_double_vec_size_0(){
+cetl_void_t test_front_type_double_vec_size_0() {
   check_front(double_type, 0, &filler_double_val, NULL, 0);
 }
 
-cetl_void_t test_front_type_double_vec_size_5(){
-  check_front(double_type, 0, &filler_double_val, NULL, 0);
+cetl_void_t test_front_type_double_vec_size_5() {
+  check_front(double_type, 5, &filler_double_val, &filler_double_val,
+              sizeof(filler_double_val));
 }
 
 // Struct
 
-cetl_void_t test_front_type_struct_vec_size_0(){
+cetl_void_t test_front_type_struct_vec_size_0() {
   check_front(struct_type, 0, &filler_struct_val, NULL, 0);
 }
 
-cetl_void_t test_front_type_struct_vec_size_5(){
-  check_front(struct_type, 0, &filler_struct_val, NULL, 0);
-}
-
-// Heap Struct
-
-cetl_void_t test_front_type_heap_struct_vec_size_0(){
-  check_front(heap_struct_type, 0, &filler_heap_struct_val, NULL, 0);
-}
-
-cetl_void_t test_front_type_heap_struct_vec_size_5(){
-  check_front(heap_struct_type, 0, &filler_heap_struct_val, NULL, 0);
+cetl_void_t test_front_type_struct_vec_size_5() {
+  check_front(struct_type, 5, &filler_struct_val, &filler_struct_val,
+              sizeof(filler_struct_val));
 }
 
 // ********************
@@ -1700,8 +1692,8 @@ cetl_void_t test_front_type_heap_struct_vec_size_5(){
 // ********** Back **********
 
 cetl_void_t check_back(const cetl_element *type, cetl_size_t start_size,
-                        cetl_ptr_t fill_value, cetl_ptr_t expected_elem,
-                        cetl_size_t elem_size) {
+                       cetl_ptr_t fill_value, cetl_ptr_t expected_elem,
+                       cetl_size_t elem_size) {
 
   cetl_vector *vec = cetl_vec_create_empty(type);
   TEST_ASSERT_NOT_NULL(vec);
@@ -1709,13 +1701,12 @@ cetl_void_t check_back(const cetl_element *type, cetl_size_t start_size,
   fill_vec_with(vec, start_size, fill_value);
 
   cetl_ptr_t elem = cetl_vec_back(vec);
-  
-  if(expected_elem == NULL){
+
+  if (expected_elem == NULL) {
     TEST_ASSERT_NULL(elem);
     cetl_vec_free(vec);
     return;
   }
-
 
   TEST_ASSERT_EQUAL_MEMORY(expected_elem, elem, elem_size);
 
@@ -1724,46 +1715,259 @@ cetl_void_t check_back(const cetl_element *type, cetl_size_t start_size,
 
 // Int
 
-cetl_void_t test_back_type_int_vec_size_0(){
+cetl_void_t test_back_type_int_vec_size_0() {
   check_back(int_type, 0, &filler_int_val, NULL, 0);
 }
 
-cetl_void_t test_back_type_int_vec_size_5(){
-  check_back(int_type, 0, &filler_int_val, NULL, 0);
+cetl_void_t test_back_type_int_vec_size_5() {
+  check_back(int_type, 5, &filler_int_val, &filler_int_val,
+             sizeof(filler_int_val));
 }
 
 // Double
 
-cetl_void_t test_back_type_double_vec_size_0(){
+cetl_void_t test_back_type_double_vec_size_0() {
   check_back(double_type, 0, &filler_double_val, NULL, 0);
 }
 
-cetl_void_t test_back_type_double_vec_size_5(){
-  check_back(double_type, 0, &filler_double_val, NULL, 0);
+cetl_void_t test_back_type_double_vec_size_5() {
+  check_back(double_type, 5, &filler_double_val, &filler_double_val,
+             sizeof(filler_double_val));
 }
 
 // Struct
 
-cetl_void_t test_back_type_struct_vec_size_0(){
+cetl_void_t test_back_type_struct_vec_size_0() {
   check_back(struct_type, 0, &filler_struct_val, NULL, 0);
 }
 
-cetl_void_t test_back_type_struct_vec_size_5(){
-  check_back(struct_type, 0, &filler_struct_val, NULL, 0);
-}
-
-// Heap Struct
-
-cetl_void_t test_back_type_heap_struct_vec_size_0(){
-  check_back(heap_struct_type, 0, &filler_heap_struct_val, NULL, 0);
-}
-
-cetl_void_t test_back_type_heap_struct_vec_size_5(){
-  check_back(heap_struct_type, 0, &filler_heap_struct_val, NULL, 0);
+cetl_void_t test_back_type_struct_vec_size_5() {
+  check_back(struct_type, 5, &filler_struct_val, &filler_struct_val,
+             sizeof(filler_struct_val));
 }
 
 // ********************
 
+// ********** Get **********
+
+cetl_void_t check_get(const cetl_element *type, cetl_size_t start_size,
+                      cetl_ptr_t fill_value, cetl_ptr_t expected_elem,
+                      cetl_size_t elem_size, cetl_size_t elem_pos) {
+
+  cetl_vector *vec = cetl_vec_create_empty(type);
+  TEST_ASSERT_NOT_NULL(vec);
+
+  fill_vec_with(vec, start_size, fill_value);
+
+  cetl_ptr_t elem = cetl_vec_get(vec, elem_pos);
+
+  if (expected_elem == NULL) {
+    TEST_ASSERT_NULL(elem);
+    cetl_vec_free(vec);
+    return;
+  }
+
+  TEST_ASSERT_EQUAL_MEMORY(expected_elem, elem, elem_size);
+
+  cetl_vec_free(vec);
+}
+
+// Int
+
+cetl_void_t test_get_type_int_vec_size_0_elem_pos_0() {
+  check_get(int_type, 0, &filler_int_val, NULL, 0, 0);
+}
+
+cetl_void_t test_get_type_int_vec_size_0_elem_pos_10() {
+  check_get(int_type, 0, &filler_int_val, NULL, 0, 10);
+}
+
+cetl_void_t test_get_type_int_vec_size_5_elem_pos_2() {
+  check_get(int_type, 5, &filler_int_val, &filler_int_val,
+            sizeof(filler_int_val), 2);
+}
+
+// Double
+
+cetl_void_t test_get_type_double_vec_size_0_elem_pos_0() {
+  check_get(double_type, 0, &filler_double_val, NULL, 0, 0);
+}
+
+cetl_void_t test_get_type_double_vec_size_0_elem_pos_10() {
+  check_get(double_type, 0, &filler_double_val, NULL, 0, 10);
+}
+
+cetl_void_t test_get_type_double_vec_size_5_elem_pos_2() {
+  check_get(double_type, 5, &filler_double_val, &filler_double_val,
+            sizeof(filler_double_val), 2);
+}
+
+// Struct
+
+cetl_void_t test_get_type_struct_vec_size_0_elem_pos_0() {
+  check_get(struct_type, 0, &filler_struct_val, NULL, 0, 0);
+}
+
+cetl_void_t test_get_type_struct_vec_size_0_elem_pos_10() {
+  check_get(struct_type, 0, &filler_struct_val, NULL, 0, 10);
+}
+
+cetl_void_t test_get_type_struct_vec_size_5_elem_pos_2() {
+  check_get(struct_type, 5, &filler_struct_val, &filler_struct_val,
+            sizeof(filler_struct_val), 2);
+}
+
+// ********************
+
+// ********** Set **********
+
+cetl_void_t check_set(const cetl_element *type, cetl_size_t start_size,
+                      cetl_ptr_t fill_value, cetl_ptr_t set_val,
+                      cetl_size_t elem_size, cetl_result_t expected_res,
+                      cetl_size_t set_pos) {
+
+  cetl_vector *vec = cetl_vec_create_empty(type);
+  TEST_ASSERT_NOT_NULL(vec);
+
+  fill_vec_with(vec, start_size, fill_value);
+
+  cetl_result_t res = cetl_vec_set(vec, set_pos, set_val);
+  TEST_ASSERT_EQUAL_INT(expected_res, res);
+
+  cetl_ptr_t res_val = cetl_vec_get(vec, set_pos);
+
+  if (res_val) {
+    TEST_ASSERT_EQUAL_MEMORY(set_val, cetl_vec_get(vec, set_pos), elem_size);
+  }
+
+  cetl_vec_free(vec);
+}
+
+cetl_void_t check_set_heap_struct(cetl_size_t start_size, cetl_ptr_t set_val,
+                                  cetl_result_t expected_res,
+                                  cetl_size_t set_pos) {
+
+  cetl_vector *vec = cetl_vec_create_empty(heap_struct_type);
+  TEST_ASSERT_NOT_NULL(vec);
+
+  fill_vec_with(vec, start_size, filler_heap_struct_val);
+
+  cetl_result_t res = cetl_vec_set(vec, set_pos, set_val);
+  TEST_ASSERT_EQUAL_INT(expected_res, res);
+
+  cetl_ptr_t res_val = cetl_vec_get(vec, set_pos);
+
+  if (res_val) {
+    cetl_str_t expected_str = ((TestHeapStruct *)set_val)->data;
+    cetl_str_t current_str =
+        ((TestHeapStruct *)cetl_vec_get(vec, set_pos))->data;
+    TEST_ASSERT_EQUAL_STRING(expected_str, current_str);
+  }
+
+  cetl_vec_free(vec);
+}
+
+// Int
+
+cetl_void_t test_set_type_int_vec_size_0_set_pos_0() {
+  int set_val = 21;
+  check_set(int_type, 0, &filler_int_val, &set_val, sizeof(filler_int_val), -2,
+            0);
+}
+
+cetl_void_t test_set_type_int_vec_size_0_set_pos_10() {
+  int set_val = 21;
+  check_set(int_type, 0, &filler_int_val, &set_val, sizeof(filler_int_val), -2,
+            0);
+}
+
+cetl_void_t test_set_type_int_vec_size_0_set_val_null() {
+  check_set(int_type, 0, &filler_int_val, NULL, sizeof(filler_int_val), -1, 0);
+}
+
+cetl_void_t test_set_type_int_vec_size_5_set_pos_2() {
+  int set_val = 21;
+  check_set(int_type, 5, &filler_int_val, &set_val, sizeof(filler_int_val), 0,
+            2);
+}
+
+// Double
+
+cetl_void_t test_set_type_double_vec_size_0_set_pos_0() {
+  double set_val = 34.;
+  check_set(double_type, 0, &filler_double_val, &set_val,
+            sizeof(filler_double_val), -2, 0);
+}
+
+cetl_void_t test_set_type_double_vec_size_0_set_pos_10() {
+  double set_val = 34.;
+  check_set(double_type, 0, &filler_double_val, &set_val,
+            sizeof(filler_double_val), -2, 0);
+}
+
+cetl_void_t test_set_type_double_vec_size_0_set_val_null() {
+  check_set(double_type, 0, &filler_double_val, NULL, sizeof(filler_double_val),
+            -1, 0);
+}
+
+cetl_void_t test_set_type_double_vec_size_5_set_pos_2() {
+  double set_val = 34.;
+  check_set(double_type, 5, &filler_double_val, &set_val,
+            sizeof(filler_double_val), 0, 2);
+}
+
+// Struct
+
+cetl_void_t test_set_type_struct_vec_size_0_set_pos_0() {
+  TestStruct set_val = {55, 94};
+  check_set(struct_type, 0, &filler_struct_val, &set_val,
+            sizeof(filler_struct_val), -2, 0);
+}
+
+cetl_void_t test_set_type_struct_vec_size_0_set_pos_10() {
+  TestStruct set_val = {22, 102};
+  check_set(struct_type, 0, &filler_struct_val, &set_val,
+            sizeof(filler_struct_val), -2, 0);
+}
+
+cetl_void_t test_set_type_struct_vec_size_0_set_val_null() {
+  check_set(struct_type, 0, &filler_struct_val, NULL, sizeof(filler_struct_val),
+            -1, 0);
+}
+
+cetl_void_t test_set_type_struct_vec_size_5_set_pos_2() {
+  TestStruct set_val = {932, 170};
+  check_set(struct_type, 5, &filler_struct_val, &set_val,
+            sizeof(filler_struct_val), 0, 2);
+}
+
+// Heap struct
+
+cetl_void_t test_set_type_heap_struct_vec_size_0_set_pos_0() {
+  TestHeapStruct *set_val = malloc(sizeof(TestHeapStruct));
+  check_set_heap_struct(0, set_val, -2, 0);
+  free(set_val);
+}
+
+cetl_void_t test_set_type_heap_struct_vec_size_0_set_pos_10() {
+  TestHeapStruct *set_val = malloc(sizeof(TestHeapStruct));
+  check_set_heap_struct(0, set_val, -2, 10);
+  free(set_val);
+}
+
+cetl_void_t test_set_type_heap_struct_vec_size_0_set_val_null() {
+  TestHeapStruct *set_val = NULL;
+  check_set_heap_struct(0, set_val, -1, 0);
+}
+
+cetl_void_t test_set_type_heap_struct_vec_size_5_set_pos_2() {
+  TestHeapStruct *set_val = malloc(sizeof(TestHeapStruct));
+  set_val->data = "set value";
+  check_set_heap_struct(5, set_val, 0, 2);
+  free(set_val);
+}
+
+// ********************
 
 int main() {
 
@@ -1983,7 +2187,6 @@ int main() {
   puts("\nInsert range\n");
 
   puts("\nInt\n");
-
   RUN_TEST(test_insert_range_type_int_init_size_0_insert_range_0);
   RUN_TEST(test_insert_range_type_int_init_size_0_insert_range_1);
   RUN_TEST(test_insert_range_type_int_init_size_1_insert_range_0);
@@ -1995,7 +2198,6 @@ int main() {
   RUN_TEST(test_insert_range_type_int_init_size_5_insert_range_1_pos_middle);
 
   puts("\nStruct\n");
-
   RUN_TEST(test_insert_range_type_struct_init_size_0_insert_range_0);
   RUN_TEST(test_insert_range_type_struct_init_size_0_insert_range_1);
   RUN_TEST(test_insert_range_type_struct_init_size_1_insert_range_0);
@@ -2008,7 +2210,6 @@ int main() {
   RUN_TEST(test_insert_range_type_struct_init_size_5_insert_range_1_pos_middle);
 
   puts("\nHeap Struct\n");
-
   RUN_TEST(test_insert_range_type_heap_struct_init_size_0_insert_range_0);
   RUN_TEST(test_insert_range_type_heap_struct_init_size_0_insert_range_1);
   RUN_TEST(test_insert_range_type_heap_struct_init_size_1_insert_range_0);
@@ -2028,7 +2229,6 @@ int main() {
   puts("\nErase Range\n");
 
   puts("\nInt\n");
-
   RUN_TEST(test_erase_range_type_int_init_size_0_erase_range_0);
   RUN_TEST(test_erase_range_type_int_init_size_0_erase_range_1);
   RUN_TEST(test_erase_range_type_int_init_size_1_erase_range_10);
@@ -2038,7 +2238,6 @@ int main() {
   RUN_TEST(test_erase_range_type_int_init_size_5_erase_range_5_pos_begin);
 
   puts("\nStruct\n");
-
   RUN_TEST(test_erase_range_type_struct_init_size_0_erase_range_0);
   RUN_TEST(test_erase_range_type_struct_init_size_0_erase_range_1);
   RUN_TEST(test_erase_range_type_struct_init_size_1_erase_range_10);
@@ -2048,7 +2247,6 @@ int main() {
   RUN_TEST(test_erase_range_type_struct_init_size_5_erase_range_5_pos_begin);
 
   puts("\nHeap struct\n");
-
   RUN_TEST(test_erase_range_type_heap_struct_init_size_0_erase_range_0);
   RUN_TEST(test_erase_range_type_heap_struct_init_size_0_erase_range_1);
   RUN_TEST(test_erase_range_type_heap_struct_init_size_1_erase_range_10);
@@ -2063,46 +2261,73 @@ int main() {
   puts("\nFront\n");
 
   puts("\nInt\n");
-  
   RUN_TEST(test_front_type_int_vec_size_0);
   RUN_TEST(test_front_type_int_vec_size_5);
 
   puts("\nDouble\n");
-  
   RUN_TEST(test_front_type_double_vec_size_0);
   RUN_TEST(test_front_type_double_vec_size_5);
 
   puts("\nStruct\n");
-  
   RUN_TEST(test_front_type_struct_vec_size_0);
   RUN_TEST(test_front_type_struct_vec_size_5);
-
-  puts("\nHeap struct\n");
-  
-  RUN_TEST(test_front_type_heap_struct_vec_size_0);
-  RUN_TEST(test_front_type_heap_struct_vec_size_5);
 
   puts("\nBack\n");
 
   puts("\nInt\n");
-  
   RUN_TEST(test_back_type_int_vec_size_0);
   RUN_TEST(test_back_type_int_vec_size_5);
 
   puts("\nDouble\n");
-  
   RUN_TEST(test_back_type_double_vec_size_0);
   RUN_TEST(test_back_type_double_vec_size_5);
 
   puts("\nStruct\n");
-  
   RUN_TEST(test_back_type_struct_vec_size_0);
   RUN_TEST(test_back_type_struct_vec_size_5);
 
+  puts("\nGet\n");
+
+  puts("\nInt\n");
+  RUN_TEST(test_get_type_int_vec_size_0_elem_pos_0);
+  RUN_TEST(test_get_type_int_vec_size_0_elem_pos_10);
+  RUN_TEST(test_get_type_int_vec_size_5_elem_pos_2);
+
+  puts("\nDouble\n");
+  RUN_TEST(test_get_type_double_vec_size_0_elem_pos_0);
+  RUN_TEST(test_get_type_double_vec_size_0_elem_pos_10);
+  RUN_TEST(test_get_type_double_vec_size_5_elem_pos_2);
+
+  puts("\nStruct\n");
+  RUN_TEST(test_get_type_struct_vec_size_0_elem_pos_0);
+  RUN_TEST(test_get_type_struct_vec_size_0_elem_pos_10);
+  RUN_TEST(test_get_type_struct_vec_size_5_elem_pos_2);
+
+  puts("\nSet\n");
+
+  puts("\nInt\n");
+  RUN_TEST(test_set_type_int_vec_size_0_set_pos_0);
+  RUN_TEST(test_set_type_int_vec_size_0_set_pos_10);
+  RUN_TEST(test_set_type_int_vec_size_0_set_val_null);
+  RUN_TEST(test_set_type_int_vec_size_5_set_pos_2);
+
+  puts("\nDouble\n");
+  RUN_TEST(test_set_type_double_vec_size_0_set_pos_0);
+  RUN_TEST(test_set_type_double_vec_size_0_set_pos_10);
+  RUN_TEST(test_set_type_double_vec_size_0_set_val_null);
+  RUN_TEST(test_set_type_double_vec_size_5_set_pos_2);
+
+  puts("\nStruct\n");
+  RUN_TEST(test_set_type_struct_vec_size_0_set_pos_0);
+  RUN_TEST(test_set_type_struct_vec_size_0_set_pos_10);
+  RUN_TEST(test_set_type_struct_vec_size_0_set_val_null);
+  RUN_TEST(test_set_type_struct_vec_size_5_set_pos_2);
+
   puts("\nHeap struct\n");
-  
-  RUN_TEST(test_back_type_heap_struct_vec_size_0);
-  RUN_TEST(test_back_type_heap_struct_vec_size_5);
+  RUN_TEST(test_set_type_heap_struct_vec_size_0_set_pos_0);
+  RUN_TEST(test_set_type_heap_struct_vec_size_0_set_pos_10);
+  RUN_TEST(test_set_type_heap_struct_vec_size_0_set_val_null);
+  RUN_TEST(test_set_type_heap_struct_vec_size_5_set_pos_2);
 
   return UNITY_END();
 }
